@@ -1,0 +1,28 @@
+\documentclass[12pt, a4paper]{report}
+
+\usepackage{geometry}
+\geometry{a4paper, left=30mm, right=20mm, top=30mm, bottom=30mm}
+
+\usepackage{t1enc}
+\usepackage[utf8]{inputenc}
+\usepackage[magyar]{babel}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{indentfirst}
+
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+% 0 - Do NOT print
+% 1 - Print
+\def\printName{1}
+
+% Set line spacing to 1.5
+\linespread{1.25}
+
+\input{./misc/defines.tex}
+
+\begin{document}
+    \input{./misc/titlepage.tex}
+\end{document}
