@@ -1,0 +1,47 @@
+\chapter{Bevezetés}
+
+\section{A dolgozat felépítése}
+
+A dolgozatomban egy olyan transzformációs eljárást szeretnék ismertetni, mely lehetővé teszi generátorok előállítását \textit{Java} nyelven. A módszer lépéseinek és megvalósításának részletezése előtt sor kerül az elméleti hátterét adó \textit{Continuation Passing Style} ismertetésére, valamint a generátorok elhelyezésére más, a programvezérlés útját befolyásoló szerkezetek között. Zárásként a bemutatott technika, és a generátorok \textit{Java}ban, jelenlegi eszközökkel való létrehozásának összehasonlítása szerepel, a teljesítményt, valamint a szükséges apparátust, kódmennyiséget alapul véve.
+
+\section{Motiváció}
+
+A \textit{Java} az objektumorientált paradigma mentén megtervezett[cite - OO], legutóbbi, \textit{Java 8} verziójában azonban már funkcionális jegyeket is magára öltő programozási nyelv [cite - Java 8 fun]. A funkcionális paradigma irányába tett lépésként értékelhető például a \textit{Stream API} és a lambda függvények megjelenése [cite - Java 8 features]. 
+
+Bár ezek a fejlesztések jelentősek, azonban mondhatni folytatás nélkül maradnak, hiszen a 2017. július 27-én kiadásra kerülő \textit{Java 9} nem tartalmaz ilyen jellegű, az említettekkel megegyező horderejű újdonságokat [cite Java 9 features]. Tehát olyan eszközök támogatása, mint például a generátorok, sem a legközelebbi, sem a későbbi verziókban nem várható, a jelenlegi tervek alapján [cite Java X/Project Valhalla features].
+
+Természetesen felmerül a kérdés, hogy mégis mennyiben indokolt egy ilyen, új nyelvi elem bevezetése? Egyelőre ahelyett, hogy a generátorok előnyeivel próbálnánk érvelni a bevezetésük mellett, vizsgáljuk meg inkább azt, hogy más, széleskörben használt programozási nyelvek hogyan viszonyulnak a kérdéshez. Az \ref{table:1} táblázat adataiból kiolvasható, hogy a legnépszerűbb programozási nyelvek fele natívan támogatja a generátorok létrehozását. Ennek ismeretében már feltételezhetjük, hogy valós igény mutatkozna ezen struktúra bevezetésére a \textit{Java} nyelvben is. Az említett két tényező biztosította a motivációt, hogy a generátorok \textit{Java} nyelvben történő bevezetésének lehetőségét megvizsgáljam.
+
+\begin{table}
+\captionsetup{justification=centering}
+\centering
+  \begin{tabular}{|| c | c ||}
+  \hline
+  Programozási nyelv & Támogatás \\
+  \hline \hline
+  Java                  & \cellcolor{red!20}Nem \\
+  C                     & \cellcolor{red!20}Nem \\
+  C++                   & \cellcolor{yellow!20}Tervezett [cite Resumable functions] \\
+  C\#                   & \cellcolor{green!20}Igen \\
+  Python                & \cellcolor{green!20}Igen \\
+  Visual Basic .NET     & \cellcolor{green!20}Igen \\
+  PHP                   & \cellcolor{green!20}Igen \\
+  JavaScript            & \cellcolor{green!20}Igen \\
+  Delphi/Object Pascal  & \cellcolor{red!20}Nem \\
+  Swift                 & \cellcolor{red!20}Nem \\
+  \hline
+  \end{tabular}
+\caption{Generátorok támogatása a legnépszerűbb programozási nyelvek körében (népszerűség sorrendjében)}  
+\label{table:1}
+\end{table}
+
+\section{Az eljárás célja}
+
+A dolgozatban ismertetett transzformációs eljárás azzal a céllal került kidolgozásra, hogy alapot vessen a natív támogatás megjelenésének. A kísérleti implementáció által szolgáltatott tapasztalatok birtokában ugyanis megnyílik az út a \textit{Java} fordító módosítása, egy új ajánlás létrehozása, és utolsó lépésként akár a hivatalos támogatás elnyerése előtt. 
+Tehát a kidolgozott módszer és a dolgozat tekinthető egy hosszú eljárás első lépésének is, mely egy, a \textit{Java} fejlődését célzó \textit{Java Specification Request} kidolgozásában érhet véget. 
+
+\section{Az implementációról}
+
+Egy hasonló horderejű változtatás a nyelvben általában a fordító kiegészítését vonja maga után. Azonban a \textit{Java} által biztosított \textit{Pluggable Annotation Processing API} [cite JSR 269] segítségével a nyelv és a fordító módosítása nélkül készíthetünk egy kísérleti implementációt. A dolgozat részeként elkészített könyvtár, a \textit{Jield} \footnote{játékos név, a \texttt{yield} kulcsszó és a \textit{Java} programkönyvtárak esetén gyakran használt \textit{J} előtag összevonásából} [cite Jield GH] is az említett \textit{API} által kínált lehetőségeket aknázza ki.
+
+Az elkészült implementáció kísérleti jellegű, azonban ilyen formában is alkalmat ad arra, hogy a létrehozott generátorokat összevessük értelmüket tekintve azonos, ám a generátorok eleganciáját és rugalmasságát nélkülöző kódrészletekkel. Az összehasonlítás részeként a különböző kódrészletek teljesítménye is megvizsgálásra kerül a \textit{JMH} [cite JMH] könyvtár felhasználásával.
