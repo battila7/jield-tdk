@@ -9,13 +9,18 @@
 % A kódrészletek beállításai
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \lstset{xleftmargin=15pt,
-        basicstyle=\footnotesize,
+        basicstyle=\scriptsize,
         numbers=left,
         numbersep=5pt,
-        numberstyle=\tiny\color{codegray}}
+        numberstyle=\tiny\color{codegray},
+        escapechar=!}
+
+% Fix listings
+\renewcommand{\lstlistingname}{Kódrészlet}
 
 % Fix APA
 \renewcommand\BOthers{és mtsai\hbox{}}
 \renewcommand\BOthersPeriod{és mtsai.\hbox{}}
 \renewcommand\BRetrievedFrom{Letöltve:\ }
 \renewcommand\BRetrieved[1]{Letöltve, {#1}:\ }
+
