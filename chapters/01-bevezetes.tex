@@ -45,30 +45,3 @@ Tehát a kidolgozott módszer és a dolgozat tekinthető egy hosszú eljárás e
 Egy hasonló horderejű változtatás a nyelvben általában a fordító kiegészítését vonja maga után. Azonban a \textit{Java} által biztosított \citeA{JSR269} segítségével a nyelv és a fordító módosítása nélkül készíthetünk egy kísérleti implementációt. A dolgozat részeként elkészített könyvtár, a \textit{Jield} \footnote{játékos név, a \texttt{yield} kulcsszó és a \textit{Java} programkönyvtárak esetén gyakran használt \textit{J} előtag összevonásából} is az említett \textit{API} által kínált lehetőségeket aknázza ki.
 
 Az elkészült implementáció kísérleti jellegű, azonban ilyen formában is alkalmat ad arra, hogy a létrehozott generátorokat összevessük értelmüket tekintve azonos, ám a generátorok eleganciáját és rugalmasságát nélkülöző kódrészletekkel. Az összehasonlítás részeként a különböző kódrészletek teljesítménye is megvizsgálásra kerül a \textit{JMH} (\textit{Java Microbenchmark Harness}) könyvtár felhasználásával.
-
-\begin{center}
-\begin{mdframed}
-\begin{minipage}[t]{0.4\textwidth}
-\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} ! 
-  return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} !
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} ! 
-  return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} !
-\end{lstlisting}
-\end{minipage} 
-\begin{minipage}[t]{0.6\textwidth}
-\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-  Bounce<T> method1(GeneratorState<T> k) {
-    ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} !
-    return cont(() -> method2(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} !);
-  }
-
-  Bounce<T> method2(GeneratorState<T> k) {
-    ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} !
-    return cont(() -> k.apply(null), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.5cm} !);
-  }
-\end{lstlisting} 
-\end{minipage}
-\end{mdframed}
-\captionof{lstlisting}{Lineáris vezérlésű kód transzformálása}
-\end{center}

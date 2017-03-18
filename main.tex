@@ -16,8 +16,6 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
-\usepackage[linewidth=0.33pt, rightline=false, leftline=false]{mdframed}
-
 \usepackage{graphicx}
 \graphicspath{ {images/} }
 
@@ -29,6 +27,8 @@
 \usetikzlibrary{shapes}
 \usetikzlibrary{positioning}
 
+\usepackage[linewidth=0.33pt, rightline=false, leftline=false, framemethod=tikz]{mdframed}
+
 % 1,5-es sorköz
 \linespread{1.25}
 
@@ -38,6 +38,8 @@
     \input{./misc/titlepage.tex}
 
     \input{./chapters/01-bevezetes.tex}
+
+    \input{./chapters/02-transzformacio-abrak.tex}
 
     \bibliographystyle{apacite}
     \bibliography{references.bib}
