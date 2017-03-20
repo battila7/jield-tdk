@@ -1,0 +1,33 @@
+\chapter{A generátor és a vele rokon szerkezetek}
+
+Mielőtt belekezdhetnénk a transzformáció lépéseinek és implementációjának tárgyalásába, meg kell ismernünk az alapfogalmakat, amivel az eljárás dolgozik. E fogalmak közül talán a legfontosabb maga a \textit{generátor}. A fejezet célja, hogy megmutassa, hogy mi az a generátor, valamint a teljesség igénye nélkül felvázolja a generátorral rokon szerkezetek családját. Ezzel egyfajta tágabb kontextusban tudjuk értelmezni a generátort.
+
+A rokon szerkezetek között megtalálunk a programvezérlés szervezésére alkalmas struktúrákat, kifejezéseket, adatszerkezetek bejárására szolgáló eszközöket, valamint egy, a \textit{Java} nyelvből ismert osztályt. 
+
+\section{Szubrutin (\textit{subroutine})}
+
+A szubrutin leggyakoribb felhasználása egy olyan kódrészlet kiemelése, melyet a programunk több részén is felhasználunk [Knuth - TAoCP Vol.1 1.4.1]. A kódduplikáció ilyen módon történő megszüntetése, illetve csökkentése a program méretét, és így a karbantartandó kód mennyiségét is csökkenti. 
+
+A programrészletek szubrutinokba történő szervezése javítja a program olvashatóságát, érthetőbbé, követhetőbbé teszi a kódbázist. A szubrutin egyfajta absztrakciónak is tekinthető, mely elrejt egy utasítássorozatot, így az anélkül lesz felhasználható, hogy ismernénk a megvalósítás pontos részleteit. E módon a szubrutin hozzájárul a kódújrafelhasználáshoz is.
+
+A \textit{refactoring} is előszeretettel alkalmazza a szubrutinokba szervezést. \textit{Martin Fowler} például \textit{Extract Method}nak nevezi a hosszú metódusok rövidebb, jobban átlátható egységekbe való felbontását [Fowler - Refactoring].
+
+Érdeklődésünk középpontjában azonban a szubrutin programvezérlésre kifejtett hatása áll. Egy szubrutin meghívásakor a hívott és hívó között egy alá-fölérendeltségi viszony (\textit{subroutine linkage}) jön létre. A programvezérlés, miután a szubrutin törzse végrehajtásra került, visszatér a hívó kódhoz, mely csak ezt követően folytatódhat [Scott: Programming Language Pragmatics, p. 383]. Természetesen egy szubrutin meghívhat más szubrutinokat is, azonban a vezérlés végül mindig vissza fog kerülni a szubrutint meghívó kódhoz.
+
+\section{Korutin (\textit{coroutine})}
+
+A \textit{korutin} fogalmának definiálása helyett, először kövessük Knuth gondolatmenetét [TAoCP Vol.1 1.4.2], melynek segítségével azt is megérthetjük, miért volt szükség a szubrutin ismertetésére.
+
+Tekintsünk a főprogramra és a szubrutinokra együttesen úgy, mint programok egy csapatára, melyben minden egyes csapattag valamilyen feladatot végez el. A főprogram meghív egy szubrutint, az végrehajtja a megfelelő utasításokat, majd újra a főprogram következik. Tovább folytatva a gondolatsort, képzeljük el, hogy a szubrutin, amikor visszatér, valójában meghívja a főprogramot. 
+
+Az előbbi gondolatokat követve, megkapjuk a korutinokat, amelyek esetében nincsen egyértelmű alá-fölérendeltségi viszony, mint a szubrutin és a főprogram esetén. A korutinok mind alá-fölérendeltségi, mind mellérendeltségi viszony kialakítására alkalmasak. Ennek megfelelően a szubrutinok valójában speciális korutinok [Knuth].
+
+Felmerülhet azonban a kérdés, hogy mi történik abban az esetben, amikor egy korutin egynél többször kerül meghívásra? Míg szubrutinok hívásakor a végrehajtás mindig a szubrutin elejétől indul, addig korutinok esetén a végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt. Ez, és a korutin szempontjából lokális változók értékének megőrzése a hívások között, a korutinok két legfontosabb, definiáló tulajdonsága [Marlin 1980].
+
+\subsection{Szimmetrikus és aszimmetrikus korutinok}
+
+de Moura és Ierusalimschy különböző szempontok szerint osztályozza a korutinokat (vagyis azok megvalósításait) [de Moura, Ierusalimschy, 2004]. Egyik lehetséges osztályozási szempont a vezérlés átadásának módja, mely szerint szimmetrikus és aszimmetrikus korutinokat különböztethetünk meg.
+
+A szimmetria valójában a korutinok egymás közötti viszonyát határozza meg. Ha a korutinok szimmetrikusak, akkor egy korutin tetszőleges másik korutint hívhat meg, felfüggesztve ezzel a saját futását, és aktívvá téve a másikat. Ezzel szemben az aszimmetria azt jelenti, hogy egy korutin csak az őt meghívó korutint hívhatja meg. Ez pontosan az a megvalósítás, amit a Knuth-féle gondolatmenet bevezetett. Ilyenkor, bár alárendeltségi viszony alakul ki, a Marlin-féle tulajdonságok továbbra is megmaradnak.
+
+Az aszimmetrikus korutinokat elsőként Dahl [Dahl-Dijkstra-Hoare - Structured Programming] vezette be, és félkorutinnak (\textit{semicoroutine}) nevezte őket. Összegezve, a félkorutint többször is meghívhatjuk, mely hívások esetén mindig a megelőző visszatérés helye után fog folytatódni. A hívások között megőrzi lokális változóinak értékét, és ha visszatér, mindig a hívóhoz tér vissza. Pontosan e tulajdonságokra van szükség a generátorok előállításához.
