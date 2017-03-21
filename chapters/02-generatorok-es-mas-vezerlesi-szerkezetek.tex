@@ -2,11 +2,11 @@
 
 Mielőtt belekezdhetnénk a transzformáció lépéseinek és implementációjának tárgyalásába, meg kell ismernünk az alapfogalmakat, amivel az eljárás dolgozik. E fogalmak közül talán a legfontosabb maga a \textit{generátor}. A fejezet célja, hogy megmutassa, hogy mi az a generátor, valamint a teljesség igénye nélkül felvázolja a generátorral rokon szerkezetek családját. Ezzel egyfajta tágabb kontextusban tudjuk értelmezni a generátort.
 
-A rokon szerkezetek között megtalálunk a programvezérlés szervezésére alkalmas struktúrákat, kifejezéseket, adatszerkezetek bejárására szolgáló eszközöket, valamint egy, a \textit{Java} nyelvből ismert osztályt. 
+A rokon szerkezetek között megtalálunk a programvezérlés szervezésére alkalmas struktúrákat, kifejezéseket, valamint adatszerkezetek bejárására szolgáló eszközöket.
 
 \section{Szubrutin (\textit{subroutine})}
 
-A szubrutin leggyakoribb felhasználása egy olyan kódrészlet kiemelése, melyet a programunk több részén is felhasználunk [Knuth - TAoCP Vol.1 1.4.1]. A kódduplikáció ilyen módon történő megszüntetése, illetve csökkentése a program méretét, és így a karbantartandó kód mennyiségét is csökkenti. 
+A szubrutin leggyakoribb felhasználása egy olyan kódrészlet kiemelése, melyet a programunk több részén is felhasználunk [Knuth - TAoCP Vol.1 1.4.1]. A kódduplikáció ilyen módon történő megszüntetése, illetve mérséklése a program méretét, és így a karbantartandó kód mennyiségét is csökkenti. 
 
 A programrészletek szubrutinokba történő szervezése javítja a program olvashatóságát, érthetőbbé, követhetőbbé teszi a kódbázist. A szubrutin egyfajta absztrakciónak is tekinthető, mely elrejt egy utasítássorozatot, így az anélkül lesz felhasználható, hogy ismernénk a megvalósítás pontos részleteit. E módon a szubrutin hozzájárul a kódújrafelhasználáshoz is.
 
@@ -26,8 +26,136 @@ Felmerülhet azonban a kérdés, hogy mi történik abban az esetben, amikor egy
 
 \subsection{Szimmetrikus és aszimmetrikus korutinok}
 
-de Moura és Ierusalimschy különböző szempontok szerint osztályozza a korutinokat (vagyis azok megvalósításait) [de Moura, Ierusalimschy, 2004]. Egyik lehetséges osztályozási szempont a vezérlés átadásának módja, mely szerint szimmetrikus és aszimmetrikus korutinokat különböztethetünk meg.
+A korutinok (vagyis azok megvalósításainak) különböző szempontok szerint osztályozását adja meg de Moura és Ierusalimschy [de Moura, Ierusalimschy, 2004]. Egyik lehetséges osztályozási szempont a vezérlés átadásának módja, mely szerint szimmetrikus és aszimmetrikus korutinokat különböztethetünk meg.
 
-A szimmetria valójában a korutinok egymás közötti viszonyát határozza meg. Ha a korutinok szimmetrikusak, akkor egy korutin tetszőleges másik korutint hívhat meg, felfüggesztve ezzel a saját futását, és aktívvá téve a másikat. Ezzel szemben az aszimmetria azt jelenti, hogy bár továbbra is biztosított tetszőleges korutin meghívása, emellett azonban egy korutin fel tudja függeszteni a saját futását, visszaadva a vezérlést az őt meghívó korutinnak. Ez pontosan az a megvalósítás, amit a Knuth-féle gondolatmenet bevezetett. Ilyenkor, bár alárendeltségi viszony alakul ki, a Marlin-féle tulajdonságok továbbra is megmaradnak.
+A szimmetria valójában a korutinok egymás közötti viszonyát határozza meg. Ha a korutinok szimmetrikusak, akkor egy korutin tetszőleges másik korutint hívhat meg, felfüggesztve ezzel a saját futását, és aktívvá téve a másikat. Ezzel szemben az aszimmetria azt jelenti, hogy a hívott korutinnak vissza kell adnia a vezérlést a hívónak, felfüggesztve ezzel saját futását. Ez pontosan az a megvalósítás, amit a Knuth-féle gondolatmenet bevezetett. Ilyenkor, bár alárendeltségi viszony alakul ki, a Marlin-féle tulajdonságok továbbra is megmaradnak.
 
 Az aszimmetrikus korutinokat elsőként Dahl [Dahl-Dijkstra-Hoare - Structured Programming] vezette be, és félkorutinnak (\textit{semicoroutine}) nevezte őket. Összegezve, a félkorutint többször is meghívhatjuk, mely hívások esetén mindig a megelőző visszatérés helye után fog folytatódni. A hívások között megőrzi lokális változóinak értékét, és képes felfüggeszteni a saját futását, így visszatérve a hívóhoz. Pontosan e tulajdonságokra van szükség a generátorok előállításához.
+
+\section{Generátor (\textit{generator})}
+
+A félkorutinok bevezetése után már a birtokunkban van egy alkalmas fogalom, mely felhasználható a generátorok kifejezéséhez. A generátor egy olyan félkorutin, amely elemek sorozatának előállítására képes. Ezt oly módon teszi, hogy minden egyes hívás alkalmával a sorozatnak egyetlen elemét képzi, majd visszaadva a vezérlést a hívónak, átadja a generált elemet. Pontosan ezt valósítja meg a \textit{CLU} nyelv \textit{iterator} szerkezete [CLU Manual], melyet kifejezetten azzal a céllal vezettek be a nyelvbe, hogy lehetővé tegye a különböző adatszerkezetek elemeinek egyenkénti feldolgozását, egységes módon [History of CLU].
+
+Érdemes megemlíteni, hogy a \textit{CLU} \textit{iterator} szerkezetét az \textit{Alphard} generátorai inspirálták [History of CLU][Shaw 1966], amelyek pedig az \textit{IPL-V} nyelv azonos nevű szerkezetében gyökereznek. Marlin szerint [Marlin, 1980] az \textit{IPL-V} nyelv generátorai jelentik a korutinok legkorábbi alkalmazását. A generátorok megvalósításában ma is használt \textit{yield} kulcsszó azonban csak a \textit{CLU}-ban került bevezetésre.
+
+Természetesen a generátorok felhasználási területe nem csak az adatszerkezetek bejárására, feldolgozására korlátozódik. Használatukkal elemek tetszőleges sorozata előállítható, legyen az a sorozat véges, vagy végtelen. E működésre a generátorokat \textit{lusta} (\textit{lazy}) mivoltuk teszi alkalmassá, azaz, hogy csak akkor állítanak elő új elemet, ha szükséges.
+
+\begin{lstlisting}[language=JavaScript, caption={Páratlan számok végtelen sorozatát előállító generátor JavaScriptben}, captionpos=b, label=JSGenOdds]
+function *odds() {
+    let i = 1;
+
+    while (true) {
+        yield i;
+
+        i += 2;
+    }
+}
+\end{lstlisting}
+
+A \ref{JSGenOdds} kódrészlet egy \textit{JavaScript}ben írt, páratlan számok végtelen sorozatát előállító generátort ad meg. A \texttt{function} kulcsszó és a függvény neve között elhelyezett \texttt{*} karakter jelzi, hogy egy generátort definiálunk, melynek törzsében a \texttt{yield} kulcsszó segítségével tudjuk visszaadni a vezérlést a hívó kódnak, és átadni egy értéket. A példában, mivel a \texttt{yield} egy végtelen cikluson belül helyezkedik el, a generátor is végtelen sorozatot fog előállítani.
+
+A \textit{CLU} a generátorok használatát csak a \texttt{for} ciklusokkal karöltve teszi lehetővé [CLU Reference]. Ennek az az oka, hogy a generátor sorozatos meghívását, így az új elemek előállítását a \texttt{for} szerkezet vezérli, nem a programozó. Ezzel szemben például a \textit{JavaScript} vagy a \textit{C\#} mindenhol lehetővé teszi a generátorok használatát, ahol hagyományos függvények is használhatónak. Ahhoz hogy megértsük, ez miért lehetséges, szükség van az iterátor fogalmára.
+
+\section{Iterátor (\textit{iterator})}
+
+A különböző adatszerkezetekben tárolt elemekhez gyakran egyesével is hozzá szeretnénk férni, hogy valamilyen műveletet végezzünk rajtuk. Ehhez ki kell nyernünk az adatszerkezetből az elemeket. Az \textit{iterátor} az adatszerkezet megvalósításának ismerete nélkül teszi lehetővé a tárolt elemeken való iterációt [Baker: Iterators Sign of Weakness]. Az elemek kinyerésének logikáját e módon elválasztja az elemeken végzett művelet logikájától.
+
+Ahhoz, hogy az iterátor képes legyen az adatszerkezet bejárására, ismernie kell annak belső megvalósítását. \textit{C++}-ban ezt általában az osztályok közötti \textit{friend} kapcsolat segítségével oldják meg [Gamma - Design Patterns, 262]. \textit{Java}ban az iterátor az adatszerkezet egy \textit{nem statikus tagosztályaként} (\textit{inner class}) kerülhet definiálásra ugyanilyen helyzetben [például ArrayList, HashMap]. Az implementáció ismerete mellett az iterátoroknak \textit{állapotra} van szükségük ahhoz, hogy a bejárást folytatni tudják. 
+
+\subsection{Belső és külső iterátor (\textit{internal and external iterator})}
+
+Az iterátor egy olyan minta, amely attól függően, hogy milyen tulajdonságokat várunk el tőle, rendkívül sokféle módon implementálható. Az egyik szempont, ami befolyásolhatja a megvalósítást, az iteráció vezérlésének kérdése. Aszerint, hogy ki vezérli az iterációt, kétféle iterátor-megvalósítást különböztetünk meg.
+
+A \textit{belső} vagy \textit{passzív iterátor} saját maga vezérli az elemekhez való hozzáférést. A külső, kliens kódnak csak az elemeken elvégzendő műveletet kell szolgáltatnia. Ennek a módszernek az előnye, hogy a bejárást vezérlő kódot csak egyszer, az iterátor megvalósításakor kell megírni, a kliens kódban már nem szükséges \footnote{R. Martin. Discovering patterns in existing applications. In J. O. Coplien and D. C. Schmidt, editors, Pattern Languages of Program Design, pages 365–393. Addison-Wesley, 1994}. A belső iterátorokat tipikusan az adatszerkezeteket megvalósító osztályok bocsájtják a kliensek rendelkezésére [Kühne 1999].
+
+\begin{lstlisting}[language=JavaScript, caption={Tömb elemeinek kilistázása belső iterátorral JavaScriptben}, captionpos=b, label=JSInternalIt]
+const numbers = [1, 2, 3, 4, 5];
+
+numbers.forEach(function print(element) {
+    console.log(element);
+});
+\end{lstlisting}
+
+A \ref{JSInternalIt} kódrészlet a \textit{JavaScript} \texttt{Array} objektuma által biztosított belső iterátor segítségével listázza ki a \texttt{numbers} tömb elemeit. Vegyük észre, hogy csak az elemeken végrehajtandó műveletet kellett megadni egy függvény formájában. Az adatszerkezet megvalósítása és bejárásának logikája rejtve marad.
+
+\textit{Külső} vagy \textit{aktív iterátor} használatakor a kliensre hárul az iteráció vezérlésének feladata. Az iterátor biztosítja az ehhez szükséges eszközöket, mint például a következő elemre lépés, vagy az aktuális elem lekérdezése. Ez a megoldás, bár több terhet ró a kliensre, rugalmasabb, mint a belső iterátor [Gamma, 260]. Erre példa az iteráció idő előtt való befejezése (azaz a teljes adatszerkezet bejárásának megelőzése), mely külső iterátor használatával triviális. 
+
+\begin{lstlisting}[language=JavaScript, caption={Tömb elemeinek kilistázása külső iterátorral JavaScriptben}, captionpos=b, label=JSExternalIt]
+const numbers = [1, 2, 3, 4, 5];
+
+const it = numbers[Symbol.iterator]();
+
+let state = it.next();
+
+while (!state.done) {
+    console.log(state.value);
+
+    state = it.next();
+}
+\end{lstlisting}
+
+A \ref{JSExternalIt} kódrészlet ugyanúgy az elemek kiíratását valósítja meg, mint a \ref{JSInternalIt} kódrészlet, azonban külső iterátor alkalmazásával. A következő elemet mindig a \texttt{next()} függvény meghívásával állítottuk elő. Feltűnő, hogy az iteráció vezérlése mekkora kódmennyiséget jelent a tényleges műveleten felül.
+
+A külső és belső iterátorok részletes összehasonlítása megtalálható T. Kühne: Internal Iteration Externalized című munkájában.
+
+\subsection{Iterálható (\textit{iterable})}
+
+A \textit{Java} és a \textit{Python} az iterátoron felül egy további absztrakciót biztosít, az \textit{iterálhatót}. Iterálható lehet bármilyen olyan osztály, amely képes valamilyen külső iterátort biztosítani a kliens számára; tipikusan ilyenek az elemek gyűjteményei, mint a lista vagy a halmaz [nvie: iterators vs generators]. Az iterálható kihangsúlyozza az iterátor és az iterált adatszerkezet közötti különbséget.
+
+\subsection{Generátorok megvalósítása iterátorokkal}
+
+Az iterátorok viszonylag részletes bemutatása meglepő lehet abból a szempontból, hogy rokonságuk a korutinokkal távolinak tűnik. Az összekötő kapocs nem lesz más, mint a generátor. A generátorok, ha a programvezérlés szempontjából tekintünk rájuk, akkor a speciális félkorutin mivoltukat fedik fel. Ha viszont arra gondolunk, hogy egy sorozat elemeit képesek egyenként előállítani, akkor beláthatjuk, hogy egyúttal speciális iterátornak is tekinthetők.
+
+Ez a rokonság az alapja annak, hogy a korutinokat nem, de iterátorokat ismerő programozási nyelvekben is dolgozhassunk generátorokkal. Az egyik lehetőség, hogy a függvényeket \textit{iterálhatónak} tekintjük. Ebben az esetben a függvény meghívásával egy új \textit{iterátort} kapunk, mely a generátor által lustán előállított elemeken képes iterálni. Ezt alkalmazza például a \textit{JavaScript}. A másik lehetőség, hogy a függvény egy \textit{iterálhatóval} tér vissza, melyet ugyanúgy használhatunk, mint egy iterálható gyűjteményt. E megoldás alkalmazására példa a \textit{C\#}.
+
+A függvény eredeti törzsét azonban nem használhatjuk fel közvetlenül, hiszen korutinok hiányában nem rendelkezünk olyan eszközökkel, melyek lehetővé tennék a lokális változók értékének hívások közötti megőrzését és a végrehajtás folytatását. A függvénytörzset fordítási idejű transzformációnak kell alávetnünk, hogy ezeket a tulajdonságokat szimulálni tudjuk. A dolgozatban ismertetésre kerülő transzformáció célja is pontosan ugyanez.
+
+% Lehet, hogy el kell majd távolítani
+\pagebreak
+
+\section{Generátor-kifejezés (\textit{generator expression})}
+
+A szubrutinoktól az iterátorokig végigvezetett gondolatmenet ívét megtörte volna a következő eszköz, mely azonban számot tarthat az olvasó érdeklődésére, hiszen szorosan kapcsolódik a generátorokhoz. 
+
+Néhány esetben fárasztó lehet generátort írni, vagy nem is ismeri ezt a fogalmat a programozási nyelv, amiben dolgozunk. Mindkét esetben megoldást kínálhatnak a \textit{generátor kifejezések} (bizonyos nyelvekben \textit{comprehension}), melyek megtartják a generátorok legnagyobb előnyét (az elemek lusta előállítását), de minimalizálják a szükséges kódmennyiséget. 
+
+Szemléletes példa a \textit{Python}, mely bár ismeri a generátorokat, lehetővé teszi generátor-kifejezések használatát is [PEP 289]
+
+\begin{center}
+\begin{minipage}[t]{0.45\textwidth}
+\begin{lstlisting}[language=Python]
+g = (x**2 for x in range(10))
+
+print g.next()
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.45\textwidth}
+\begin{lstlisting}[language=Python,]
+def __gen(exp):
+    for x in exp:
+        yield x**2
+
+g = __gen(iter(range(10)))
+
+print g.next()
+\end{lstlisting} 
+\end{minipage}
+\captionof{lstlisting}{Négyzetszámok előállítása generátor-kifejezés és generátor segítségével Pythonban}
+\label{PythonGenComparison}
+\end{center}
+
+A \ref{PythonGenComparison} kódrészlet jobb- és baloldala is pontosan ugyanazt valósítja meg, azonban a baloldali, generátor-kifejezést használó kód jóval tömörebb formában.
+
+A \textit{Java}val közelebbi rokonságban álló nyelvek közül a \textit{Ceylon}t lehet kiemelni, mely \textit{comprehension} néven biztosít hasonló lehetőséget [Ceylon Docs] Fontos megjegyezni, hogy \textit{Ceylon}ban nincsen nyelvi szintű generátor, szemben a \textit{Python}nal.
+
+\begin{lstlisting}[language=Ceylon, caption={Nevek kilistázása generátor-kifejezéssel Ceylonban}, captionpos=b, label=CeylonGenExpr]
+class Person(shared String name) {}
+
+value people = { Person("Gavin"), Person("Stephane"), Person("Tom") };
+          
+{String*} names = { for (p in people) p.name };
+          
+print(names);
+\end{lstlisting}
+
+A \ref{CeylonGenExpr} kódrészlet ötödik sorában található generátor-kifejezés neveket állít elő, azonban az értékadás pillanatában a kifejezés még nem generál egy nevet sem. Ez csak akkor fog bekövetkezni, amikor ténylegesen fel kívánjuk használni a generált elemeket, például ki szeretnénk listázni őket. 

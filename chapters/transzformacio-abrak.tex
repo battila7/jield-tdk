@@ -7,22 +7,22 @@ A transzformáció lépéseinek leírásához kerülő ábrák.
 \begin{mdframed}
 \begin{minipage}[t]{0.4\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} ! 
-return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} !
-! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} ! 
-return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} !
+@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} @ 
+return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} @
+@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} @ 
+return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} @
 \end{lstlisting}
 \end{minipage} 
 \begin{minipage}[t]{0.6\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
 Bounce<T> method1(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} !
-  return cont(() -> method2(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} @
+  return cont(() -> method2(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} @);
 }
 
 Bounce<T> method2(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} !
-  return cont(() -> k.apply(null), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.6cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} @
+  return cont(() -> k.apply(null), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.6cm} @);
 }
 \end{lstlisting} 
 \end{minipage}
@@ -37,33 +37,33 @@ Bounce<T> method2(GeneratorState<T> k) {
 \begin{mdframed}[topline=true]
 \begin{minipage}[t]{0.4\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-for (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Init}; \hspace*{0.6cm}!; ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.0cm}!; ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Frissít}; \vspace*{0.3cm} \hspace*{0.9cm}!) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} ! 
-  return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} !
+for (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Init}; \hspace*{0.6cm}@; @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.0cm}@; @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Frissít}; \vspace*{0.3cm} \hspace*{0.9cm}@) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
 }
 \end{lstlisting}
 \end{minipage} 
 \begin{minipage}[t]{0.6\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
 Bounce<T> method1(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Init}; \vspace*{0.3cm} !
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Init}; \vspace*{0.3cm} @
   return cont(() -> method2(k));
 }
 
 Bounce<T> method2(GeneratorState<T> k) {
-  if (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} !) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
     return cont(() -> method3(k));
   }
   return cont(() -> k.apply(null));
 }
 
 Bounce<T> method3(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} !
-  return cont(() -> method4(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method4(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
 }
 
 Bounce<T> method4(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Frissít}; \vspace*{0.3cm} !
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Frissít}; \vspace*{0.3cm} @
   return cont(() -> method2(k));
 }
 \end{lstlisting} 
@@ -79,24 +79,24 @@ Bounce<T> method4(GeneratorState<T> k) {
 \begin{mdframed}[topline=true]
 \begin{minipage}[t]{0.4\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-while (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \vspace*{0.3cm} \hspace*{1.14cm}!) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} ! 
-  return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} !
+while (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \vspace*{0.3cm} \hspace*{1.14cm}@) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
 }
 \end{lstlisting}
 \end{minipage} 
 \begin{minipage}[t]{0.6\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
 Bounce<T> method1(GeneratorState<T> k) {
-  if (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} !) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
     return cont(() -> method2(k));
   }
   return cont(() -> k.apply(null));
 }
 
 Bounce<T> method2(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} !
-  return cont(() -> method1(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method1(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
 }
 \end{lstlisting} 
 \end{minipage}
@@ -110,20 +110,20 @@ Bounce<T> method2(GeneratorState<T> k) {
 \begin{minipage}[t]{0.4\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
 do {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} ! 
-  return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} !
-} while (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \vspace*{0.3cm} \hspace*{1.14cm}!);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
+} while (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \vspace*{0.3cm} \hspace*{1.14cm}@);
 \end{lstlisting}
 \end{minipage} 
 \begin{minipage}[t]{0.6\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
 Bounce<T> method1(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} !
-  return cont(() -> method2(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method2(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
 }
 
 Bounce<T> method2(GeneratorState<T> k) {
-  if (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} !) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
     return cont(() -> method1(k));
   }
   return cont(() -> k.apply(null));
@@ -142,30 +142,30 @@ Bounce<T> method2(GeneratorState<T> k) {
 \begin{mdframed}[topline=true]
 \begin{minipage}[t]{0.4\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-for (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Változó}; \hspace*{1.05cm}! : ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Forrás}; \vspace*{0.3cm} \hspace*{0.9cm}!) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} ! 
-  return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} !
+for (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Változó}; \hspace*{1.05cm}@ : @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Forrás}; \vspace*{0.3cm} \hspace*{0.9cm}@) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
 }
 \end{lstlisting}
 \end{minipage} 
 \begin{minipage}[t]{0.6\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-Bounce<T> method1(GeneratorState<T> k) { !\vspace{0.2cm}!
-  iterator = CPSUtil.iterator(! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, yshift=0.1cm, inner sep=5pt, anchor=west] {Forrás}; \vspace{0.3cm} \hspace*{1.0cm}!);
+Bounce<T> method1(GeneratorState<T> k) { @\vspace{0.2cm}@
+  iterator = CPSUtil.iterator(@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, yshift=0.1cm, inner sep=5pt, anchor=west] {Forrás}; \vspace{0.3cm} \hspace*{1.0cm}@);
   return cont(() -> method2(k));
 }
 
 Bounce<T> method2(GeneratorState<T> k) {
-  if (iterator.hasNext()) { !\vspace{0.2cm}!
-    ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Változó}; \vspace*{0.2cm} \hspace*{1.1cm}! = iterator.next();
+  if (iterator.hasNext()) { @\vspace{0.2cm}@
+    @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Változó}; \vspace*{0.2cm} \hspace*{1.1cm}@ = iterator.next();
     return cont(() -> method3(k));
   }
   return cont(() -> k.apply(null));
 }
 
 Bounce<T> method3(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} !
-  return cont(() -> method2(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method2(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
 }
 \end{lstlisting} 
 \end{minipage}
@@ -180,22 +180,22 @@ Bounce<T> method3(GeneratorState<T> k) {
 \begin{mdframed}[topline=true]
 \begin{minipage}[t]{0.4\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-switch (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Szelektor}; \vspace*{0.3cm} \hspace*{1.35cm}!) {
-  case ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Konstans}; \vspace*{0.3cm} \hspace*{1.35cm}!:
-    ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} ! 
-    return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} !
+switch (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Szelektor}; \vspace*{0.3cm} \hspace*{1.35cm}@) {
+  case @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Konstans}; \vspace*{0.3cm} \hspace*{1.35cm}@:
+    @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} @ 
+    return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} @
 
   default :
-    ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} ! 
-    return ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} !
+    @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} @ 
+    return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} @
 }
 \end{lstlisting}
 \end{minipage} 
 \begin{minipage}[t]{0.6\textwidth}
 \begin{lstlisting}[language=Java, numbers=none, breaklines=true]
-Bounce<T> method1(GeneratorState<T> k) { !\vspace{0.2cm}!
-  switch (! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Szelektor}; \vspace*{0.3cm} \hspace*{1.35cm}!) {
-    case ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Konstans}; \vspace*{0.1cm} \hspace*{1.35cm}!:
+Bounce<T> method1(GeneratorState<T> k) { @\vspace{0.2cm}@
+  switch (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Szelektor}; \vspace*{0.3cm} \hspace*{1.35cm}@) {
+    case @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Konstans}; \vspace*{0.1cm} \hspace*{1.35cm}@:
       return cont(() -> method2(k));
 
     default :
@@ -204,13 +204,13 @@ Bounce<T> method1(GeneratorState<T> k) { !\vspace{0.2cm}!
 }
 
 Bounce<T> method2(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} !
-  return cont(() -> method4(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} @
+  return cont(() -> method4(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} @);
 }
 
 Bounce<T> method3(GeneratorState<T> k) {
-  ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} !
-  return cont(() -> method4(k), ! \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.75cm} !);
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} @
+  return cont(() -> method4(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.75cm} @);
 }
 
 Bounce<T> method4(GeneratorState<T> k) {

@@ -13,10 +13,41 @@
         numbers=left,
         numbersep=5pt,
         numberstyle=\tiny\color{codegray},
-        escapechar=!,
+        escapechar=@,
         aboveskip=2em,
         belowskip=2em,
         belowcaptionskip=2em}
+
+% JS nyelv
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, yield, let, const        },
+  keywordstyle=\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\ttfamily,
+  stringstyle=\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+% Ceylon nyelv
+\lstdefinelanguage{Ceylon}{
+  keywords={value, String, for, in, class, shared},
+  keywordstyle=\bfseries,
+  ndkeywordstyle=\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\ttfamily,
+  stringstyle=\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
 
 % Fix listings
 \renewcommand{\lstlistingname}{Kódrészlet}
