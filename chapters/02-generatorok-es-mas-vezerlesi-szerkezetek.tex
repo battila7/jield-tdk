@@ -20,7 +20,7 @@ A \textit{korutin} fogalmának definiálása helyett, először kövessük Knuth
 
 Tekintsünk a főprogramra és a szubrutinokra együttesen úgy, mint programok egy csapatára, melyben minden egyes csapattag valamilyen feladatot végez el. A főprogram meghív egy szubrutint, az végrehajtja a megfelelő utasításokat, majd újra a főprogram következik. Tovább folytatva a gondolatsort, képzeljük el, hogy a szubrutin, amikor visszatér, valójában meghívja a főprogramot. 
 
-Az előbbi gondolatokat követve, megkapjuk a korutinokat, amelyek esetében nincsen egyértelmű alá-fölérendeltségi viszony, mint a szubrutin és a főprogram esetén. A korutinok mind alá-fölérendeltségi, mind mellérendeltségi viszony kialakítására alkalmasak. Ennek megfelelően a szubrutinok valójában speciális korutinok \cite[p. 190]{TAoCPVol1}.
+Az előbbi gondolatokat követve, megkapjuk a korutinokat, amelyek esetében nincsen egyértelmű alá-fölérendeltségi viszony, mint a szubrutin és a főprogram esetén. A ko\-rutinok mind alá-fölérendeltségi, mind mellérendeltségi viszony kialakítására alkalmasak. Ennek megfelelően a szubrutinok valójában speciális korutinok \cite[p. 190]{TAoCPVol1}.
 
 Felmerülhet azonban a kérdés, hogy mi történik abban az esetben, amikor egy korutin egynél többször kerül meghívásra? Míg szubrutinok hívásakor a végrehajtás mindig a szubrutin elejétől indul, addig korutinok esetén a végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt. Ez, és a korutin szempontjából lokális változók értékének megőrzése a hívások között, a korutinok két legfontosabb, definiáló tulajdonsága \cite{Marlin1980}.
 

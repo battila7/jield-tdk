@@ -1,0 +1,72 @@
+\chapter{\textit{Continuation Passing Style} és kapcsolódó eszközök}
+
+Az előző fejezet bevezette a generátorokat, melyeknek használatát lehetővé szeretnénk tenni \textit{Java}ban. Egyelőre azonban csak azt tudjuk, hogy \textit{mit} szeretnénk elérni, a \textit{hogyan} rejtve maradt. Felfedni ezt is csak lépésenként érdemes, továbbra is fokozatosan bevezetve a fogalmakat, melyekre a módszer támaszkodik. E fejezet a \textit{Continuation Passing Style} (továbbiakban \textit{CPS}), és néhány kapcsolódó eszköz ismertetését tartalmazza. Ezek birtokában már kifejezhetjük a dolgozat eredményét jelentő transzformációt és annak implementációját.
+
+\section{\textit{Direct Style}}
+
+A \textit{CPS} kifejtése előtt röviden vizsgáljuk meg ellentétét, a \textit{direct style}-t \cite{Danvy1994}, mely nem szorul hosszú bemutatásra, hiszen ez a programok írásának általánosan alkalmazott eszköze. Az ebben a stílusban írt függvények pusztán a formális paramétereiknek megfelelő argumentumokkal kerülnek meghívásra, futásuk befejeztét követően pedig visszatérnek a hívóhoz valamilyen értékkel (vagy bármilyen érték nélkül).
+
+Friedmann és Wand \citeyear{EssProgLan} gondolatmenetét követve, vegyük szemügyre a faktoriális kiszámítását végző különböző függvények viselkedését.
+
+\begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó rekurzív függvény JavaScriptben}, captionpos=b, label=JSDSFactRec]
+function factDSRec(n) {
+    if (n === 0) {
+        return 1;
+    } else {
+        return n * factDSRec(n)
+    }
+}
+\end{lstlisting}
+
+A \ref{JSDSFactRec} kódrészlet egy rekurzív, \textit{direct style} függvény, mely \texttt{n} faktoriálisát határozza meg. A függvény működésének illusztrálásához vezessük le, hogyan kerül kiszámításra $4!$ értéke.
+
+\begin{lstlisting}[language=JavaScript, caption={$4!$ kiszámítása \texttt{factDSRec} segítségével}, captionpos=b, numbers=none]
+   factDSRec(4)
+=  4 * factDSRec(3)
+=  4 * (3 * factDSRec(2))
+=  4 * (3 * (2 * factDSRec(1)))
+=  4 * (3 * (2 * 1))
+=  4 * (3 * 2)
+=  4 * 6
+=  24
+\end{lstlisting}
+
+Amíg a futás el nem éri a rekurzió alapesetét, új \texttt{factDSRec} hívások történnek, mindig eggyel kisebb \texttt{n} értékkel. Figyelemre méltó, hogy minden hívással együtt megjelenik egy szorzás is, mely csak a függvény visszatérését követően lesz elvégezhető.
+
+\begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó függvény JavaScriptben}, captionpos=b, label=JSDSFactIter]
+function factDSIter(n) {
+    function factIterAcc(i, acc) {
+        if (i === 0) {
+            return acc;
+        } else {
+            factIterAcc(i - 1, acc * i);
+        }
+    }
+
+    factIterAcc(n, 1);
+}
+\end{lstlisting}
+
+A \ref{JSDSFactIter} kódrészlet két ponton különbözik jelentősen a \texttt{factDSRec} függvénytől. Az eltérések elemzését megelőzően azonban számoljuk ki ismét $4!$ értékét!
+
+\begin{lstlisting}[language=JavaScript, caption={$4!$ kiszámítása \texttt{factDSIter} segítségével}, captionpos=b, numbers=none]
+   factDSIter(4)
+=  factIterAcc(4, 1)
+=  factIterAcc(3, 4)
+=  factIterAcc(2, 12)
+=  factIterAcc(1, 24)
+=  24
+\end{lstlisting}
+
+Az első, ami szembetűnik, hogy a számítás nem rendelkezik a \texttt{factDSRec} ``piramis'' mintájával, mely a sorozatos hívások által kijelölt szorzásoknak volt köszönhető. A rekurzív hívások ebben az esetben is jelen vannak, azonban az előző függvény \textit{hátralevő} szorzásait az \texttt{acc} paraméterbe helyeztük. Ennek következtében nem szükséges a kijelölt műveletek folyamatos feljegyzése, a függvény futásának tárigénye konstans. Ezt a működést, a rekurzió ellenére \textit{iterative control behaviour}nak nevezzük \shortcite{EssProgLan}.
+
+\section{\textit{Continuation Passing Style}}
+
+A \textit{CPS}-t az idők folyamán sokan sokféle formában felfedezték, és definiálták \cite{Reynolds1993}. Egy elegáns meghatározás a következő, mely pusztán két szabályt fektet le. A függvények
+
+\begin{enumerate}
+    \item sohasem térhetnek vissza, és
+    \item formális paraméterlistájuk kiegészül egy \textit{continuation}nek nevezett paraméterrel \cite{MightCPS}.
+\end{enumerate}
+
+A stílus minden előnyös tulajdonsága a fenti szabályok alkalmazásának köszönhető. Viszont felmerülhet a kérdés, hogy ha egy függvény sohasem térhet vissza, akkor mégis hogyan képes értéket visszaadni? Sussman és Steele \citeyear{Sussman1975} erre a következő választ adja: ``\textit{\textellipsis in this continuation-passing programming style, a function always "returns" its result by "sending" it to another function}''. A függvény, aminek a visszatérési érték át lesz adva, nem más, mint a \textit{continuation}.
