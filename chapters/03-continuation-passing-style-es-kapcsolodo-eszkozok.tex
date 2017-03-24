@@ -6,14 +6,14 @@ Az előző fejezet bevezette a generátorokat, melyeknek használatát lehetőv�
 
 A \textit{CPS} kifejtése előtt röviden vizsgáljuk meg ellentétét, a \textit{direct style}-t \cite{Danvy1994}, mely nem szorul hosszú bemutatásra, hiszen ez a programok írásának általánosan alkalmazott eszköze. Az ebben a stílusban írt függvények pusztán a formális paramétereiknek megfelelő argumentumokkal kerülnek meghívásra, futásuk befejeztét követően pedig visszatérnek a hívóhoz valamilyen értékkel (vagy bármilyen érték nélkül).
 
-Friedmann és Wand \citeyear{EssProgLan} gondolatmenetét követve, vegyük szemügyre a faktoriális kiszámítását végző különböző függvények viselkedését.
+Friedman és Wand \citeyear{EssProgLan} gondolatmenetét követve, vegyük szemügyre a faktoriális kiszámítását végző különböző függvények viselkedését.
 
 \begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó rekurzív függvény JavaScriptben}, captionpos=b, label=JSDSFactRec]
 function factDSRec(n) {
     if (n === 0) {
         return 1;
     } else {
-        return n * factDSRec(n)
+        return n * factDSRec(n - 1);
     }
 }
 \end{lstlisting}
@@ -69,4 +69,78 @@ A \textit{CPS}-t az idők folyamán sokan sokféle formában felfedezték, és d
     \item formális paraméterlistájuk kiegészül egy \textit{continuation}nek nevezett paraméterrel \cite{MightCPS}.
 \end{enumerate}
 
-A stílus minden előnyös tulajdonsága a fenti szabályok alkalmazásának köszönhető. Viszont felmerülhet a kérdés, hogy ha egy függvény sohasem térhet vissza, akkor mégis hogyan képes értéket visszaadni? Sussman és Steele \citeyear{Sussman1975} erre a következő választ adja: ``\textit{\textellipsis in this continuation-passing programming style, a function always "returns" its result by "sending" it to another function}''. A függvény, aminek a visszatérési érték át lesz adva, nem más, mint a \textit{continuation}.
+A stílus minden előnyös tulajdonsága a fenti szabályok alkalmazásának köszönhető. Viszont felmerülhet a kérdés, hogy ha egy függvény sohasem térhet vissza, akkor mégis hogyan képes értéket visszaadni? Sussman és Steele \citeyear{Sussman1975} erre a következő választ adja: ``\textit{\textellipsis in this continuation-passing programming style, a function always "returns" its result by "sending" it to another function}''. 
+
+A függvény, aminek a visszatérési érték át lesz adva, nem más, mint a \textit{continuation}. Ez fogja jelképezni a még hátralevő számításokat, azaz hogy \textit{mi a teendő ezután} \cite{CompCont}.
+
+\subsection{Példák \textit{CPS} függvényekre}
+
+Amilyen egyszerű módon vezettük be a stílust, legalább annyira nehéz elképzelni, hogyan is működik. Ezért nézzünk két példát a \textit{CPS} alkalmazására!
+
+\begin{lstlisting}[language=JavaScript, caption={\textit{CPS} összeadást végző függvény JavaScriptben}, captionpos=b, label=JSCPSAdd]
+function addCPS(a, b, cont) {
+    cont(a + b);
+}
+
+addCPS(10, 20, function print(n) {
+    console.log(n);
+});
+\end{lstlisting}
+
+A \ref{JSCPSAdd} kódrészlet először egy \texttt{addCPS} nevű függvényt definiál, melynek \textit{direct style} esetén csak két paramétere lenne, az összeadandó értékek. A második szabály értelmében azonban hozzá kellett adni egy harmadik paramétert is. Ez lesz a \textit{continuation}, aminek át kell adnunk az összeadás eredményét, hiszen az első szabály megtiltja, hogy a függvény visszatérjen vele. Ezután a függvény meghívásának módja már egyértelmű. Átadunk egy függvényt, mely paraméterül várja a kiszámított értéket, és tesz vele valamit, jelen esetben kiírja a konzolra.
+
+Következzen egy összetettebb példa, a \texttt{factDSRec} függvény \textit{CPS}-transzformációja!
+
+\begin{lstlisting}[language=JavaScript, caption={\textit{CPS} faktoriálist kiszámító függvény JavaScriptben}, captionpos=b, label=JSCPSFact]
+function factCPS(n, cont) {
+    if (n === 0) {
+        cont(1);
+    } else {
+        factCPS(n - 1, val => cont(n * val));
+    }
+}
+\end{lstlisting}
+
+Mire érdemes felfigyelni a függvény törzsében? Természetesen a \texttt{return} utasítások eltűntek, helyükre viszont annál érdekesebb kifejezések kerültek. A \texttt{return 1;} utasítást felváltotta a konstans érték átadása a \textit{continuation}nek, hasonlóan az \texttt{addCPS} függvényhez. Az eredeti \texttt{factDSRec} függvény ötödik sorának helyén álló hívás viszont már nem ilyen magától értetődő. Könnyebben követhetővé válik a transzformáció, ha beiktatunk egy közbülső lépést.
+
+\lstset{language=JavaScript, numbers=none, breaklines=true}
+
+\begin{table}[h]
+\captionsetup{justification=centering}
+\centering
+\begin{tabular}{p{0.33\linewidth} | p{0.33\linewidth} | p{0.33\linewidth}}
+\begin{lstlisting}
+return
+    n * factDSRec(n - 1);
+\end{lstlisting}&
+\begin{lstlisting}
+const val =
+    factDSRec(n - 1);
+
+return n * val;
+\end{lstlisting}&
+\begin{lstlisting}
+factCPS(n - 1, 
+ val => cont(n * val));
+\end{lstlisting} 
+\end{tabular}
+\caption{A \texttt{return} utasítás transzformálásának lépései a \texttt{factDSRec} függvényben}  
+\label{table:steps}
+\end{table}
+
+% reset lstset
+\lstset{xleftmargin=15pt,
+        basicstyle=\scriptsize,
+        numbers=left,
+        numbersep=5pt,
+        numberstyle=\tiny\color{codegray},
+        escapechar=@,
+        aboveskip=2em,
+        belowskip=2em,
+        belowcaptionskip=2em}
+
+A középső lépésben egy nevet rendelünk az eredetileg rekurzív függvényhívás eredményéhez, ezzel explicitté téve azt, hogy a szorzás elvégzése előtt egy függvényhívást kell végrehajtani. Pontosan ez jelenik meg a jobboldalon is. Meghívjuk a \texttt{factCPS} függvényt, az eredeti \textit{continuation} helyett egy új függvénnyel, melyben elvégezzük a szorzást. Utána a szorzás eredménye már továbbadható a kapott \textit{continuation}nek.
+
+Az \texttt{addCPS} és a \texttt{factDSRec} függvény transzformációjának lépései valójában néhány szabályban összefoglalhatóak és általánosíthatóak. Egy ilyen transzformációs ``\textit{receptet}'' ad meg Friedman \citeyear{EssProgLan}.
+
+\subsection{Programvezérlés \textit{CPS} segítségével}
