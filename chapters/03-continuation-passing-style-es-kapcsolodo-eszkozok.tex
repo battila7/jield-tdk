@@ -8,7 +8,7 @@ A \textit{CPS} kifejtése előtt röviden vizsgáljuk meg ellentétét, a \texti
 
 Friedman és Wand \citeyear{EssProgLan} gondolatmenetét követve, vegyük szemügyre a faktoriális kiszámítását végző különböző függvények viselkedését.
 
-\begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó rekurzív függvény JavaScriptben}, captionpos=b, label=JSDSFactRec]
+\begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó függvény}, captionpos=b, label=JSDSFactRec]
 function factDSRec(n) {
     if (n === 0) {
         return 1;
@@ -33,7 +33,7 @@ A \ref{JSDSFactRec} kódrészlet egy rekurzív, \textit{direct style} függvény
 
 Amíg a futás el nem éri a rekurzió alapesetét, új \texttt{factDSRec} hívások történnek, mindig eggyel kisebb \texttt{n} értékkel. Figyelemre méltó, hogy minden hívással együtt megjelenik egy szorzás is, mely csak a függvény visszatérését követően lesz elvégezhető.
 
-\begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó függvény JavaScriptben}, captionpos=b, label=JSDSFactIter]
+\begin{lstlisting}[language=JavaScript, caption={\textit{Direct style} faktoriálist meghatározó függvény akkumulátorral}, captionpos=b, label=JSDSFactIter]
 function factDSIter(n) {
     function factIterAcc(i, acc) {
         if (i === 0) {
@@ -58,7 +58,7 @@ A \ref{JSDSFactIter} kódrészlet két ponton különbözik jelentősen a \textt
 =  24
 \end{lstlisting}
 
-Az első, ami szembetűnik, hogy a számítás nem rendelkezik a \texttt{factDSRec} ``piramis'' mintájával, mely a sorozatos hívások által kijelölt szorzásoknak volt köszönhető. A rekurzív hívások ebben az esetben is jelen vannak, azonban az előző függvény \textit{hátralevő} szorzásait az \texttt{acc} paraméterbe helyeztük. Ennek következtében nem szükséges a kijelölt műveletek folyamatos feljegyzése. Ezt a működést, a rekurzió ellenére \textit{iterative control behaviour}nak nevezzük \shortcite{EssProgLan}.
+Az első, ami szembetűnik, hogy a számítás nem rendelkezik a \texttt{factDSRec} ``\textit{piramis}'' mintájával, mely a sorozatos hívások által kijelölt szorzásoknak volt köszönhető. A rekurzív hívások ebben az esetben is jelen vannak, azonban az előző függvény \textit{hátralevő} szorzásait az \texttt{acc} paraméterbe helyeztük. Ennek következtében nem szükséges a kijelölt műveletek folyamatos feljegyzése. Ezt a működést, a rekurzió ellenére \textit{iterative control behaviour}nak nevezzük \shortcite{EssProgLan}.
 
 \section{\textit{Continuation Passing Style}}
 
@@ -77,7 +77,7 @@ A függvény, aminek a visszatérési érték át lesz adva, nem más, mint a \t
 
 Amilyen egyszerű módon vezettük be a stílust, legalább annyira nehéz elképzelni, hogyan is működik. Ezért nézzünk két példát a \textit{CPS} alkalmazására!
 
-\begin{lstlisting}[language=JavaScript, caption={\textit{CPS} összeadást végző függvény JavaScriptben}, captionpos=b, label=JSCPSAdd]
+\begin{lstlisting}[language=JavaScript, caption={\textit{CPS} összeadást végző függvény és meghívása}, captionpos=b, label=JSCPSAdd]
 function addCPS(a, b, cont) {
     cont(a + b);
 }
@@ -91,7 +91,7 @@ A \ref{JSCPSAdd} kódrészlet először egy \texttt{addCPS} nevű függvényt de
 
 Következzen egy összetettebb példa, a \texttt{factDSRec} függvény \textit{CPS}-transzformációja!
 
-\begin{lstlisting}[language=JavaScript, caption={\textit{CPS} faktoriálist kiszámító függvény JavaScriptben}, captionpos=b, label=JSCPSFact]
+\begin{lstlisting}[language=JavaScript, caption={\textit{CPS} faktoriálist kiszámító függvény}, captionpos=b, label=JSCPSFact]
 function factCPS(n, cont) {
     if (n === 0) {
         cont(1);
@@ -101,7 +101,7 @@ function factCPS(n, cont) {
 }
 \end{lstlisting}
 
-Mire érdemes felfigyelni a függvény törzsében? Természetesen a \texttt{return} utasítások eltűntek, helyükre viszont annál érdekesebb kifejezések kerültek. A \texttt{return 1;} utasítást felváltotta a konstans érték átadása a \textit{continuation}nek, hasonlóan az \texttt{addCPS} függvényhez. Az eredeti \texttt{factDSRec} függvény ötödik sorának helyén álló hívás viszont már nem ilyen magától értetődő. Könnyebben követhetővé válik a transzformáció, ha beiktatunk egy közbülső lépést.
+Mire érdemes felfigyelni a függvény törzsében? Természetesen a \texttt{return} utasítások eltűntek, helyükre viszont annál érdekesebb kifejezések kerültek. A \texttt{return 1;} utasítást felváltotta a konstans érték átadása a \textit{continuation}nek, hasonlóan az \texttt{addCPS} függvényhez. Az eredeti \texttt{factDSRec} függvény ötödik sorának helyén álló hívás viszont már nem ilyen magától értetődő. Követhetőbbé válik a transzformáció folyamata, ha beiktatunk egy közbülső lépést.
 
 \lstset{language=JavaScript, numbers=none, breaklines=true}
 
@@ -166,9 +166,9 @@ A \ref{JSThrow} kódrészlet \texttt{Throw} függvénye mindössze meghívja a k
 A teljes szerkezet modellezésére szolgáló függvény elkészítése előtt szükséges a vezérlés vizsgálata. Mikor merre kell folytatódnia a programvégrehajtásnak?
 
 \begin{itemize}
-    \item Ha a \texttt{try} blokkban nem történik \texttt{Throw} hívás, akkor úgy fut tovább a program, mintha nem is lett volna \texttt{try-catch}, ami az eredetileg kapott \texttt{cont} paramétert jelenti.
+    \item Ha a \texttt{try} blokkban nem történik \texttt{Throw} hívás, akkor a futásnak \texttt{try-catch} utáni utasítással kell folytatódnia, ami az eredetileg kapott \texttt{cont} paramétert jelenti.
     \item Amennyiben a \texttt{try} blokkon belül kivétel történik, akkor viszont a \texttt{catch} blokkot kell végrehajtani. Ezt kell felhasználni a \texttt{try} blokk \texttt{err} paramétereként.
-    \item A \texttt{catch} blokknak is szüksége van két \textit{continuation}re. Az előző két pontban használt gondolatemenetet alkalmazhatjuk itt is. Ha nem történik kivétel, akkor az eredeti \texttt{cont} paraméter jelentette utat követjük. Kivétel bekövetkeztekor pedig a tartalmazó \texttt{catch} blokkra támaszkodunk, amit a kapott \texttt{err} paraméter segítségével érünk el.
+    \item A \texttt{catch} blokknak is szüksége van két \textit{continuation}re. Az előző két pontban használt gondolatemenetet alkalmazhatjuk itt is. Ha nem történik kivétel, akkor az eredeti \texttt{cont} paraméter jelentette utat követjük. Kivétel bekövetkeztekor pedig a tartalmazó (eggyel magasabb szintű) \texttt{catch} blokkra támaszkodunk, amit a kapott \texttt{err} paraméter segítségével érünk el.
 \end{itemize}
 
 Összegezve a fentieket, az implementáció a következő:
@@ -203,8 +203,43 @@ A \ref{JSCPSFactTryCatch} kódrészlet egy \texttt{try-catch} szerkezettel egés
 
 \section{\textit{Tail Call Optimization}}
 
-Eddig a \textit{CPS} programvezérlésre kifejtett hatása volt előtérben. Ha újra megvizsáljuk a kódrészleteket, a stílus egy egészen más aspektusára lehetünk figyelmesek. A \ref{JSCPSFactTryCatch} kódrészletben a vezérlés minden lehetséges ágának utolsó utasítása egy függvényhívás. Ez a \textit{CPS} első szabályának következménye. Mivel a függvények sosem térnek vissza, ezért bármilyen, függvényhívás után álló utasítás sosem fog végrehajtásra kerülni. Hívás még egy másik függvény argumentuma sem lehet, az ilyen helyzeteket a \textit{continuation} megfelelő szervezésével kell megoldani. Tehát minden hívás úgynevezett \textit{tail call} \cite{CompCont}.
+Eddig a \textit{CPS} programvezérlésre kifejtett hatása volt előtérben. Ha újra megvizsáljuk a kódrészleteket, a stílus egy egészen más aspektusára lehetünk figyelmesek. A \ref{JSCPSFactTryCatch} kódrészletben a vezérlés minden lehetséges ágának utolsó utasítása egy függvényhívás. Ez a \textit{CPS} első szabályának következménye. Mivel a függvények sohasem térnek vissza, ezért a függvényhívás után álló utasítások nem fognak végrehajtásra kerülni. Hívás még egy másik függvény argumentuma sem lehet, az ilyen helyzeteket a \textit{continuation} megfelelő szervezésével kell megoldani. Tehát minden hívás úgynevezett \textit{tail call} \cite{CompCont}.
 
-A \textit{tail call} a \textit{CPS}-től teljesen független fogalom, egyszerűen olyan hívást jelent, mely egy függvény utolsó utasítása. Ha ez a hívás egy rekurzív hívás, akkor \textit{tail recursion}ről beszélünk (bár a szakirodalomban gyakran mindkét esetet így nevezik). \textit{Tail call} esetén a hívó rutinhoz nincs miért visszatérni, hiszen neki csak egyetlen dolga maradt: visszaadni a vezérlést az őt hívónak. Ha egy $f$ rutin \textit{tail call} formájában hívja $g$-t, akkor $g$-nek már nem kell visszatérnie $f$-hez, elegendő lenne az $f$ hívójához visszatérnie \cite{CompCont}. 
+Bár a \textit{CPS}-transzformáció következménye az ilyen hívások megjelenése, a \textit{tail call} a \textit{CPS}-től teljesen független fogalom, egyszerűen olyan hívást jelent, mely egy függvény utolsó utasítása. Ha ez a hívás egy rekurzív hívás, akkor \textit{tail recursion}ről beszélünk (bár a szakirodalomban gyakran mindkét esetet így nevezik). \textit{Tail call} esetén a hívó rutinhoz nincs miért visszatérni, hiszen neki csak egyetlen dolga maradt: visszaadni a vezérlést az őt hívónak. Általánosan, ha egy $f$ rutin \textit{tail call} formájában hívja $g$-t, akkor $g$-nek már nem kell visszatérnie $f$-hez, elegendő $f$ hívójához visszatérnie \cite{CompCont}. 
 
-Hagyományos esetben, amikor egy szubrutinhívás történik, meg kell jegyezni, hogy a hívás után hova kell visszatérni. Err szolgál a verem \textit{stack}. Minden hívás egy újabb \textit{stack frame} létrehozását jelenti \cite{EssProgLan}. Egymást követő számtalan hívás után a verem túlcsordulhat, ez a \textit{stack overflow}. A \textit{tail call optimization} (néha \textit{tail recursion elimination}, a változatos elnevezések miatt) a verem túlcsordulásának elkerülésére szolgáló, az előző felismeréseken alapuló technika. Többféleképpen megvalósítható, a \textit{CHICKEN} \textit{Scheme} fordító például Baker 1994-es javaslatát alkalmazza \cite{ChickenCompilation}. Baker ajánlásában a verem a soha vissza nem térő hívások következtében folyamatosan növekszik, mielőtt azonban túlcsordulna, a felesleges \textit{stack frame}-ek egy \textit{garbage collector} segítségével törlésre kerülnek \cite{CheneyOnTheMTA}.
+Hagyományos esetben, amikor egy szubrutinhívás történik, meg kell jegyezni, hogy a hívás után hova kell visszatérni. Többek között erre szolgál a verem (\textit{stack}). Minden hívás egy újabb \textit{stack frame} létrehozását jelenti \cite{EssProgLan}. Egymást követő számtalan hívás után a verem túlcsordulhat, ez a \textit{stack overflow}. A \textit{tail call optimization} (néha \textit{tail recursion elimination}, a változatos elnevezések miatt) a verem túlcsordulásának elkerülésére szolgáló, az előző felismeréseken alapuló technika. Többféleképpen megvalósítható, a \textit{CHICKEN} \textit{Scheme} fordító például Baker 1994-es javaslatát alkalmazza \cite{ChickenCompilation}. Baker ajánlásában a verem a soha vissza nem térő hívások következtében folyamatosan növekszik, mielőtt azonban túlcsordulna, a felesleges \textit{stack frame}-ek egy \textit{garbage collector} segítségével törlésre kerülnek \cite{CheneyOnTheMTA}.
+
+Összegezve, amennyiben egy függvény \textit{tail call}-lal ér véget, a \textit{direct style} kapcsán említett \textit{iterative control behaviour} automatikusan megvalósul. Ezt pedig kihasználhatjuk a \textit{tail call optimization} alkalmazásával, ami elhárítja a verem túlcsordulásának veszélyét.
+
+\subsection{\textit{Trampolining}}
+
+ A \textit{tail call optimization} nem csak olyan összetett technikákkal vihető véghez, mint a Baker-féle \textit{Cheney on the M.T.A.} Egy könnyedén megvalósítható megoldást kínál a \textit{trampolining}.
+
+ Adott egy legkülső függvény, a \textit{trampoline}. Amikor egy függvény szeretne meghívni egy másikat, azt a \textit{trampoline} közbeiktatásával teheti meg. Ez azt jelenti, hogy a hívónak vissza kell adnia valamilyen, a meghívandó függvényre utaló adatot, mely alapján a \textit{trampoline} el tudja végezni a hívást \cite{Schinz2001}. A \textit{verem} mérete így nem fog minden határon túl nőni, hanem alternálva, egyszer nő, egyszer csökken. Erről a szemléletes fel-le mozgásról kapta a nevét az eljárás.
+
+ A példa bemutat egy visszaszámláló függvényt, ami egyre kisebb értékkel hívja meg önmagát, míg el nem éri a nullát.
+
+\begin{lstlisting}[language=JavaScript, caption={\textit{Trampolining} megvalósítása \textit{JavaScript}ben}, captionpos=b, label=JSTrampoline]
+function trampoline(start) {
+  let bounce = start;
+
+  while (bounce && bounce.func) {
+    bounce = bounce.func(...bounce.args);
+  }
+}
+
+function counter(n) {
+  if (n > 0) {
+    return { 
+      func: counter, 
+      args: [n - 1]
+    };
+  } else {
+    return null;
+  }
+}
+\end{lstlisting}
+ 
+ A \ref{JSTrampoline} kódrészlet kulcsszereplője a \texttt{trampoline} függvény ciklusa. Ez mindaddig fut, amíg a legutóbb végrehajtott függvény visszaad egy megfelelő objektumot. Ebben az objektumban egy, a következőnek meghívandó függvényre mutató referencia, valamint az átadandó argumentumok szerepelnek, egy tömb formájában.
+
+ Ugyanezt a működést megvalósító, \textit{trampoline} nélküli kód, egy megfelelően nagy szám megadásával a teljes vermet el fogja használni. A példában szereplő \texttt{counter} viszont tetszőleges értékkel megbirkózik, hiszen a tárigénye korlátozott.
