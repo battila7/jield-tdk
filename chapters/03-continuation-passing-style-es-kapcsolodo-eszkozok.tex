@@ -144,3 +144,61 @@ A középső lépésben egy nevet rendelünk az eredetileg rekurzív függvényh
 Az \texttt{addCPS} és a \texttt{factDSRec} függvény transzformációjának lépései valójában néhány szabályban összefoglalhatóak és általánosíthatóak. Egy ilyen transzformációs ``\textit{receptet}'' ad meg Friedman \citeyear{EssProgLan}.
 
 \subsection{Programvezérlés \textit{CPS} segítségével}
+
+Az előző példák kevésbé szóltak a \textit{CPS} mellett, hiszen egy viszonylag egyszerű faktoriális függvény átírása is egy elsőre ránézésre nem teljesen egyértelmű kódrészletet eredményezett. Ha viszont eltekintünk a \textit{continuation} kezelése okozta komplexitástól, akkor megcsillan a \textit{CPS} egyik legjobb tulajdonsága. A programvezérlés útja explicitté vált, a műveletek végrehajtásának sorrendjével együtt \shortcite{CompCont, EssProgLan}. A \ref{table:steps} táblázat lépései világosan mutatják, ahogy a szorzás elvégzéséhez szükséges műveletek és azok sorrendje explicit kifejezésre került. Ugyanígy, a \textit{continuation}ök vizsgálatával pontosan megmondhatjuk, sőt kontrollálhatjuk, hogy a vezérlés merre fog tovább haladni.
+
+Ez a jellemző olyan erőt ad a programozók és a fordítóprogramok készítőinek kezébe, mely primitívebb vezérlési szerkezetek mellett akár korutinok megvalósítását is lehetővé teszi \shortcite{Haynes1984}. Mi több, valójában tetszőleges vezérlési elv implementálására alkalmas apparátust kínál a \textit{CPS} \cite{Lippert2010}. 
+
+Ennek ismeretében tegyük fel, hogy a \textit{JavaScript} nyelv egy olyan változatát kell használnunk, mely nem rendelkezik a kivételek kezelésére alkalmas \texttt{try-catch} struktúrával. Lippert \citeyear{Lippert2010} \textit{C\#}-ban készített transzformációját alapul véve, szeretném megmutatni, hogy a \textit{CPS} egy olyan eszköz, ami lehetővé teszi, hogy elméleti \textit{JavaScript} nyelvünk hiányosságát pótoljuk.
+
+Az első lépés a meglevő \texttt{cont} paraméter mellé egy második, \texttt{err} nevű \textit{continuation} paraméter hozzáadása. Ezt a változtatást a kivételkezelés indokolja. A program futása során a vezérlés rendes irányát megszakíthatja egy kivétel kiváltása. Ilyen esetben a futásnak egy kivételkezelő blokkban kell folytatódnia. Az újonnan bevezett \textit{continuation} fogja szimbolizálni a kivételes helyzetekben választandó futási irányt.
+
+Kivétel a legtöbb programozási nyelvben egy \texttt{throw} nevű utasítással váltható ki. Ezzel összehangban a modellben is ezt a nevet fogjuk használni.
+
+\begin{lstlisting}[language=JavaScript, caption={A \textit{throw} utasítás \textit{CPS}-ben}, captionpos=b, label=JSThrow]
+function Throw(cont, err) {
+    err();  
+}
+\end{lstlisting}
+
+A \ref{JSThrow} kódrészlet \texttt{Throw} függvénye mindössze meghívja a kivételek kezelésére szolgáló \textit{continuation}t.
+
+A teljes szerkezet modellezésére szolgáló függvény elkészítése előtt szükséges a vezérlés vizsgálata. Mikor merre kell folytatódnia a programvégrehajtásnak?
+
+\begin{itemize}
+    \item Ha a \texttt{try} blokkban nem történik \texttt{Throw} hívás, akkor úgy fut tovább a program, mintha nem is lett volna \texttt{try-catch}, ami az eredetileg kapott \texttt{cont} paramétert jelenti.
+    \item Amennyiben a \texttt{try} blokkon belül kivétel történik, akkor viszont a \texttt{catch} blokkot kell végrehajtani. Ezt kell felhasználni a \texttt{try} blokk \texttt{err} paramétereként.
+    \item A \texttt{catch} blokknak is szüksége van két \textit{continuation}re. Az előző két pontban használt gondolatemenetet alkalmazhatjuk itt is. Ha nem történik kivétel, akkor az eredeti \texttt{cont} paraméter jelentette utat követjük. Kivétel bekövetkeztekor pedig a tartalmazó \texttt{catch} blokkra támaszkodunk, amit a kapott \texttt{err} paraméter segítségével érünk el.
+\end{itemize}
+
+Összegezve a fentieket, az implementáció a következő:
+
+\begin{lstlisting}[language=JavaScript, caption={A \textit{try-catch} blokk \textit{CPS}-ben}, captionpos=b, label=JSTryCatch]
+function TryCatch(tryBlock, catchBlock, cont, err) {
+    tryBlock(cont, () => catchBlock(cont, err));
+}
+\end{lstlisting}
+
+Nézzük meg a \texttt{TryCatch} működését a jól ismert \texttt{factCPS} egy módosított változatában!
+
+\begin{lstlisting}[language=JavaScript, caption={Faktoriálist kiszámító függvény \textit{CPS}-ben, \texttt{try-catch} szerkezettel}, captionpos=b, label=JSCPSFactTryCatch]
+function factCPSTryCatch(n, cont, err) {
+    TryCatch(
+        (cont, err) => {
+            if (n < 0) {
+                Throw(cont, err); 
+            } else if (n === 0) {
+                cont(1);
+            } else {
+                factCPS(n - 1, val => cont(n * val), err);
+            }    
+        }, 
+        (cont, err) =>  cont(-1),
+        cont, err
+    );
+}
+\end{lstlisting}
+
+A \ref{JSCPSFactTryCatch} kódrészlet egy \texttt{try-catch} szerkezettel egészíti ki a \ref{JSCPSFact} kódrészlet függvényét. Amennyiben $n$ negatív, a \texttt{Throw} egy kivételt vált ki. Ennek hatására a vezérlés a \texttt{TryCatch} függvény második paramétereként átadott kivételkezelő kóddal fog folytatódni. Ez pedig az ismert módon ``\textit{visszatér}'' mínusz eggyel.
+
+\section{\textit{Tail Call Optimization}}
