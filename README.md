@@ -6,8 +6,6 @@ Szerző: Bagossy Attila
 
 Témavezetők: Dr. Battyányi Gyula Péter, Balla Tibor
 
-----
-
 ## Absztrakt
 
 A dolgozatban egy olyan transzformációs eljárás kerül ismertetésre, mely lehetővé teszi generátorok használatát Java nyelvben. Az eljárás a nyelv és a fordító módosítása nélkül, a Java által biztosított annotációk és a Pluggable Annotation Processing API segítségével valósítja meg a generátorok támogatását. Ennek köszönhetően használata nem igényel speciális futtatókörnyezetet. Az implementáció részletei mellett a dolgozat egy áttekintő képet ad az úgynevezett Continuation Passing Style használatáról és a generátorral rokon szerkezetek családjáról.
