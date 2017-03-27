@@ -3,3 +3,84 @@
 Az előző fejezetek bevezették a szükséges alapfogalmakat, melyekkel a generátorokat előállító módszer dolgozik. Ebben a fejezetben a dolgozat eredményét jelentő eljárás kerül részletesen ismertetésre.
 
 Az elméleti háttér és az implementáció szorosan összefonódik, így a kettő párhuzamosan, egymásra támaszkodva jelenik meg. Az eljárást lépésenként, a kód végrehajtását követve mutatom be, rávilágítva az egyes döntések mögötti megfontolásokra. Kiindulva a módosítatlan forráskódból, a fejezet egy működő generátor létrehozásánál ér véget, megágyazva ezzel a példákat bemutató következő résznek.
+
+\section{Annotáció-feldolgozás}
+
+A transzformációs eljárás a nyelv és a fordító módosítása nélkül működik. Viszont valamilyen módon a forráskódban jeleznie kell a programozónak, hogy egy metódusból generátormetódust szeretne készíteni. Erre biztosítanak lehetőséget az \textit{annotációk}. Az annotáció egy olyan, programkonstrukcióra vonatkozó metaadat, melynek nincs közvetlen hatása a programvégrehajtásra \cite{JLS8}.
+
+Az annotáció fogalmát a \textit{JSR 175} specifikáció vezette be, és megjelenése óta több közkedvelt programkönytárban is bizonyította sokoldalúságát. Emiatt természetes döntés volt, hogy a generátormetódusokat is egy annotációval kell megjelölni, ez a \texttt{@Generator}.
+
+Az annotációk feldolgozását a \textit{JSR 269} által leírt \textit{Pluggable Annotation Processing API} részét képező \texttt{javax.annotation.processing.Processor} interfészt megvalósító osztályok végezhetik. Javasolt azonban ennek egy absztrakt megvalósítását, az ugyanabban a csomagban található \texttt{AbstractProcessor} osztályt használni ősosztályként. A \textit{Java} fordító (továbbiakban \texttt{javac}) alapértelmezés szerint a \texttt{classpath}-ban keres feldolgozókat, mely viselkedés felülbírálható a \texttt{processorpath} és \texttt{processor} parancssori kapcsolók révén [javac options].
+
+\subsection{Transzformálandó metódusok összegyűjtése}
+
+A \texttt{Processor} interfész \texttt{process(Set<? extends TypeElement>, RoundEnvironment)} metódusának implementálásával lehet a tényleges feldolgozást elvégezni. A \texttt{javac} a fordítást több körben végzi, és az említett metódust az előző körben előállított gyökérelemekkel hívja meg. Erre a több körös fordításra azért van szükség, mert a feldolgozók az annotációk és az annotációk által megjelölt elemek alapján forráskódot generálhatnak. A gyökérelem általában egy fordítási egység (\textit{compilation unit}), mely több osztályt és interfészt foglalhat magában.
+
+A feldolgozók jelezhetik, hogy mely annotációk feldolgozását képesek elvégezni, azonban a \textit{"*"} értéket megadva, az összes, előző körben generált gyökérelem átadásra kerül a feldolgozó részére. Az implementáció részét képező \texttt{jield.apt.JieldProcessor} osztály is ezt a lehetőséget használja ki. A gyökérelemektől elindulva megkeresi az összes osztály- és interfész-deklarációt, majd ezeket megvizsgálva összegyűjti a \texttt{@Generator} annotációval ellátott metódusokat.
+
+Az e módon összegyűjtött metódusok azonban nem biztos, hogy eleget tesznek a transzformáció követelményeinek. Egy metódus akkor transzformálható, ha a következő kritériumoknak megfelel:
+
+\begin{itemize}
+    \item A visszatérési értékének típusa \texttt{java.util.stream.Stream}.
+    \item Van implementációja, azaz ha a tartalmazó típusa absztrakt osztály, akkor nem rendelkezik az \texttt{abstract} módosítóval, míg ha egy interfészben foglal helyet, akkor el van látva a \texttt{default} módosítóval.
+\end{itemize}
+
+Ha a \texttt{@Generator} annotáció egy olyan metóduson van elhelyezve, mely megsérti a fenti követelményeket, akkor a transzformációs és vele együtt a fordítási folyamat is hibával leáll.
+
+\section{Befoglaló osztály létrehozása}
+
+A transzformálandó metódusok birtokában következhet a generátorok létrehozása. Minden egyes generátorhoz létrejön egy osztály, mely a transzformáció folyamán előállított metódusok és mezők összegyűjtésére és egységbe zárására szolgál. Valójában ez az osztály csak az eljárás későbbi lépéseiben jön létre, azonban érdemes korábban megemlíteni, pont az előző szerepe miatt.
+
+A befoglaló osztály előállítására több út is kínálkozik, melyek alapvetően azzal vannak kapcsolatban, hogy az osztályt egy új fordítási egységben kívánjuk elhelyezni, vagy pedig ugyanabban a fordítási egységben, melyben a generátormetódus is szerepel. Az utóbbi eset jelentheti belső osztály (\textit{inner class}), statikus kontextusban (\textit{static context}) beágyazott osztály (\textit{nested class}), esetleg a metódustörzsben helyet kapó lokális vagy névtelen (\textit{anonymous}) osztály létrehozását. Ezek közül csak a belső osztály lesz vizsgálat tárgya, hiszen egyfelől ezt alkalmazza az implementáció, másfelől nem különbözik lényegesen a többi lehetőségtől.
+
+\subsection{Belső osztály (\textit{inner class})}
+
+A belső osztály egy másik osztályban helyet kapó olyan tagosztály, mely hozzáfér a befoglaló osztály példányváltozóihoz. Mi több, a befoglaló osztályt tartalmazó osztályhierarchia minden elemének példányváltozóit hivatkozhatjuk belőle. Ennek köszönhetően a belső osztály tökéletes választás a példánymetódusok transzformálásához.
+
+Érdemes még egyszer hangsúlyozni, hogy a belső osztály elhelyezéséhez a fordító által az eredeti forráskódból felépített absztrakt szintaxisfát (\textit{AST}) közvetlenül módosítani kell. Nem létezik azonban jól dokumentált, publikus \textit{API} a \texttt{javac} készítette szintaxisfa megváltoztatására, kiegészítésére. Az ezt az utat járó megoldások kizárólag a hivatalosan nem támogatott \texttt{com.sun.tools.javac.tree} csomag osztályaira támaszkodhatnak. A csomag dokumentációja tartalmazza is a következő figyelmeztetést:
+
+\begin{quote}
+	\textit{This is NOT part of any supported API. If you write code that depends on this, you do so at your own risk. This code and its internal interfaces are subject to change or deletion without notice.}
+\end{quote}
+
+Ennek következtében a szintaxisfa közvetlen módosítása nem javallott, az ilyen módon előállított forráskód működése sem garantált. Azonban a fordító is az említett \textit{API}-t használja, ami biztosítékot jelent tetszőleges kód előállítására.
+
+A belső osztályt a nevében is szereplő belső volta miatt érdemes használni. Pontosan ugyanazokhoz a mezőkhöz, metódusokhoz és típusokhoz fér hozzá, amelyekhez a \texttt{@Generator} annotációval ellátott metódus is. Ez a \texttt{private} láthatóságú deklarációkat is magában foglalja, amit egy másik fordítási egységben elhelyezkedő kód még akkor sem lát, ha azonos csomagban található. 
+
+Összefoglalva, a megoldás előnye, hogy az előállított osztály ugyanazokhoz a deklarációkhoz fér hozzá, mint az eredeti függvény. Hátránya azonban, hogy egy nem támogatott \textit{API}-t alkalmaz, mely nem is kifejezetten ilyen jellegű felhasználásra készült. Emellett az annotáció feldolgozás sem meglevő forráskód módosítását, hanem új forráskód generálását célozza.
+
+\subsection{Félnyilvános (\textit{package private}) osztály}
+
+Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztályt generálása gond nélkül kivitelezhető, hiszen ebben az esetben nem szükséges a már létező szintaxisfát módosítani, vagy újat létrehozni, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat forrásfájlokat, melyekkel eredetileg meghívtuk.
+
+Forráskódot összeállíthatunk karaktersorozatok konkatenációjával is, azonban ez kifejezetten fáradságos. Helyette érdemes valamilyen létező megoldást alkalmazni, például a \textit{javapoet} könyvtárat, melynek segítségével tetszőleges \textit{Java} forráskód előállítható, akár parametrizált módon.
+
+Bár a kényelmes forráskód-generálás vonzó alternatívát jelent, ebben az esetben akadályokba ütközhet, hogy az újonnan létrehozott osztály hozzáférjen mindazokhoz a mezőkhöz és metódusokhoz, melyekhez az eredeti metódus is hozzáfért. Ez a probléma azért állhat fent, mert egy metódus hozzáfér a tartalmazó osztály és a teljes befoglaló osztályhierarchia minden deklarációjához, beleértve a \texttt{private} láthatóságúakat is, míg egy független, nem-belső osztály nem. Az ilyen láthatóságú elemek használatának korlátozása azonban komoly megkötés lenne a felhasználók számára. Tehát nem kerülhető el ennek a problémának a megoldása.
+
+A különböző utak részletes kifejtése nélkül ki lehet azonban jelenteni, hogy a láthatóság (vagyis annak hiánya) által okozott kérdések megválaszolása óriási erőfeszítéseket igényel. Vagy bonyolult kerülőutakat kell alkalmazni, hogy a megfelelő deklarációk elérhetőek legyenek, vagy pedig \textit{reflection}t kell használni, mely összetett és fáradságos megoldás.
+
+Végül nem szabad megfeledkezni arról sem, hogy ahhoz, hogy az eredeti metódus generátor-metódussá váljon, tehát az újonnan generált osztály metódusait hívja, szükséges a meglévő kódból felépített szintaxisfa módosítása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatni.
+
+A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a stabil és kényelmes \textit{API}, amivel generálható, és hogy az annotáció feldolgozás kifejezetten ezt támogatja. Ellenérvként említendő, hogy csak bonyolultan kivitelezhető, hogy minden, az eredeti metódus által használt deklaráció elérhető legyen. Emellett semmilyen módon nem kerülhető el az eredeti metódus módosítása.
+
+\subsection{A választott megoldás}
+
+A felsorolt hátrányai ellenére, az implementáció a szintaxisfa közvetlen módosításával egy belső osztályt generál. Bár a félnyilvános osztály is alkalmas lenne speciális esetekre, ennek ellenére túl gyakran fordulhat elő olyan eset, amikor egy generátormetódus a tartalmazó osztály vagy osztályhierarchia egy \texttt{private} láthatósággal rendelkező deklarációját kívánja használni, és emiatt nem, vagy csak nehézkesen tudnánk a transzformációt alkalmazni.
+
+A szintaxisfa direkt megváltoztatására példa a \textit{Lombok} könyvtár. Ennek forráskódja azonban alacsony színvonalon (és hiányosan) dokumentált, emellett az eredeti \textit{API}-t becsomagolva használja, így nem triviális az \textit{API}-hívások pontos visszakövetése.
+
+\section{A metódus vágása}
+
+A transzformáció legjelentősebb része a \texttt{@Generator} annotációval ellátott metódusok implementációjának szétvágása. Ahogy a generátor, mint félkorutin ismertetésénél is említésre került, egy generátor futása egy érték visszaadásakor felfüggesztődik, majd legközelebb innen folytatódik. Ez viselkedés csak úgy valósítható meg, hogy az eredeti metódust sok kisebb metódusra bontjuk.
+
+Ez tehát az alapelv, ami a transzformáció mögött áll. Úgynevezett vágási pontoknál szétvágjuk a metódust kis darabokra. A generátor minden visszatérésnél megjegyzi, hogy melyik darab végrehajtásával kell folytatnia a működést. Korántsem magától értetődő azonban a vágást úgy elvégezni, hogy a kód értelme ne változzon. Tekintettel kell lenni a vezérlési szerkezetekre, az ugrást megvalósító \texttt{break} és \texttt{continue} utasításokra, valamint a lokális változók hatókörére is.
+
+A vágásnál lesz alkalmazható a \textit{CPS}, mely alkalmas a vágás során keletkező metódusokon átívelő vezérlési szerkezetek megvalósítására. A \textit{CPS}-transzformáció két formában, egyszer fordítási, egyszer pedig futási időben jelenik meg. A fordítási idejű \textit{CPS} azt jelenti, hogy a bemutatott eljárás folyamatosan nyilvántartja, hogy milyen \textit{continaution}ök állnak rendelkezésre, mikor melyik darab jelenti a \textit{continuation}t. Futási időben a \textit{CPS} úgy jelenik meg, hogy mindegyik metódus rendelkezik egy \textit{continuation} paraméterrel, ez azonban szinte formális jellegű, hiszen a \textit{continuation}ök kijelölése fordítási időben dől el.
+
+Kiindulási alapot szolgáltatott Insa és Silva \citeyear{IterToRec} módszere, mely a \textit{Java} által biztosított ciklusok rekurzióba történő átírását valósítja meg. Ez kétféle szempontból is szükséges. Egyrészt a \textit{CPS} csak rekurzióval alkalmazható, másrészt csak így lehet egy ciklust darabokra bontani. Az itt bemutatott megoldás azonban több ponton is eltér az általuk ismertetett eljárástól, hogy jobban megfeleljen a generátorok követelményeinek. Az általam készített eljárás teljesen eltérő módon képez metódusokat a ciklusokból, paraméterek helyett osztályszintű mezőkbe emeli ki a lokális változókat (átnevezéssel párosítva, ahol indokolt), és egyelőre nem támogatja a \texttt{try-catch} szerkezetet.
+
+\subsection{A \textit{return} új szerepe}
+
+Más nyelvek általában bevezetnek egy új kulcsszót (legtöbbször \texttt{yield}) a generátorokból való visszatérésre. Sajnos erre \textit{Java}ban csak akkor lenne lehetőség, ha a nyelvet és vele együtt a fordítót módosítanánk. Emiatt egy már létező kulcsszónak kell új értelmet adni. Kézenfekvő és valójában egyetlen használható megoldást jelent a \texttt{return}. Ez lesz tehát az az utasítás, mellyel visszatérhetnek a generátorok.
+
+Az, hogy a generátorból a \texttt{return} utasítást használva adható vissza érték, azt is jelenti, hogy egy \texttt{return} egyben explicit vágási pont is lesz. Egy \texttt{return} után ugyanis mindenképpen vágni kell, mivel a generátor futásának legközelebb a következő utasítással kell folytatódnia. Implicit vágási pontok a vezérlési szerkezeteknél fordulnak elő, ezek figyelembe vétele a különböző szerkezetek transzformációjánál szükséges. Mind az explicit, mind az implicit vágási pontok új metódust fognak eredményezni.
