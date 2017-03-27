@@ -47,7 +47,7 @@ Ennek következtében a szintaxisfa közvetlen módosítása nem javallott, az i
 
 A belső osztályt a nevében is szereplő belső volta miatt érdemes használni. Pontosan ugyanazokhoz a mezőkhöz, metódusokhoz és típusokhoz fér hozzá, amelyekhez a \texttt{@Generator} annotációval ellátott metódus is. Ez a \texttt{private} láthatóságú deklarációkat is magában foglalja, amit egy másik fordítási egységben elhelyezkedő kód még akkor sem lát, ha azonos csomagban található. 
 
-Összefoglalva, a megoldás előnye, hogy az előállított osztály ugyanazokhoz a deklarációkhoz fér hozzá, mint az eredeti függvény. Hátránya azonban, hogy egy nem támogatott \textit{API}-t alkalmaz, mely nem is kifejezetten ilyen jellegű felhasználásra készült. Emellett az annotáció feldolgozás sem meglevő forráskód módosítását, hanem új forráskód generálását célozza.
+Összefoglalva, a megoldás előnye, hogy az előállított osztály ugyanazokhoz a deklarációkhoz fér hozzá, mint az eredeti függvény. Hátránya azonban, hogy egy nem támogatott \textit{API}-t alkalmaz, mely nem is kifejezetten ilyen jellegű felhasználásra készült. Emellett az annotáció-feldolgozás sem meglevő forráskód módosítását, hanem új forráskód generálását célozza.
 
 \subsection{Félnyilvános (\textit{package private}) osztály}
 
@@ -61,7 +61,7 @@ A különböző utak részletes kifejtése nélkül ki lehet azonban jelenteni, 
 
 Végül nem szabad megfeledkezni arról sem, hogy ahhoz, hogy az eredeti metódus generátor-metódussá váljon, tehát az újonnan generált osztály metódusait hívja, szükséges a meglévő kódból felépített szintaxisfa módosítása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatni.
 
-A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a stabil és kényelmes \textit{API}, amivel generálható, és hogy az annotáció feldolgozás kifejezetten ezt támogatja. Ellenérvként említendő, hogy csak bonyolultan kivitelezhető, hogy minden, az eredeti metódus által használt deklaráció elérhető legyen. Emellett semmilyen módon nem kerülhető el az eredeti metódus módosítása.
+A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a stabil és kényelmes \textit{API}, amivel generálható, és hogy az annotáció-feldolgozás kifejezetten ezt támogatja. Ellenérvként említendő, hogy csak bonyolultan kivitelezhető, hogy minden, az eredeti metódus által használt deklaráció elérhető legyen. Emellett semmilyen módon nem kerülhető el az eredeti metódus módosítása.
 
 \subsection{A választott megoldás}
 
