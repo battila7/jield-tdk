@@ -32,6 +32,47 @@ Bounce<T> method2(GeneratorState<T> k) {
 
 \pagebreak
 
+% --- if-else ---
+\begin{center}
+\begin{mdframed}
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} \vspace*{0.3cm} @) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} @
+} else {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} @
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
+    return cont(() -> method2(k));
+  } else {
+    return cont(() -> method3(k));
+  }
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} @
+  return cont(() -> k.apply(null), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} @);
+}
+
+Bounce<T> method3(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} @
+  return cont(() -> k.apply(null), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.6cm} @);
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{if-else} transzformálása}
+\end{center}
+
+\pagebreak
+
 % --- for ciklus ---
 \begin{center}
 \begin{mdframed}[topline=true]

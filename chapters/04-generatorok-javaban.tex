@@ -69,11 +69,11 @@ A felsorolt hátrányai ellenére, az implementáció a szintaxisfa közvetlen m
 
 A szintaxisfa direkt megváltoztatására példa a \textit{Lombok} könyvtár. Ennek forráskódja azonban alacsony színvonalon (és hiányosan) dokumentált, emellett az eredeti \textit{API}-t becsomagolva használja, így nem triviális az \textit{API}-hívások pontos visszakövetése.
 
-\section{A metódus vágása}
+\section{A metódus vágásának elve}
 
 A transzformáció legjelentősebb része a \texttt{@Generator} annotációval ellátott metódusok implementációjának szétvágása. Ahogy a generátor, mint félkorutin ismertetésénél is említésre került, egy generátor futása egy érték visszaadásakor felfüggesztődik, majd legközelebb innen folytatódik. Ez viselkedés csak úgy valósítható meg, hogy az eredeti metódust sok kisebb metódusra bontjuk.
 
-Ez tehát az alapelv, ami a transzformáció mögött áll. Úgynevezett vágási pontoknál szétvágjuk a metódust kis darabokra. A generátor minden visszatérésnél megjegyzi, hogy melyik darab végrehajtásával kell folytatnia a működést. Korántsem magától értetődő azonban a vágást úgy elvégezni, hogy a kód értelme ne változzon. Tekintettel kell lenni a vezérlési szerkezetekre, az ugrást megvalósító \texttt{break} és \texttt{continue} utasításokra, valamint a lokális változók hatókörére is.
+Ez tehát az alapelv, ami a transzformáció mögött áll. A metódus darabokra bontását úgynevezett vágási pontoknál végezzük. Transzformációs szempontból a \textit{vágási pont} a jobb elnevezés, viselkedés szempontjából azonban mint \textit{felfüggesztési pont} tekinthetünk rájuk. Ezek lesznek azok a pontok, ahol a generátor működése felfüggesztésre kerül, és valamilyen módon meg kell őrizni, hogy melyik darab végrehajtásával kell folytatni a működést. Korántsem magától értetődő azonban a vágást úgy elvégezni, hogy a kód értelme ne változzon. Tekintettel kell lenni a vezérlési szerkezetekre, az ugrást megvalósító \texttt{break} és \texttt{continue} utasításokra, valamint a lokális változók hatókörére is.
 
 A vágásnál lesz alkalmazható a \textit{CPS}, mely alkalmas a vágás során keletkező metódusokon átívelő vezérlési szerkezetek megvalósítására. A \textit{CPS}-transzformáció két formában, egyszer fordítási, egyszer pedig futási időben jelenik meg. A fordítási idejű \textit{CPS} azt jelenti, hogy a bemutatott eljárás folyamatosan nyilvántartja, hogy milyen \textit{continaution}ök állnak rendelkezésre, mikor melyik darab jelenti a \textit{continuation}t. Futási időben a \textit{CPS} úgy jelenik meg, hogy mindegyik metódus rendelkezik egy \textit{continuation} paraméterrel, ez azonban szinte formális jellegű, hiszen a \textit{continuation}ök kijelölése fordítási időben dől el.
 
@@ -84,3 +84,27 @@ Kiindulási alapot szolgáltatott Insa és Silva \citeyear{IterToRec} módszere,
 Más nyelvek általában bevezetnek egy új kulcsszót (legtöbbször \texttt{yield}) a generátorokból való visszatérésre. Sajnos erre \textit{Java}ban csak akkor lenne lehetőség, ha a nyelvet és vele együtt a fordítót módosítanánk. Emiatt egy már létező kulcsszónak kell új értelmet adni. Kézenfekvő és valójában egyetlen használható megoldást jelent a \texttt{return}. Ez lesz tehát az az utasítás, mellyel visszatérhetnek a generátorok.
 
 Az, hogy a generátorból a \texttt{return} utasítást használva adható vissza érték, azt is jelenti, hogy egy \texttt{return} egyben explicit vágási pont is lesz. Egy \texttt{return} után ugyanis mindenképpen vágni kell, mivel a generátor futásának legközelebb a következő utasítással kell folytatódnia. Implicit vágási pontok a vezérlési szerkezeteknél fordulnak elő, ezek figyelembe vétele a különböző szerkezetek transzformációjánál szükséges. Mind az explicit, mind az implicit vágási pontok új metódust fognak eredményezni.
+
+\begin{lstlisting}[caption={Az $1, 2$ sorozatot előállító generátor}, captionpos=b, label=JavaSimpleGen, escapechar=$]
+@Generator
+Stream<Integer> generate() {
+    return 1;
+    return 2;
+}
+\end{lstlisting}
+
+A \ref{JavaSimpleGen} kódrészlet metódusa az $1,2$ sorozatot generálja. Ahhoz, hogy a transzformáció után előállított kód a generátorokra jellemző felfüggeszthető és folytatható viselkedéssel rendelkezzen, a két \texttt{return} (lényegében \texttt{yield}) között szét kell vágni a metódustörzset, hogy a második \texttt{return} az elsőtől függetlenül végrehajtható legyen.
+
+\subsection{Parciális transzformáció}
+
+Az előző fejezetben a \textit{CPS}-transzformáció során az összes függvényt és hívást egy szabályrendszernek megfelelően kellett átalakítani. A generátorok előállításához azonban nem szükséges a teljes kódrészlet ilyen stílusúra hozása, mi több, nem is lehetséges. Ehhez ugyanis a metódustörzsben meghívott összes függvényt transzformálni kellene, vagy legalább olyan metódusba csomagolni, mely \textit{CPS}-ben hívható. Emiatt az eljárás a metódushívásokat nem módosítja, a \textit{CPS} csak a vezérlési szerkezeteknél kerül alkalmazásra.
+
+Nem szükséges azonban a programvezérlésre hatással levő minden struktúra bevonása a transzformációba. Csak azokat kell szétvágni, a generátor-viselkedést megvalósítandó, melyek tartalmaznak explicit vágási pontot, azaz \texttt{return} utasítást. Ennek hiányában az adott szerkezet módosítás nélkül átemelhető az eredeti metódusból. Ekképpen az utasításoknak csak egy parciális transzformációjára kerül sor, mindössze azok a szerkezetek lesznek érintve, melyek vágása elkerülhetetlen.
+
+\section{Vezérlési szerkezetek transzformációja}
+
+A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. Mivel az eljárás nem támogatja a \texttt{try-catch} struktúrát, így az itt sem fog megjelenni. A vezérlés befolyásolásának leggyakoribb eszköze a ciklus, melyből a \textit{Java} is többfajtát bocsájt a programozó rendelkezésére, így ezek lesznek többségben. A \textit{continue} és \textit{break} utasítások, valamint a címkék hatásának vizsgálata egy későbbi rész feladata lesz, most csak az alapesetek kerülnek bemutatásra.
+
+
+
+
