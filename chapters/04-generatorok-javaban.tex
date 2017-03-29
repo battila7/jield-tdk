@@ -51,7 +51,7 @@ A belső osztályt a nevében is szereplő belső volta miatt érdemes használn
 
 \subsection{Félnyilvános (\textit{package private}) osztály}
 
-Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztályt generálása gond nélkül kivitelezhető, hiszen ebben az esetben nem szükséges a már létező szintaxisfát módosítani, vagy újat létrehozni, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat forrásfájlokat, melyekkel eredetileg meghívtuk.
+Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztály generálása gond nélkül kivitelezhető, hiszen ebben az esetben nem szükséges a már létező szintaxisfát módosítani, vagy újat létrehozni, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat forrásfájlokat, melyekkel eredetileg meghívtuk.
 
 Forráskódot összeállíthatunk karaktersorozatok konkatenációjával is, azonban ez kifejezetten fáradságos. Helyette érdemes valamilyen létező megoldást alkalmazni, például a \textit{javapoet} könyvtárat, melynek segítségével tetszőleges \textit{Java} forráskód előállítható, akár parametrizált módon.
 
@@ -59,7 +59,7 @@ Bár a kényelmes forráskód-generálás vonzó alternatívát jelent, ebben az
 
 A különböző utak részletes kifejtése nélkül ki lehet azonban jelenteni, hogy a láthatóság (vagyis annak hiánya) által okozott kérdések megválaszolása óriási erőfeszítéseket igényel. Vagy bonyolult kerülőutakat kell alkalmazni, hogy a megfelelő deklarációk elérhetőek legyenek, vagy pedig \textit{reflection}t kell használni, mely összetett és fáradságos megoldás.
 
-Végül nem szabad megfeledkezni arról sem, hogy ahhoz, hogy az eredeti metódus generátor-metódussá váljon, tehát az újonnan generált osztály metódusait hívja, szükséges a meglévő kódból felépített szintaxisfa módosítása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatni.
+Végül nem szabad megfeledkezni arról sem, hogy ahhoz, hogy az eredeti metódus generátormetódussá váljon, tehát az újonnan generált osztály metódusait hívja, szükséges a meglévő kódból felépített szintaxisfa módosítása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatni.
 
 A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a stabil és kényelmes \textit{API}, amivel generálható, és hogy az annotáció-feldolgozás kifejezetten ezt támogatja. Ellenérvként említendő, hogy csak bonyolultan kivitelezhető, hogy minden, az eredeti metódus által használt deklaráció elérhető legyen. Emellett semmilyen módon nem kerülhető el az eredeti metódus módosítása.
 
@@ -69,7 +69,7 @@ A felsorolt hátrányai ellenére, az implementáció a szintaxisfa közvetlen m
 
 A szintaxisfa direkt megváltoztatására példa a \textit{Lombok} könyvtár. Ennek forráskódja azonban alacsony színvonalon (és hiányosan) dokumentált, emellett az eredeti \textit{API}-t becsomagolva használja, így nem triviális az \textit{API}-hívások pontos visszakövetése.
 
-\section{A metódus vágásának elve}
+\section{A metódus vágása}
 
 A transzformáció legjelentősebb része a \texttt{@Generator} annotációval ellátott metódusok implementációjának szétvágása. Ahogy a generátor, mint félkorutin ismertetésénél is említésre került, egy generátor futása egy érték visszaadásakor felfüggesztődik, majd legközelebb innen folytatódik. Ez viselkedés csak úgy valósítható meg, hogy az eredeti metódust sok kisebb metódusra bontjuk.
 
@@ -81,11 +81,11 @@ Kiindulási alapot szolgáltatott Insa és Silva \citeyear{IterToRec} módszere,
 
 \subsection{A \textit{return} új szerepe}
 
-Más nyelvek általában bevezetnek egy új kulcsszót (legtöbbször \texttt{yield}) a generátorokból való visszatérésre. Sajnos erre \textit{Java}ban csak akkor lenne lehetőség, ha a nyelvet és vele együtt a fordítót módosítanánk. Emiatt egy már létező kulcsszónak kell új értelmet adni. Kézenfekvő és valójában egyetlen használható megoldást jelent a \texttt{return}. Ez lesz tehát az az utasítás, mellyel visszatérhetnek a generátorok.
+Más nyelvek általában bevezetnek egy új kulcsszót (ez legtöbbször a \texttt{yield}) a generátorokból való visszatérésre. Sajnos erre \textit{Java}ban csak akkor lenne lehetőség, ha a nyelvet és vele együtt a fordítót módosítanánk. Emiatt egy már létező kulcsszónak kell új értelmet adni. Kézenfekvő és valójában egyetlen használható megoldást jelent a \texttt{return}. Ez lesz tehát az az utasítás, mellyel visszatérhetnek a generátorok.
 
 Az, hogy a generátorból a \texttt{return} utasítást használva adható vissza érték, azt is jelenti, hogy egy \texttt{return} egyben explicit vágási pont is lesz. Egy \texttt{return} után ugyanis mindenképpen vágni kell, mivel a generátor futásának legközelebb a következő utasítással kell folytatódnia. Implicit vágási pontok a vezérlési szerkezeteknél fordulnak elő, ezek figyelembe vétele a különböző szerkezetek transzformációjánál szükséges. Mind az explicit, mind az implicit vágási pontok új metódust fognak eredményezni.
 
-\begin{lstlisting}[caption={Az $1, 2$ sorozatot előállító generátor}, captionpos=b, label=JavaSimpleGen, escapechar=$]
+\begin{lstlisting}[language=Java, caption={Az $1, 2$ sorozatot előállító generátor}, captionpos=b, label=JavaSimpleGen, escapechar=$]
 @Generator
 Stream<Integer> generate() {
     return 1;
@@ -99,12 +99,238 @@ A \ref{JavaSimpleGen} kódrészlet metódusa az $1,2$ sorozatot generálja. Ahho
 
 Az előző fejezetben a \textit{CPS}-transzformáció során az összes függvényt és hívást egy szabályrendszernek megfelelően kellett átalakítani. A generátorok előállításához azonban nem szükséges a teljes kódrészlet ilyen stílusúra hozása, mi több, nem is lehetséges. Ehhez ugyanis a metódustörzsben meghívott összes függvényt transzformálni kellene, vagy legalább olyan metódusba csomagolni, mely \textit{CPS}-ben hívható. Emiatt az eljárás a metódushívásokat nem módosítja, a \textit{CPS} csak a vezérlési szerkezeteknél kerül alkalmazásra.
 
-Nem szükséges azonban a programvezérlésre hatással levő minden struktúra bevonása a transzformációba. Csak azokat kell szétvágni, a generátor-viselkedést megvalósítandó, melyek tartalmaznak explicit vágási pontot, azaz \texttt{return} utasítást. Ennek hiányában az adott szerkezet módosítás nélkül átemelhető az eredeti metódusból. Ekképpen az utasításoknak csak egy parciális transzformációjára kerül sor, mindössze azok a szerkezetek lesznek érintve, melyek vágása elkerülhetetlen.
+Nem szükséges azonban a programvezérlésre hatással levő minden struktúra bevonása a transzformációba. Csak azokat kell szétvágni, a generátor-viselkedést megvalósítandó, melyek tartalmaznak explicit vágási pontot, azaz \texttt{return} utasítást. Ennek hiányában az adott szerkezet módosítás nélkül átemelhető az eredeti metódusból. Ekképpen az utasításoknak csak egy parciális transzformációjára kerül sor, mindössze azokat a szerkezeteket érintve, melyek vágása elkerülhetetlen.
 
 \section{Vezérlési szerkezetek transzformációja}
 
-A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. Mivel az eljárás nem támogatja a \texttt{try-catch} struktúrát, így az itt sem fog megjelenni. A vezérlés befolyásolásának leggyakoribb eszköze a ciklus, melyből a \textit{Java} is többfajtát bocsájt a programozó rendelkezésére, így ezek lesznek többségben. A \textit{continue} és \textit{break} utasítások, valamint a címkék hatásának vizsgálata egy későbbi rész feladata lesz, most csak az alapesetek kerülnek bemutatásra.
+A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. Mivel az eljárás nem támogatja a \texttt{try-catch} struktúrát, így az itt sem fog megjelenni. A vezérlés befolyásolásának leggyakoribb eszköze a ciklus, melyből a \textit{Java} is többfajtát bocsájt a programozó rendelkezésére, így ezek lesznek többségben. A \textit{continue} és \textit{break} utasítások, valamint a címkék hatásának vizsgálata egy későbbi rész feladata lesz, most csak az alapesetek kerülnek bemutatásra. A különböző szerkezetek átformálását sematikus kódrészletek szemléltetik, melyek leegyszerűsített jelölésrendszerrel, de valós típusokkal dolgoznak. 
 
+\subsection{Típusok és jelölések}
 
+\subsubsection{Dobozok}
 
+Az átalakítás szempontjából fontos szerepet játszó utasításokat vagy kifejezéseket lekerekített sarkú dobozok jelképezik. Ezek közül a ``\textit{Kódrészlet}'' felirattal rendelkezők érdemelnek külön említést, melyek mindig olyan utasítássorozat helyén állnak, mely \textit{nem} tartalmaz \texttt{return} utasítást. A többi doboz szerepe vagy tartalma a feliratnak megfelelő.
 
+\subsubsection{\texttt{GeneratorState<T>}}
+
+Az eljárás eredményeként létrehozott metódusok mindegyike egyetlen formális paraméterrel rendelkezik, ez a \textit{continuation}. Ennek típusa \texttt{GeneratorState<T>}, mely egy állapotot jelképez, amiben a generátor lehet. A típus egy funkcionális interfész, és a transzformáció által képzett metódusok mindegyike megvalósítja. A \texttt{T} típusparaméter azt a típust jelöli, amelynek példányait a generátor előállítja.
+
+\begin{lstlisting}[language=Java, caption={A \texttt{GeneratorState<T>} interfész}, captionpos=b, label=JavaGenState, escapechar=$]
+@FunctionalInterface
+public interface GeneratorState<T> extends Function<GeneratorState<T>, Bounce<T>> {
+    
+}
+\end{lstlisting}
+
+A \ref{JavaGenState} kódrészletből látható, hogy a \texttt{GeneratorState} igazából nem más, mint egy \textit{alias}, olyan metódusok számára, melyek egyetlen paramétere \texttt{GeneratorState}, visszatérési értéke pedig \texttt{Bounce} típusú.
+
+\subsubsection{\texttt{Bounce<T>}}
+
+A vágás során képzett metódusok visszatérési típusa lesz \texttt{Bounce<T>}. A névből sejthető, hogy a típus a \textit{trampolining} technikával lesz kapcsolatban, s ez valóban így is van. A metódusok e típus példányainak formájában visszadják a \textit{trampoline} részére a következőnek végrehajtandó metódust (ha van ilyen), valamint egy, az aktuális állapot által generált értéket (ha van ilyen). Ezek az értékek az eredeti, \texttt{@Generator} annotációval ellátott metódus \texttt{return} utasításai után álló kifejezésekből származnak. A \texttt{T} típusparaméter szerepe azonos, mint a \texttt{GeneratorState} esetén.
+
+\begin{lstlisting}[language=Java, caption={A \texttt{Bounce<T>} osztály legfontosabb mezői és metódusai}, captionpos=b, label=JavaBounce, escapechar=$]
+public final class Bounce<T> {
+    private final Optional<Thunk<Bounce<T>>> continuation;
+
+    private final Optional<T> value;
+
+    public static <T> Bounce<T> cont(Thunk<Bounce<T>> continuation, T value) {
+        return new Bounce<>(continuation, value);
+    }
+
+    public static <T> Bounce<T> cont(Thunk<Bounce<T>> continuation) {
+        return new Bounce<>(continuation, null);
+    }
+
+    /* további metódusok... */
+}
+\end{lstlisting}    
+
+Az osztály példányait csak úgynevezett \textit{static factory} metódusok útján lehet létrehozni. Ezek használatával jobban olvasható kódot kapunk (bár ez generált kód esetén annyira nem szempont). A \textit{continuation} egy opcionális számítást tárol, melyet a \textit{trampoline}-nak következőnek meg kell hívnia. A \textit{value} mező egy opcionális generált elemet tárol. 
+
+\subsection{Állapotok és \textit{trampolining}}
+
+Az eljárás által előállított generátorok motorja egy \textit{trampoline}, mely alapvetően az állapotokat jelképező metódusok meghívásáért felelős. Viszont rendelkezik egy legalább ilyen fontos, másodlagos feladattal is. A legutóbb végrehajtott metódus minden esetben egy \texttt{Bounce<T>} típusú objektumot ad vissza. Ezen objektum vizsgálata után a \textit{trampoline} a következő döntések egyikét hozza:
+
+\begin{itemize}
+    \item Ha van \textit{continuation}, amit legközelebb meg lehet hívni, és nincsen generált érték, akkor meghívja a \textit{continuation}t. Ilyen esetekben a legutoljára végrehajtott metódus egy áthidaló állapot volt, mint például egy transzformált \texttt{for} ciklus inicializását végző állapot, mely nem állít elő semmilyen értéket.
+    \item Ha \textit{continuation} és generált érték is rendelkezésre áll, akkor a generátor futása felfüggesztésre kerül. A \textit{trampoline} elmenti a \textit{continuation}t, és visszaadja a generált elemet.
+    \item Ha nincs \textit{continuation}, akkor a generátor már nem képes több elem generálására, futása véget ért. Ha volt generált érték, akkor még az visszaadásra kerül.
+\end{itemize}
+
+Ez lesz az a mechanizmus, ami a generátort hajtja, és a metódusok közötti átmenetet biztosítja.
+
+\subsection{Lineáris kód}
+
+A lineáris kód egy olyan utasítássorozat, amiben nem szerepel semmilyen elágazás. Kakukktojás a többi vezérlési szerkezettel összevetve, fontos azonban megemlíteni, hiszen egyfajta alapesetnek tekinthető.
+
+\begin{center}
+\begin{mdframed}
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} @ 
+return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} @
+@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} @ 
+return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} @
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} @
+  return cont(() -> method2(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} @);
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} @
+  return cont(() -> k.apply(null), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.6cm} @);
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{Lineáris vezérlésű kód transzformálása}
+\label{GenLinear}
+\end{center}
+
+A \ref{GenLinear} kódrészlet jobboldala két \texttt{return} utasítást tartalmaz, melyek a kódrészlet két darabba vágását eredményezik. A \texttt{method1} az első \texttt{return} előtt álló utasításokat tartalmazza, valamint az első generált értéket előállító kifejezést. Emellett jelzi a \textit{trampoline} számára, hogy a futásnak legközelebb a \texttt{method2}-vel kell folytatódnia. A \texttt{method2} tartalmazza a még hátralevő kódrészletet, valamint előállítja a második generált értéket. 
+
+Érdemes megfigyelni, hogy mivel ez az utolsó \textit{állapot}, a \textit{trampoline}-nak már közvetlenül a kapott \textit{continuation}t meghívó lambda függvényt ad át, jelezve a számítás végét. Ez a többi vezérlési szerkezet esetén is hasonlóan fog történni.
+
+\subsection{\texttt{if-else}}
+
+\begin{center}
+\begin{mdframed}
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} \vspace*{0.3cm} @) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} @
+} else {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} @
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
+    return cont(() -> method2(k));
+  } else {
+    return cont(() -> method3(k));
+  }
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} @
+  return cont(() -> k.apply(null), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} @);
+}
+
+Bounce<T> method3(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} @
+  return cont(() -> k.apply(null), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.6cm} @);
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{if-else} transzformálása}
+\label{GenIfElse}
+\end{center}
+
+Az \texttt{if-else} transzformációjának eredményeként megjelenik egy olyan metódus, mely nem ad vissza generált értéket, mindössze azt mondja meg a \textit{trampoline}-nak, hogy a \texttt{then} vagy pedig az \texttt{else} ággal folytatódjon a végrehajtás.
+
+Erre azért van szükség, mert az egyes ágakon belül akár több \texttt{return} is lehet, amelyek mindegyike egy vágási pont lesz. Ezek hatására a megfelelő ágba történő belépés után fel kell tudni függeszteni a generátor végrehajtását. Újabb hívások esetén természetesen onnan kell folytatni a futást, ahol az abbamaradt, ami együtt jár azzal, hogy maradni kell ugyanabban az ágban, amelyet eredetileg választottunk, anélkül, hogy a feltételt újra kiértékelnénk. Ez a működés úgy biztosítható, ha bevezetésre kerül egy olyan állapot, melynek egyetlen feladata a futás irányának kijelölése, a \ref{GenIfElse} kórészletben ez a \texttt{method1}.
+
+\pagebreak
+
+\subsection{\texttt{for} ciklus}
+
+Talán a legösszetettebb kimenettel a \texttt{for} ciklus átalakításának folyamata rendelkezik. Ezt az okozza, hogy a ciklus fejében a programozó egy inicializáló, egy, az iterációra vonatkozó feltételt meghatározó és egy frissítő részt adhat meg. További komplexitást jelentenek a \texttt{continue} és \texttt{break} utasítások, melyektől egyelőre eltekintünk.
+
+\begin{center}
+\begin{mdframed}[topline=true]
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+for (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Init}; \hspace*{0.6cm}@; @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.0cm}@; @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Frissít}; \vspace*{0.3cm} \hspace*{0.9cm}@) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Init}; \vspace*{0.3cm} @
+  return cont(() -> method2(k));
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
+    return cont(() -> method3(k));
+  }
+  return cont(() -> k.apply(null));
+}
+
+Bounce<T> method3(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method4(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
+}
+
+Bounce<T> method4(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Frissít}; \vspace*{0.3cm} @
+  return cont(() -> method2(k));
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{for} ciklus transzformálása}
+\end{center}
+
+Vegyük sorra, hogy a vezérlés hogyan fog végighaladni a létrehozott metódusokon! Értelemszerűen az átalakított kódban is először (és pontosan egy alkalommal) az inicializáló részt kell végrehajtani, amit az \textit{Init} doboz szimbolizál. Ezt követi egy olyan állapot, mely a ciklusfeltételnek felel meg. A generátor magjából képzett állapotok csak akkor lesznek lefuttatva, ha a feltétel teljesül. A végrehajtás irányának ilyen módon történő kiválasztása hasonlít az \texttt{if-else} esetében látotthoz. A ciklusmag és annak részeként az eredeti kódrészlet egyetlen \texttt{return} utasítása által visszaadott kifejezés a \texttt{method3}-ba kerül. Mivel csak ez a metódus ad vissza generált értéket, csak ennek a végrehajtását követően fog a generátor futása felfüggesztésre kerülni. 
+
+A generátor következő meghívásakor a futás a \textit{Frissít} dobozt tartalmazó metódussal folytatódik. Ez a metódus lesz az, ami a transzformált kódrészletet valóban ciklussá teszi. Ugyanis a metódus ismét a \texttt{method2} meghívását kéri a \textit{trampoline}-tól, ami maga a feltétel. Ha a feltétel teljesül, akkor újra a ciklusmag következik, ami újabb megállást, majd esetleg újabb folytatást is jelent. És ez mindaddig folytatódik, amíg a feltétel teljesül, ugyanúgy, mint egy \texttt{for} ciklus esetén.
+
+Nem lehet eléggé kihangsúlyozni, hogy a transzformált kódban a vezérlés útja teljesen explicitté vált. Mindig pontosan kiolvasható, hogy melyik állapot fog következni, mit fog legközelebb a generátor végrehajtani, milyen értéket fog legközelebb képezni.
+
+\subsection{\texttt{foreach} ciklus}
+
+A \texttt{foreach} ciklus egy tömb vagy egy \texttt{Iterable} elemein való iterálást tesz lehetővé. Transzformálását tekintve hasonlít a \texttt{for} ciklushoz, frisssítő metódusra azonban nincsen szükség.
+
+\begin{center}
+\begin{mdframed}[topline=true]
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+for (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Változó}; \hspace*{1.05cm}@ : @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.2cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Forrás}; \vspace*{0.3cm} \hspace*{0.9cm}@) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) { @\vspace{0.2cm}@
+  iterator = CPSUtil.iterator(@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, yshift=0.1cm, inner sep=5pt, anchor=west] {Forrás}; \vspace{0.3cm} \hspace*{1.0cm}@);
+  return cont(() -> method2(k));
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  if (iterator.hasNext()) { @\vspace{0.2cm}@
+    @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Változó}; \vspace*{0.2cm} \hspace*{1.1cm}@ = iterator.next();
+    return cont(() -> method3(k));
+  }
+  return cont(() -> k.apply(null));
+}
+
+Bounce<T> method3(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method2(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{foreach} ciklus transzformálása}
+\end{center}
+
+Először egy inicializáló állapotra van szükség, mely kinyer a \textit{Forrásból} egy \texttt{Iterator} objektumot. A \texttt{CPSUtil.iterator(Iterable)} metódus csak ennek az egységesítésére szolgál, elfedve, hogy tömbről vagy pedig \texttt{Iterable} objektumról van szó. 
+
+A feltétel az \texttt{iterator.hasNext()} kifejezés lesz, amely ha teljesül, akkor előállítjuk a következő elemet, és következhet a ciklusmag végrehajtása. Ismét a magból képzett metódus fog csak generált értéket visszaadni, csak ezt követően kerülhet felfüggesztésre a futás. A mag végrehajtása után újra a feltételt jelképező metódus következik, és ez így folytatódik mindaddig, míg az iterátort ki nem merítettük.
