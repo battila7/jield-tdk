@@ -10,7 +10,7 @@ A transzformációs eljárás a nyelv és a fordító módosítása nélkül mű
 
 Az annotáció fogalmát a \textit{JSR 175} specifikáció vezette be, és megjelenése óta több közkedvelt programkönytárban is bizonyította sokoldalúságát. Emiatt természetes döntés volt, hogy a generátormetódusokat is egy annotációval kell megjelölni, ez a \texttt{@Generator}.
 
-Az annotációk feldolgozását a \textit{JSR 269} által leírt \textit{Pluggable Annotation Processing API} részét képező \texttt{javax.annotation.processing.Processor} interfészt megvalósító osztályok végezhetik. Javasolt azonban ennek egy absztrakt megvalósítását, az ugyanabban a csomagban található \texttt{AbstractProcessor} osztályt használni ősosztályként. A \textit{Java} fordító (továbbiakban \texttt{javac}) alapértelmezés szerint a \texttt{classpath}-ban keres feldolgozókat, mely viselkedés felülbírálható a \texttt{processorpath} és \texttt{processor} parancssori kapcsolók révén [javac options].
+Az annotációk feldolgozását a \textit{JSR 269} által leírt \textit{Pluggable Annotation Processing API} részét képező \texttt{javax.annotation.processing.Processor} interfészt megvalósító osztályok végezhetik. Javasolt azonban ennek egy absztrakt megvalósítását, az ugyanabban a csomagban található \texttt{AbstractProcessor} osztályt használni ősosztályként. A \textit{Java} fordító (továbbiakban \texttt{javac}) alapértelmezés szerint a \texttt{classpath}-ban keres feldolgozókat, mely viselkedés felülbírálható a \texttt{processorpath} és \texttt{processor} parancssori kapcsolók révén \cite{JavacOptions}.
 
 \subsection{Transzformálandó metódusok összegyűjtése}
 
