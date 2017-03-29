@@ -93,7 +93,7 @@ Stream<Integer> generate() {
 }
 \end{lstlisting}
 
-A \ref{JavaSimpleGen} kódrészlet metódusa az $1,2$ sorozatot generálja. Ahhoz, hogy a transzformáció után előállított kód a generátorokra jellemző felfüggeszthető és folytatható viselkedéssel rendelkezzen, a két \texttt{return} (lényegében \texttt{yield}) között szét kell vágni a metódustörzset, hogy a második \texttt{return} az elsőtől függetlenül végrehajtható legyen.
+A \ref{JavaSimpleGen} kódrészlet metódusa az $1, 2$ sorozatot generálja. Ahhoz, hogy a transzformáció után előállított kód a generátorokra jellemző felfüggeszthető és folytatható viselkedéssel rendelkezzen, a két \texttt{return} (lényegében \texttt{yield}) között szét kell vágni a metódustörzset, hogy a második \texttt{return} az elsőtől függetlenül végrehajtható legyen.
 
 \subsection{Parciális transzformáció}
 
@@ -101,9 +101,9 @@ Az előző fejezetben a \textit{CPS}-transzformáció során az összes függvé
 
 Nem szükséges azonban a programvezérlésre hatással levő minden struktúra bevonása a transzformációba. Csak azokat kell szétvágni, a generátor-viselkedést megvalósítandó, melyek tartalmaznak explicit vágási pontot, azaz \texttt{return} utasítást. Ennek hiányában az adott szerkezet módosítás nélkül átemelhető az eredeti metódusból. Ekképpen az utasításoknak csak egy parciális transzformációjára kerül sor, mindössze azokat a szerkezeteket érintve, melyek vágása elkerülhetetlen.
 
-\section{Vezérlési szerkezetek transzformációja}
+\section{A vezérlés transzformációja}
 
-A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. Mivel az eljárás nem támogatja a \texttt{try-catch} struktúrát, így az itt sem fog megjelenni. A vezérlés befolyásolásának leggyakoribb eszköze a ciklus, melyből a \textit{Java} is többfajtát bocsájt a programozó rendelkezésére, így ezek lesznek többségben. A \textit{continue} és \textit{break} utasítások, valamint a címkék hatásának vizsgálata egy későbbi rész feladata lesz, most csak az alapesetek kerülnek bemutatásra. A különböző szerkezetek átformálását sematikus kódrészletek szemléltetik, melyek leegyszerűsített jelölésrendszerrel, de valós típusokkal dolgoznak. 
+A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. A \texttt{try-catch} kivételéve ez az összes, \textit{Java}ban használható eszközt jelenti. A transzformált vezérlési struktúrák egyfajta építőkövek lesznek, melyekből a generátor felépíthető. Szükséges még a létrejött darabok összekapcsolása, ezt a feladatot egy speciális \textit{trampoline} fogja ellátni. A különböző szerkezetek átformálását szemlélető sematikus kódrészleteket még megelőzi a használt jelölés- és típusrendszer bemutatása.
 
 \subsection{Típusok és jelölések}
 
@@ -284,6 +284,7 @@ Bounce<T> method4(GeneratorState<T> k) {
 \end{minipage}
 \end{mdframed}
 \captionof{lstlisting}{\texttt{for} ciklus transzformálása}
+\label{GenFor}
 \end{center}
 
 Vegyük sorra, hogy a vezérlés hogyan fog végighaladni a létrehozott metódusokon! Értelemszerűen az átalakított kódban is először (és pontosan egy alkalommal) az inicializáló részt kell végrehajtani, amit az \textit{Init} doboz szimbolizál. Ezt követi egy olyan állapot, mely a ciklusfeltételnek felel meg. A generátor magjából képzett állapotok csak akkor lesznek lefuttatva, ha a feltétel teljesül. A végrehajtás irányának ilyen módon történő kiválasztása hasonlít az \texttt{if-else} esetében látotthoz. A ciklusmag és annak részeként az eredeti kódrészlet egyetlen \texttt{return} utasítása által visszaadott kifejezés a \texttt{method3}-ba kerül. Mivel csak ez a metódus ad vissza generált értéket, csak ennek a végrehajtását követően fog a generátor futása felfüggesztésre kerülni. 
@@ -334,3 +335,237 @@ Bounce<T> method3(GeneratorState<T> k) {
 Először egy inicializáló állapotra van szükség, mely kinyer a \textit{Forrásból} egy \texttt{Iterator} objektumot. A \texttt{CPSUtil.iterator(Iterable)} metódus csak ennek az egységesítésére szolgál, elfedve, hogy tömbről vagy pedig \texttt{Iterable} objektumról van szó. 
 
 A feltétel az \texttt{iterator.hasNext()} kifejezés lesz, amely ha teljesül, akkor előállítjuk a következő elemet, és következhet a ciklusmag végrehajtása. Ismét a magból képzett metódus fog csak generált értéket visszaadni, csak ezt követően kerülhet felfüggesztésre a futás. A mag végrehajtása után újra a feltételt jelképező metódus következik, és ez így folytatódik mindaddig, míg az iterátort ki nem merítettük.
+
+\subsection{\texttt{while} és \texttt{do-while} ciklus}
+
+A \texttt{while} és \texttt{do-while} ciklus hasonlóan működik, mindössze a minimális ismétlések számában különböznek, így a transzformációjuk sem különbözik jelentősen.
+
+\begin{center}
+\begin{mdframed}[topline=true]
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+while (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \vspace*{0.3cm} \hspace*{1.14cm}@) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true, aboveskip=1em]
+Bounce<T> method1(GeneratorState<T> k) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
+    return cont(() -> method2(k));
+  }
+  return cont(() -> k.apply(null));
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method1(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{while} ciklus transzformálása}
+\label{GenWhile}
+\end{center}
+
+A \ref{GenWhile} kódrészletben két generált metódus jelenik meg. A \texttt{method1} végzi a ciklusfeltétel ellenőrzését. Amennyiben ez teljesül, a generátor futása folytatódik a törzset jelképező \texttt{method2}-vel, mely már értéket is állít elő.   
+\begin{center}
+\begin{mdframed}[topline=true]
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true, aboveskip=1em]
+do {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.5cm} @ 
+  return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.3cm} @
+} while (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \vspace*{0.3cm} \hspace*{1.14cm}@);
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet}; \vspace*{0.3cm} @
+  return cont(() -> method2(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés}; \vspace*{0.2cm} \hspace*{1.2cm} @);
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  if (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Feltétel}; \hspace*{1.04cm} @) {
+    return cont(() -> method1(k));
+  }
+  return cont(() -> k.apply(null));
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{do-while} ciklus transzformálása}
+\end{center}
+
+A \texttt{do-while} ciklus átalakításával nyert kód pontosan ugyanazokat a metódusokat tartalmazza, mint \texttt{while} esetében, csak megcserélt sorrendben. Elsőnek a magot hajtja végre a generátor, és csak utána következik a feltétel, egy megállást követően.
+
+\subsection{switch}
+
+\begin{center}
+\begin{mdframed}[topline=true]
+\begin{minipage}[t]{0.4\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+switch (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Szelektor}; \vspace*{0.3cm} \hspace*{1.35cm}@) {
+  case @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Konstans}; \vspace*{0.3cm} \hspace*{1.35cm}@:
+    @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.5cm} @ 
+    return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.3cm} @
+
+  default :
+    @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.5cm} @ 
+    return @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.3cm} @
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.6\textwidth}
+\begin{lstlisting}[language=Java, numbers=none, breaklines=true]
+Bounce<T> method1(GeneratorState<T> k) { @\vspace{0.2cm}@
+  switch (@ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Szelektor}; \vspace*{0.3cm} \hspace*{1.35cm}@) {
+    case @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Konstans}; \vspace*{0.1cm} \hspace*{1.35cm}@:
+      return cont(() -> method2(k));
+
+    default :
+      return cont(() -> method3(k));
+  }
+}
+
+Bounce<T> method2(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#1}; \vspace*{0.3cm} @
+  return cont(() -> method4(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#1}; \vspace*{0.2cm} \hspace*{1.75cm} @);
+}
+
+Bounce<T> method3(GeneratorState<T> k) {
+  @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west] {Kódrészlet \#2}; \vspace*{0.3cm} @
+  return cont(() -> method4(k), @ \tikz[remember picture, overlay]\node[rounded corners, draw, xshift=-0.1cm, inner sep=5pt, anchor=west, yshift=0.1cm] {Kifejezés \#2}; \vspace*{0.2cm} \hspace*{1.75cm} @);
+}
+
+Bounce<T> method4(GeneratorState<T> k) {
+  return cont(() -> k.apply(null));
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{\texttt{switch} utasítás transzformálása}
+\end{center}
+
+A transzformáció megtartja a \texttt{switch} utasítást, hiszen továbbra is több konstans közül kell választani a szelektor értéke alapján. Azonban, hogy a futás felfüggeszthető és folytatható legyen, minden egyes \texttt{case}-hez tartozó utasítássorozat egy új metódusba kerül. Ez akkor is megtörténik, ha nem \texttt{return}, hanem a jellemzőbb \texttt{break} utasítással ér véget utasítások egy sorozata.
+
+A \texttt{switch} ágaiból képzett metódusok már csak az adott ághoz tartozó utasításokat tartalmazzák. Egy további állapotban történik a vezérlés újraegyesítése, mely semmilyen, az eredeti kódrészletből átemelt utasítást nem tartalmaz.
+
+\subsection{Fordítási idejű CPS}
+
+A vezérlési szerkezetek bemutatásakor egyik oldalon szerepelt a forráskód, a másik oldalon pedig az ebből képzett metódusok. A két oldal közötti mechanika nem került pontos ismertetésre. A transzformáció egzakt működése azonban csak ennek felfedésével lesz megérthető.
+
+A technikát fordítási idejű \textit{CPS}-nek neveztem el. Az előző példákból kitűnik, hogy minden szerkezet metódusok egy sorára képezhető le. Viszont mi a teendő egymásba ágyazott szerkezetek vagy pedig ugró utasítások esetén? Mindig tudni kell, hogy a vezérlésnek hol kell folytatódnia, hogyan kell összekötni a már említett építőkockákat. A \textit{continuation} pontosan erre szolgál, a hátralevő számítás nyilvántartására, így fordítási időben is ez kerül alkalmazásra.
+
+Az eljárás áttekinthető leírását adja, ha egy példán keresztül szemléljük a működését.
+
+\begin{lstlisting}[language=Java, caption={Ugró utasítást tartalmazó generátormetódus}, captionpos=b, label=GenCompileTimeCPS, escapechar=$]
+@Generator
+Stream<Integer> generate() {
+  for (int i = 0; i < 10; ++i) {
+    if (i == 5) {
+      break;
+    }
+
+    return i;
+  }
+}
+\end{lstlisting}
+
+A \ref{GenCompileTimeCPS} kódrészlet \texttt{for} ciklusában látható egy \texttt{break} utasítás, mely a feltétel teljesülése esetén a ciklusból való kilépést fogja okozni. Hogyan lehet megvalósítani ezt a működést? A transzformáció először megvizsgálja, hogy van-e a \texttt{for} ciklus belsejében \texttt{return}. Mivel van, ezért elkezdi felbontani a ciklust a \ref{GenFor} kódrészletben látottakhoz hasonló metódusokra. Mielőtt azonban ezt megtenné, elmenti, hogy a \texttt{for} ciklus befejezése után melyik metódusnak kell következnie. Ha még nincs ilyen, akkor létrehoz egy lezáró metódust. Amikor a ciklusfeltételt tartalmazó metódust hozza létre, abban ennek a megjegyzett metódusnak a hívását helyezi el. Így a transzformált ciklust és a meglevő metódusokat össszekötötte. Ez az elv jelenik meg a \texttt{break} esetén is. Amikor elkezdődik a \texttt{for} transzformációja, akkor elmentésre kerül, hogy egy \texttt{break} vagy egy \texttt{continue} melyik, már létrehozott metódusba irányítaná a vezérlést.
+
+Egymásba ágyazott szerkezetek és címkék is megvalósíthatóak ezzel a módszerrel. Egy \textit{break-}, valamint \textit{continue-continuation} mindaddig érvényben marad, míg felülírásra nem kerül (például egy beágyazott ciklus által), vagy a transzformáció följebb nem lép a szintaxisfában. Amikor az eljárás egy címkézett utasítást talál, akkor pedig egy címkézett \textit{continuation}t alkalmazva tartja nyilván, hogyan kell majd a vezérlést szabályozni. Így a transzformáció eredményeként előálló kód már nem fog tartalmazni se címkéket, se ugró utasításokat, hiszen nincsen rájuk szükség. Ezek hatása is explicitté vált.
+
+\section{Lokális változók és paraméterek kiemelése}
+
+Az eredeti generátormetódus felbontásával a lokális változók felhasználásának helyei is különböző metódusokba kerülhetnek. Azért, hogy a működés a transzformáció után is biztosított legyen, át kell hidalni a metódusok közötti lyukakat. 
+
+Egy lehetséges megoldás, hogy minden lokális változót kiemelünk a generátor számára létrehozott osztály egy mezőjébe. Ezzel egy csapásra megoldottuk a hatókörrel kapcsolatos gondokat. Viszont ügyelni kell arra, hogy az inicializációval egybekötött deklarációkat kicseréljük egy értékadásra. Ez azonban csak a kisebbik probléma. Azzal, hogy a változókat mindenhol hozzáférhető, mező szintre emeltük, a hatókörük túl széles lett.
+
+A hatókör leszűkítésére nincs mód, így más megoldáshoz kell folyamodnunk. Csak akkor okoz problémát a túl széles hatókör, ha több, azonos nevű lokális változó került deklarálásra. Ilyenkor alapesetben ütköző nevű mezők jöhetnének létre. Ezt elkerülendő a már észlelt nevű lokális változók átnevezésre kerülnek.
+
+\begin{lstlisting}[language=Java, caption={Elfedő deklarációkat tartalmazó generátor}, captionpos=b, label=GenShadowing, escapechar=$]
+@Generator
+Stream<Integer> generate() {
+  {
+    int i = 0;
+
+    return i;
+  }
+
+  {
+    int i = 2;
+
+    class Clazz {
+      int i = 1;
+
+      int getValue() {
+        return i;
+      }
+    }
+
+     return new Clazz().getValue();
+  }
+}
+\end{lstlisting}
+
+Az átnevezés rekurzív módon történik, a tartalmazó blokk deklarációt követő utasításainak vizsgálatával. Bár a \textit{Java} nem teszi lehetővé lokális változók nevének elfedését, vannak olyan esetek, ahol az egyszerű rekurzív névcsere megváltoztatná a kód működését. Ezek a lokális és névtelen osztályok. A tartalmazó metódus lokális változói hozzáférhetőek ezekben az osztályokban, viszont deklarálható azonos nevű mező, vagy valamely metódusban lokális változó. Emiatt ilyen struktúrákban fokozott körültekintéssel kell elvégezni a névcserét.
+
+A \ref{GenShadowing} kódrészlet hivatott szemléltetni a problémát. A forráskód negyedik és tizedik sorában található deklarációk kiemelése ütköző nevű mezőket eredményezne, így a második \texttt{i} változót át kell nevezni. Ez a tartalmazó blokk hátralevő utasításainak átvizsgálását, és az előfordulások átnevezését vonja maga után. Azonban a 12. sorban deklarált \texttt{Clazz} osztály szintén rendelkezik egy \texttt{i} mezővel, ami elfedi a tizedik sorban deklarált \texttt{i} változót. Ennek következtében az osztályon belül nem szabad névcseréket végezni. 
+
+Az eredeti metódus paraméterei szintén mezők formájában állnak majd a generált metódusok rendelkezésére. Ezeknél biztosan nem kell az átnevezésseé foglalkozni, hiszen előttük nem áll deklaráció, mely azonos névvel rendelkezne.
+
+\section{Befejező lépések}
+
+Az előző lépések után már csak néhány kisebb teendő maradt, melyek közül a legjelentősebb az eredeti generátormetódus átírása. Az eredeti implementációval egyenértékű generátort egy osztályba helyeztük el. Először ennek kell egy példányát létrehozni. Ezt követi a paraméterek számára létrehozott mezők inicializálása a metódus argumentumaival. Nem statikus metódus esetén a tartalmazó osztály aktuális példányára mutató referencia is átadásra kerül. Végül meg kell hívni az osztály generált \texttt{stream()} metódusát, mely elindítja a generátort. Ugyanez a metódus visszaad egy \texttt{Stream}et is, mely az új implementáció visszatérési értéke lesz.
+
+A legutolsó lépés a \texttt{@Generator} annotáció eltávolítása a metódusról a többszöri transzformáció elkerülése végett.
+
+\begin{lstlisting}[language=Java, caption={Az $1, 2$ sorozatot előállító generátor a transzformáció előtt}, captionpos=b, label=GenBefore, escapechar=$]
+@Generator
+Stream<Integer> generate() {
+    return 1;
+    return 2;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption={Az $1, 2$ sorozatot előállító generátor a transzformáció után}, captionpos=b, label=GenAfter, escapechar=!]
+Stream<Integer> generate() {                                                                                                    
+    $GeneratorImpl_0generate581665465 $generator = new $GeneratorImpl_0generate581665465();                                   
+    $generator.$Example1064910397 = this;                                                                                      
+    return $generator.stream();                                                                                                 
+}                                                                                                                               
+                                                                                                                                
+private final class $GeneratorImpl_0generate581665465 {                                                                        
+    private Example $Example1064910397;                                                                                        
+                                                                                                                                
+    private Stream<Integer> stream() {                                                                                          
+        return jield.runtime.BaseGenerator.startingAt(this::<>$generate_1014242157_0).stream();                                 
+    }                                                                                                                           
+                                                                                                                                
+    private jield.runtime.Bounce<Integer> $generate_1014242157_0(jield.runtime.GeneratorState<java.lang.Integer> $_contParam) { 
+        return jield.runtime.Bounce.cont(()->$generate_1014242157_2($_contParam), 1);                                           
+    }                                                                                                                           
+                                                                                                                                
+    private jield.runtime.Bounce<Integer> $generate_1014242157_1(jield.runtime.GeneratorState<java.lang.Integer> $_contParam) { 
+        return jield.runtime.Bounce.cont(()->$_contParam.apply(jield.runtime.GeneratorState.empty()));                          
+    }                                                                                                                           
+                                                                                                                                
+    private jield.runtime.Bounce<Integer> $generate_1014242157_2(jield.runtime.GeneratorState<java.lang.Integer> $_contParam) { 
+        return jield.runtime.Bounce.cont(()->$generate_1014242157_3($_contParam), 2);                                           
+    }                                                                                                                           
+                                                                                                                                
+    private jield.runtime.Bounce<Integer> $generate_1014242157_3(jield.runtime.GeneratorState<java.lang.Integer> $_contParam) { 
+        return jield.runtime.Bounce.cont(()->$generate_1014242157_1($_contParam));                                              
+    }                                                                                                                           
+                                                                                                                                
+    private jield.runtime.Bounce<Integer> $generate_1014242157_4(jield.runtime.GeneratorState<java.lang.Integer> $_contParam) { 
+        return jield.runtime.Bounce.cont(()->$generate_1014242157_1($_contParam));                                              
+    }                                                                                                                           
+}                                                                                                                               
+\end{lstlisting}
+
+A \ref{GenBefore} és \ref{GenAfter} kódrészletek szemléltetik a teljes transzformációs folyamat kezdő- és végpontját. Az újonnan létrehozott osztály átlátszatlan számsorozatokat tartalmaz a névütközések elkerülése érdekében. Az összes generátor között megosztott kódot, mint például a \textit{trampoline}, a \texttt{BaseGenerator} osztály tartalmazza, mely a \textit{Jield} futásidejű könyvtárának része.
