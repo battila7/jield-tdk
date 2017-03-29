@@ -103,7 +103,7 @@ Nem szükséges azonban a programvezérlésre hatással levő minden struktúra 
 
 \section{A vezérlés transzformációja}
 
-A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. A \texttt{try-catch} kivételéve ez az összes, \textit{Java}ban használható eszközt jelenti. A transzformált vezérlési struktúrák egyfajta építőkövek lesznek, melyekből a generátor felépíthető. Szükséges még a létrejött darabok összekapcsolása, ezt a feladatot egy speciális \textit{trampoline} fogja ellátni. A különböző szerkezetek átformálását szemlélető sematikus kódrészleteket még megelőzi a használt jelölés- és típusrendszer bemutatása.
+A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. A \texttt{try-catch} kivételével ez az összes, \textit{Java}ban használható eszközt jelenti. A transzformált vezérlési struktúrák egyfajta építőkövek lesznek, melyekből a generátor felépíthető. Szükséges még a létrejött darabok összekapcsolása, ezt a feladatot egy speciális \textit{trampoline} fogja ellátni. A különböző szerkezetek átformálását szemlélető sematikus kódrészleteket még megelőzi a használt jelölés- és típusrendszer bemutatása.
 
 \subsection{Típusok és jelölések}
 
@@ -118,7 +118,9 @@ Az eljárás eredményeként létrehozott metódusok mindegyike egyetlen formál
 \begin{lstlisting}[language=Java, caption={A \texttt{GeneratorState<T>} interfész}, captionpos=b, label=JavaGenState, escapechar=$]
 @FunctionalInterface
 public interface GeneratorState<T> extends Function<GeneratorState<T>, Bounce<T>> {
-    
+    static <T> GeneratorState<T> empty() { 
+      return null; 
+    }
 }
 \end{lstlisting}
 
@@ -146,7 +148,7 @@ public final class Bounce<T> {
 }
 \end{lstlisting}    
 
-Az osztály példányait csak úgynevezett \textit{static factory} metódusok útján lehet létrehozni. Ezek használatával jobban olvasható kódot kapunk (bár ez generált kód esetén annyira nem szempont). A \textit{continuation} egy opcionális számítást tárol, melyet a \textit{trampoline}-nak következőnek meg kell hívnia. A \textit{value} mező egy opcionális generált elemet tárol. 
+Az osztály példányait csak úgynevezett \textit{static factory} metódusok útján lehet létrehozni. Ezek használatával jobban olvasható kódot kapunk (bár ez generált kód esetén annyira nem szempont). A \textit{continuation} mező értéke egy opcionális számítás, melyet a \textit{trampoline}-nak következőnek meg kell hívnia. A \textit{value} mező egy opcionális generált elemet tárol. 
 
 \subsection{Állapotok és \textit{trampolining}}
 
@@ -155,7 +157,7 @@ Az eljárás által előállított generátorok motorja egy \textit{trampoline},
 \begin{itemize}
     \item Ha van \textit{continuation}, amit legközelebb meg lehet hívni, és nincsen generált érték, akkor meghívja a \textit{continuation}t. Ilyen esetekben a legutoljára végrehajtott metódus egy áthidaló állapot volt, mint például egy transzformált \texttt{for} ciklus inicializását végző állapot, mely nem állít elő semmilyen értéket.
     \item Ha \textit{continuation} és generált érték is rendelkezésre áll, akkor a generátor futása felfüggesztésre kerül. A \textit{trampoline} elmenti a \textit{continuation}t, és visszaadja a generált elemet.
-    \item Ha nincs \textit{continuation}, akkor a generátor már nem képes több elem generálására, futása véget ért. Ha volt generált érték, akkor még az visszaadásra kerül.
+    \item Ha nincs \textit{continuation}, akkor a generátor már nem képes több elem generálására, futása véget ért. Ha volt generált érték, akkor az még visszaadásra kerül.
 \end{itemize}
 
 Ez lesz az a mechanizmus, ami a generátort hajtja, és a metódusok közötti átmenetet biztosítja.
@@ -332,13 +334,13 @@ Bounce<T> method3(GeneratorState<T> k) {
 \captionof{lstlisting}{\texttt{foreach} ciklus transzformálása}
 \end{center}
 
-Először egy inicializáló állapotra van szükség, mely kinyer a \textit{Forrásból} egy \texttt{Iterator} objektumot. A \texttt{CPSUtil.iterator(Iterable)} metódus csak ennek az egységesítésére szolgál, elfedve, hogy tömbről vagy pedig \texttt{Iterable} objektumról van szó. 
+Elsőnek egy inicializáló állapot jön létre, mely kinyer a \textit{Forrásból} egy \texttt{Iterator} objektumot. A \texttt{CPSUtil.iterator(Iterable)} metódus csak ennek az egységesítésére szolgál, elfedve, hogy tömbről vagy pedig \texttt{Iterable} objektumról van szó. 
 
-A feltétel az \texttt{iterator.hasNext()} kifejezés lesz, amely ha teljesül, akkor előállítjuk a következő elemet, és következhet a ciklusmag végrehajtása. Ismét a magból képzett metódus fog csak generált értéket visszaadni, csak ezt követően kerülhet felfüggesztésre a futás. A mag végrehajtása után újra a feltételt jelképező metódus következik, és ez így folytatódik mindaddig, míg az iterátort ki nem merítettük.
+A feltétel az \texttt{iterator.hasNext()} kifejezés lesz, amely ha teljesül, akkor előállítjuk a következő elemet, és következhet a ciklusmag végrehajtása. Ismét a magból képzett metódus fog csak generált értéket visszaadni, így csak ezt követően kerülhet felfüggesztésre a futás. A mag végrehajtása után újra a feltételt jelképező metódus következik, és ez így folytatódik mindaddig, míg az iterátort ki nem merítettük.
 
 \subsection{\texttt{while} és \texttt{do-while} ciklus}
 
-A \texttt{while} és \texttt{do-while} ciklus hasonlóan működik, mindössze a minimális ismétlések számában különböznek, így a transzformációjuk sem különbözik jelentősen.
+A \texttt{while} és \texttt{do-while} ciklus hasonlóan működik, mindössze a minimális ismétlések számában különböznek, így a transzformációjuk sem tér el jelentősen.
 
 \begin{center}
 \begin{mdframed}[topline=true]
@@ -402,7 +404,7 @@ Bounce<T> method2(GeneratorState<T> k) {
 
 A \texttt{do-while} ciklus átalakításával nyert kód pontosan ugyanazokat a metódusokat tartalmazza, mint \texttt{while} esetében, csak megcserélt sorrendben. Elsőnek a magot hajtja végre a generátor, és csak utána következik a feltétel, egy megállást követően.
 
-\subsection{switch}
+\subsection{\texttt{switch}}
 
 \begin{center}
 \begin{mdframed}[topline=true]
@@ -516,11 +518,11 @@ Az átnevezés rekurzív módon történik, a tartalmazó blokk deklarációt k�
 
 A \ref{GenShadowing} kódrészlet hivatott szemléltetni a problémát. A forráskód negyedik és tizedik sorában található deklarációk kiemelése ütköző nevű mezőket eredményezne, így a második \texttt{i} változót át kell nevezni. Ez a tartalmazó blokk hátralevő utasításainak átvizsgálását, és az előfordulások átnevezését vonja maga után. Azonban a 12. sorban deklarált \texttt{Clazz} osztály szintén rendelkezik egy \texttt{i} mezővel, ami elfedi a tizedik sorban deklarált \texttt{i} változót. Ennek következtében az osztályon belül nem szabad névcseréket végezni. 
 
-Az eredeti metódus paraméterei szintén mezők formájában állnak majd a generált metódusok rendelkezésére. Ezeknél biztosan nem kell az átnevezésseé foglalkozni, hiszen előttük nem áll deklaráció, mely azonos névvel rendelkezne.
+Az eredeti metódus paraméterei szintén mezők formájában állnak majd a generált metódusok rendelkezésére. Ezeknél biztosan nem kell az átnevezéssel foglalkozni, hiszen előttük nem áll deklaráció, mely azonos névvel rendelkezne.
 
 \section{Befejező lépések}
 
-Az előző lépések után már csak néhány kisebb teendő maradt, melyek közül a legjelentősebb az eredeti generátormetódus átírása. Az eredeti implementációval egyenértékű generátort egy osztályba helyeztük el. Először ennek kell egy példányát létrehozni. Ezt követi a paraméterek számára létrehozott mezők inicializálása a metódus argumentumaival. Nem statikus metódus esetén a tartalmazó osztály aktuális példányára mutató referencia is átadásra kerül. Végül meg kell hívni az osztály generált \texttt{stream()} metódusát, mely elindítja a generátort. Ugyanez a metódus visszaad egy \texttt{Stream}et is, mely az új implementáció visszatérési értéke lesz.
+Az előző műveletek után már csak néhány kisebb teendő maradt, melyek közül a legjelentősebb az eredeti generátormetódus átírása. Az eredeti implementációval egyenértékű generátort egy osztályba helyeztük el. Először ennek kell egy példányát létrehozni. Ezt követi a paraméterek számára létrehozott mezők inicializálása a metódus argumentumaival. Nem statikus metódus esetén a tartalmazó osztály aktuális példányára mutató referencia is átadásra kerül. Végül meg kell hívni az osztály generált \texttt{stream()} metódusát, mely elindítja a generátort. Ugyanez a metódus visszaad egy \texttt{Stream}et is, mely az új implementáció visszatérési értéke lesz.
 
 A legutolsó lépés a \texttt{@Generator} annotáció eltávolítása a metódusról a többszöri transzformáció elkerülése végett.
 
