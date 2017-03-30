@@ -51,7 +51,7 @@ A belső osztályt a nevében is szereplő belső volta miatt érdemes használn
 
 \subsection{Félnyilvános (\textit{package private}) osztály}
 
-Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztály generálása gond nélkül kivitelezhető, hiszen ebben az esetben nem szükséges a már létező szintaxisfát módosítani, vagy újat létrehozni, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat forrásfájlokat, melyekkel eredetileg meghívtuk.
+Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztály generálása gond nélkül kivitelezhető, hiszen ebben az esetben az osztály létrehozásához nem kell a már létező szintaxisfát módosítani, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat forrásfájlokat, melyekkel eredetileg meghívtuk.
 
 Forráskódot összeállíthatunk karaktersorozatok konkatenációjával is, azonban ez kifejezetten fáradságos. Helyette érdemes valamilyen létező megoldást alkalmazni, például a \textit{javapoet} könyvtárat, melynek segítségével tetszőleges \textit{Java} forráskód előállítható, akár parametrizált módon.
 
@@ -59,7 +59,7 @@ Bár a kényelmes forráskód-generálás vonzó alternatívát jelent, ebben az
 
 A különböző utak részletes kifejtése nélkül ki lehet azonban jelenteni, hogy a láthatóság (vagyis annak hiánya) által okozott kérdések megválaszolása óriási erőfeszítéseket igényel. Vagy bonyolult kerülőutakat kell alkalmazni, hogy a megfelelő deklarációk elérhetőek legyenek, vagy pedig \textit{reflection}t kell használni, mely összetett és fáradságos megoldás.
 
-Végül nem szabad megfeledkezni arról sem, hogy ahhoz, hogy az eredeti metódus generátormetódussá váljon, tehát az újonnan generált osztály metódusait hívja, szükséges a meglévő kódból felépített szintaxisfa módosítása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatni.
+Bár az osztály létrehozását kivitelezhető a meglevő szintaxisfa módosítása nélkül, azonban ahhoz hogy az eredeti metódus generátormetódussá váljon, tehát az újonnan előállított osztály metódusait hívja, szükséges a felépített szintaxisfa átírása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatnunk.
 
 A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a stabil és kényelmes \textit{API}, amivel generálható, és hogy az annotáció-feldolgozás kifejezetten ezt támogatja. Ellenérvként említendő, hogy csak bonyolultan kivitelezhető, hogy minden, az eredeti metódus által használt deklaráció elérhető legyen. Emellett semmilyen módon nem kerülhető el az eredeti metódus módosítása.
 
@@ -67,7 +67,7 @@ A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a
 
 A felsorolt hátrányai ellenére, az implementáció a szintaxisfa közvetlen módosításával egy belső osztályt generál. Bár a félnyilvános osztály is alkalmas lenne speciális esetekre, ennek ellenére túl gyakran fordulhat elő olyan eset, amikor egy generátormetódus a tartalmazó osztály vagy osztályhierarchia egy \texttt{private} láthatósággal rendelkező deklarációját kívánja használni, és emiatt nem, vagy csak nehézkesen tudnánk a transzformációt alkalmazni.
 
-A szintaxisfa direkt megváltoztatására példa a \textit{Lombok} könyvtár. Ennek forráskódja azonban alacsony színvonalon (és hiányosan) dokumentált, emellett az eredeti \textit{API}-t becsomagolva használja, így nem triviális az \textit{API}-hívások pontos visszakövetése.
+A \texttt{com.sun.tools.javac.tree} csomag használatára példa a \textit{Lombok} könyvtár. Ennek forráskódja azonban alacsony színvonalon (és hiányosan) dokumentált, emellett az eredeti \textit{API}-t becsomagolva használja, így nem triviális az \textit{API}-hívások pontos visszakövetése.
 
 \section{A metódus vágása}
 
