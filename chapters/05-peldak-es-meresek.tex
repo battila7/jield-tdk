@@ -1,0 +1,53 @@
+\chapter{Példák és mérések}
+
+A fejezetben a bemutatott eljárást használó és kézzel írt generátorok összehasonlítása szerepel, két példán keresztül. Objektív szempont a kódok teljesítménye, melynek mérése a mikromérések (\textit{microbenchmark}) készítésére alkalmas \textit{JMH} könyvtárral történt. Emellett olyan, szubjektívebb szempontot tekintve is összevetésre kerültek a megvalósítások, mint az olvashatóság és áttekinthetőség.
+
+\section{Konfiguráció}
+
+Egy teljesítményteszt eredményének reprodukálásához elengedhetetlen a használt paraméterek pontos ismerete. Ez magában foglalja a mérésekhez alkalmazott keretrendszer, a \textit{JMH} beállításait, és a futtató környezet szoftver- és hardverkonfigurációját is. Előbbit az \ref{table:jmhparams}, utóbbit az \ref{table:envparams} táblázat tartalmazza.
+
+\begin{table}[h]
+\captionsetup{justification=centering}
+\centering
+  \begin{tabular}{|| l | c ||}
+  \hline
+  Paraméter & Érték \\
+  \hline \hline
+  JMH Version                        & 1.18 \\
+  \hline
+  Warmup iterations                  & 10 \\
+  Time per warmup iteration          & 1 sec \\
+  \hline
+  Measurement iterations             & 10 \\
+  Time per measurement iteration     & 1 sec \\
+  \hline
+  Forks                              & 5 \\
+  \hline                               
+  Mode                               & Average time \\
+  \hline
+  \end{tabular}
+\caption{A mérések során alkalmazott \textit{JMH} paraméterértékek}  
+\label{table:jmhparams}
+\end{table}
+
+\begin{table}[h]
+\captionsetup{justification=centering}
+\centering
+  \begin{tabular}{|| l | c ||}
+  \hline
+  Paraméter & Érték \\
+  \hline \hline
+  Processzor                  & Intel Core i5-6500, 3.2 GHz \\
+  Memória                     & 16 GB, DDR4 \\
+  \hline
+  Operációs rendszer                        & Windows 10 64 bit \\
+  \hline
+  JRE verzió                  & 1.8.0u121-b13 \\
+  JVM verzió                  & HotSpot 25.121-b13 \\
+  \hline
+  \end{tabular}
+\caption{A méréseket futtató környezet paraméterei}  
+\label{table:envparams}
+\end{table}
+
+A \ref{table:jmhparams} táblázat a különféle beállítások \textit{JMH} által használt elnevezéseit használja. Összefoglalva, minden tényleges mérést 10, egyenként 1 másodperc hosszúságú bemelegítő iteráció előzött meg. A bemelegítést követően 10, szintén 1 másodpercig tartó ismétlés alatt a végrehajtáshoz szükséges átlagidő került mérésre. Ez az eljárás 5 független \textit{JVM}-en lett elvégezve.
