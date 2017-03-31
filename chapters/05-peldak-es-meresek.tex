@@ -4,7 +4,7 @@ A fejezetben a bemutatott eljárást használó és kézzel írt generátorok ö
 
 \section{Konfiguráció}
 
-Egy teljesítményteszt eredményének reprodukálásához elengedhetetlen a használt paraméterek pontos ismerete. Ez magában foglalja a mérésekhez alkalmazott keretrendszer, a \textit{JMH} beállításait, és a futtató környezet szoftver- és hardverkonfigurációját is. Előbbit az \ref{table:jmhparams}, utóbbit az \ref{table:envparams} táblázat tartalmazza.
+Egy teljesítményteszt eredményének reprodukálásához elengedhetetlen a használt paraméterek pontos ismerete. Ez magában foglalja a mérésekhez alkalmazott keretrendszer, a \textit{JMH} beállításait és a futtató környezet szoftver- és hardverkonfigurációját is. Előbbit az \ref{table:jmhparams}, utóbbit az \ref{table:envparams} táblázat tartalmazza.
 
 \begin{table}[h]
 \captionsetup{justification=centering}
@@ -50,4 +50,170 @@ Egy teljesítményteszt eredményének reprodukálásához elengedhetetlen a has
 \label{table:envparams}
 \end{table}
 
-A \ref{table:jmhparams} táblázat a különféle beállítások \textit{JMH} által használt elnevezéseit használja. Összefoglalva, minden tényleges mérést 10, egyenként 1 másodperc hosszúságú bemelegítő iteráció előzött meg. A bemelegítést követően 10, szintén 1 másodpercig tartó ismétlés alatt a végrehajtáshoz szükséges átlagidő került mérésre. Ez az eljárás 5 független \textit{JVM}-en lett elvégezve.
+A \ref{table:jmhparams} táblázat a \textit{JMH} beállításait a keretrendszerben használt nevükkel sorolja fel. Összefoglalva, minden tényleges mérést 10, egyenként 1 másodperc hosszúságú bemelegítő iteráció előzött meg. A bemelegítést követően 10, szintén 1 másodpercig tartó ismétlés alatt a végrehajtáshoz szükséges átlagidő került mérésre. Ez az eljárás 5 független \textit{JVM}-en lett elvégezve.
+
+\section{Fibonacci-sorozat}
+
+Az első példát a Fibonacci-sorozat elemeit generáló metódusok alkotják. A sorozat elemeinek kiszámítását végző algoritmus azonos, a három kódrészlet közötti különbséget az algoritmust működtető mechanizmus jelenti. Az összehasonlított megvalósítások közül kettő szerepel az \ref{FibComparison} kódrészletben. A harmadik, az \texttt{intStreamGenerate} annyiban tér el a \texttt{streamGenerate} metódustól, hogy az \texttt{int} típusra specializált \texttt{IntStream} és \texttt{IntSupplier} osztályokat alkalmazza.
+
+\begin{center}
+\begin{mdframed}[topline=true]
+\begin{minipage}[t]{0.45\textwidth}
+\begin{lstlisting}[language=Java, breaklines=true, escapechar=!]
+@Generator
+public Stream<Integer> jield() {
+  int a = 0, b = 1;
+
+  while (true) {
+    int temp = a;
+    a = b;
+    b = a + temp;
+
+    return temp;
+  }
+}
+\end{lstlisting}
+\end{minipage} 
+\begin{minipage}[t]{0.55\textwidth}
+\begin{lstlisting}[language=Java, breaklines=true, escapechar=!]
+public Stream<Integer> streamGenerate() {
+  return Stream.generate(
+    new Supplier<Integer>() {
+      private int a = 0;
+
+      private int b = 1;
+
+      @Override
+      public Integer get() {
+        int temp = a;
+        a = b;
+        b = a + temp;
+
+        return temp;
+      }
+    });
+}
+\end{lstlisting} 
+\end{minipage}
+\end{mdframed}
+\captionof{lstlisting}{A Fibonacci-sorozat előállítása \textit{Jield} és \texttt{Stream.generate} segítségével}
+\label{FibComparison}
+\end{center}
+
+\subsection{Olvashatóság}
+
+Sorok számát tekintve nincs jelentős különbség az \ref{FibComparison} kódrészlet két oldala között. Azonban, míg a \texttt{jield} metódus szinte kizárólag egy elem előállítását adja meg, addig a \texttt{streamGenerate} szükségszerűen tartalmaz a generátor-mechanizmusra vonatkozó implementációs részleteket. Annak ellenére, hogy a két kód lényegét tekintve azonos, a \texttt{jield} könnyebben áttekinthető, hiszen csak egy végtelen ciklusból áll. A sorozat egy elemét kiszámoló kód egy végtelen ciklusban került elhelyezésre, lezárva egy \texttt{return} utasítással. Ez a recept vagy minta természetesen más sorozatok esetén is felhasználható.
+
+Érdemes megemlíteni, hogy bár a \texttt{Stream.generate} metódus meghívható egy lambda függvénnyel is, jelen esetben mindenképpen névtelen osztályt kell létrehozni, a generátor állapotának megőrzése érdekében. Igazából emiatt szenved hátrányt a \texttt{streamGenerate} olvashatósága.
+
+\subsection{Teljesítmény}
+
+Az implementációk teljesítményét a Fibonacci-sorozat első 1, 10 és 100 elemének generálásával mértem, a fejezet elején említett beállítások mellett. A tesztek előtt természetesen rendelkeztem egy elvárással a lehetséges sorrendet illetően. Úgy gondoltam, hogy az \texttt{intStreamGenerate} biztosan meg fogja előzni a \texttt{streamGenerate} metódust, hiszen csak primitíveken dolgozik. A \texttt{jield} futási idejét azonban tapasztalatok hiányában nem tudtam megbecsülni.
+
+\begin{table}[h]
+\captionsetup{justification=centering}
+\centering
+  \begin{tabular}{|| c | c | c ||}
+  \hline
+  Metódus neve & Generált elemek száma & Átlagos futási idő ($\mu\mathrm{s}$) \\
+  \hline \hline
+  \multirow{3}{8.8em}{\texttt{jield}} & 1 & 0.136 \\
+  & 10 & 0.584 \\
+  & 100 & 5.079 \\
+  \hline
+  \multirow{3}{8.8em}{\texttt{streamGenerate}} & 1 & 0.039 \\
+  & 10 & 0.116 \\
+  & 100 & 0.923 \\
+  \hline
+  \multirow{3}{8.8em}{\texttt{intStreamGenerate}} & 1 & 0.037 \\
+  & 10 & 0.096 \\
+  & 100 & 0.679 \\
+  \hline
+  \end{tabular}
+\caption{A Fibonacci-sorozatot generáló metódusok átlagos futási idejének összehasonlítása}  
+\label{table:fibComp}
+\end{table}
+
+Az \ref{table:fibComp} táblázat adatai nem nevezhetőek meglepőnek. A generált elemek számával minden esetben együtt nő a végrehajtáshoz szükséges idő. A \texttt{jield} a leglassabb a három metódus közül, valószínűleg a \textit{trampolining} és a sok lambda függvény miatt. 100 elem generálásakor átlagosan megközelítőleg $7,5$-szer tovább fut, mint az \texttt{intStreamGenerate}, mely a várakozásoknak megfelelően megelőzte a \texttt{streamGenerate} metódust.
+
+\section{\textit{Iterable} elemeinek ismétlése}
+
+A második példa metódusai az \textit{R} \texttt{rep} függvényéhez hasonló működést valósítanak meg. Egy olyan sorozatot képeznek, mely egy \texttt{Iterable} elemeiből áll, és két paraméterrel befolyásholható. A \texttt{times} azt adja meg, hogy az \texttt{Iterable} elemeit hányszor állítsa elő a generátor, az \texttt{each} pedig azt, hogy az így kapott sorozat minden eleme hányszor legyen megismételve. Csak két generikus implementáció került összehasonlításra, az egyik a \textit{Jield}-féle generátor, a másik pedig a \texttt{Stream.generate} metódust veszi alapul.
+
+\begin{lstlisting}[language=Java, caption={Elemek ismétlése \textit{Jield} segítségével}, escapechar=!, captionpos=b, belowskip=1em, belowcaptionskip=0em]
+@Generator
+public <T> Stream<T> jield(Iterable<T> iter, int times, int each) {
+  for (int j = 0; j < times; ++j) {
+    for (T element : iter) {
+      for (int i = 0; i < each; ++i) {
+        return element;
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption={Elemek ismétlése \texttt{Stream.generate} használatával}, escapechar=!, captionpos=b, aboveskip=1em, label=repStreamGenerate]
+public <T> Stream<T> streamGenerate(Iterable<T> iter, int times, int each) {
+  return Stream.generate(
+     () -> StreamSupport.stream(iter.spliterator(), false)
+                        .map(t -> Collections.nCopies(each, t))
+                        .flatMap(Collection::stream))
+    .limit(times)
+    .flatMap(Function.identity());
+}
+\end{lstlisting} 
+
+\subsection{Olvashatóság}
+
+A kódrészletek hosszában ismét nem tapasztalható jelentős eltérés. A két megvalósítás ennél jobban azonban nem is különbözhetne! A \texttt{jield} metódus pusztán ciklusokból építkezik, míg a \texttt{streamGenerate} a \texttt{Stream} és \texttt{StreamSupport} osztályok szolgáltatásait használja. Ugyan nem jelenthető ki egyértelműen, hogy az egyik megoldás olvashatóságot tekintve jobb lenne a másiknál, azonban az implementációk értelmezéséhez szükséges előismeret és háttértudás markánsan eltér. 
+
+A \textit{Jield} a megszokott vezérlési szerkezeteket alkalmazva teszi lehetővé generátorok elkészítését. A programozónak csak annyit kell megjegyeznie, hogy a \texttt{return} többé nem csak visszatérést, hanem visszatérést és felfüggesztést jelent egyben. Hozzászokva ehhez a gondolathoz, már mindent tud, amit a \textit{Jield} megkövetel a generátorok írásához. A \textit{Stream API} használata, mint az \ref{repStreamGenerate} kódrészletből is látszik, nem ilyen egyszerű. Ez nem is meglepő, figyelembe véve, hogy a \textit{Stream API} nem kifejezetten generátorok elkészítését célozza, mint a \textit{Jield}.
+
+\subsection{Teljesítmény}
+
+A méréseket különböző \texttt{times} és \texttt{each} paraméterértékek mellett végeztem el. Az átadott \texttt{Iterable} minden esetben egy három elemű, \texttt{String} objektumokból álló lista volt, az \texttt{Arrays.asList} metódussal összeállítva. 
+
+\begin{table}[h]
+\captionsetup{justification=centering}
+\centering
+  \begin{tabular}{|| c | c | c | c ||}
+  \hline
+  Metódus neve & \texttt{times} & \texttt{each} & Átlagos futási idő ($\mu\mathrm{s}$) \\
+  \hline \hline
+  \multirow{9}{8.8em}{\texttt{jield}} & 1 & 1 & 0.542  \\
+  & 10 & 1 & 4.653  \\
+  & 100 & 1 & 44.855  \\
+  & 1 & 10 & 2.164  \\
+  & 10 & 10 & 20.481  \\
+  & 100 & 10 & 203.088  \\
+  & 1 & 100 & 18.727 \\
+  & 10 & 100 & 183.869  \\
+  & 100 & 100 & 1845.712 \\
+  \hline
+  \multirow{9}{8.8em}{\texttt{streamGenerate}} & 1 & 1 & 0.291  \\
+  & 10 & 1 & 2.372  \\
+  & 100 & 1 & 22.750  \\
+  & 1 & 10 & 0.519  \\
+  & 10 & 10 & 4.459  \\
+  & 100 & 10 & 44.057  \\
+  & 1 & 100 & 2.666  \\
+  & 10 & 100 & 24.469  \\
+  & 100 & 100 & 245.874  \\
+  \hline
+  \end{tabular}
+\caption{Elemek ismétlését végző metódusok összehasonlítása}  
+\label{table:repComp}
+\end{table}
+
+\pagebreak
+
+Előzetesen azt vártam, hogy a \texttt{jield} lassabb lesz, mint a \texttt{streamGenerate}. Ez az elvárás be is igazolódott, amint az az \ref{table:repComp} táblázat adataiból kiolvasható. Legrosszabb esetben, a paraméterek maximális értéke esetén ezúttal is $7,5$-szeres különbség figyelhető meg, a \texttt{streamGenerate} javára. 
+
+\section{Konklúzió}
+
+A fejezet két példán keresztül mutatta be a \textit{Jield} használatát és teljesítményét. Természetesen ez nem elég ahhoz, hogy általános érvényű következtetéseket vonhassunk le, azonban bizonyos jellemzők megfigyelését lehetővé teszik.
+
+A \textit{Jield} segítségével ugyanúgy írhatunk generátort, mint egy hagyományos metódust, mindössze a \texttt{return} megváltozott szerepére kell tekintettel lenni. Ez lehetővé teszi, közvetlenül az elemek előállítására koncentráljunk, a generátor működési mechanizmusa rejtve marad.
+
+Az absztrakciónak azonban ára van. A mérésekből kitűnik, hogy legjobb esetben is kétszer, legrosszabb esetben mintegy $7,5$-szer több a \textit{Jield}-féle generátorok átlagos futási ideje, mint a \texttt{Stream}et használó metódusoké. Teljesítménykritikus helyzetekben ezt mindenképpen figyelembe kell venni.
