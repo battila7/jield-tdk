@@ -1,0 +1,23 @@
+\chapter{Összefoglalás}
+
+A dolgozatban egy olyan eljárás került bemutatásra, mely úgynevezett generátorok előállítását teszi lehetővé \textit{Java}ban. A kidolgozott módszer annotáció-feldolgozáson alapul, használatához csak egy annotáció elhelyezése szükséges a megfelelő metóduson. A háttérben, a szintaxisfa módosítása segítségével új osztályok és új metódusok kerülnek létrehozásra, valamint az eredeti implementáció sem marad érintetlenül. A programvezérlés szabályozása \textit{CPS}-transzformáció segítségével valósul meg.
+
+\section{A transzformáció jellemzői}
+
+Az elkészített implementáció, a \textit{Jield} a \texttt{try-catch} szerkezeten kívül lehetővé teszi tetszőleges vezérlési struktúra alkalmazását a generátorokban. A \textit{continuation}ök nyilvántartásának köszönhetően a címkék és az ugrást megvalósító utasítások, a \texttt{continue} és a \texttt{break} is használhatóak bárhol, ahol a \textit{Java} megengedi. A \texttt{try-catch} transzformációja egyelőre összetettsége folytán nem került megvalósításra. 
+
+A transzformáció alapjául szolgáló metódusok lehetnek példánymetódusok vagy statikus metódusok is. Interfészek \textit{default} metódusai is generátorrá alakíthatóak. Típusparaméterek alkalmazására is lehetőség van, azonban csak példány kontextusban. Ennek a korlátozásnak a hátterében az áll, hogy még nem sikerült a szintaxisfa olyan módosítását megtalálni, mely statikus kontextus esetén nem okoz a fordítási folyamatban hibát, és így a fordító leállását.
+
+A létrehozott generátorok valóban rendelkeznek az elvárt tulajdonságokkal, működésük felfüggeszthető, és a felfüggesztés pontjától újra folytatható. Emellett a visszatérési értékük \texttt{java.util.stream.Stream} típusú, mely kényelmes hozzáférést biztosít a lustán képzett elemekhez. A \texttt{Stream} példányokból a \texttt{Stream.iterator} metódus segítségével \texttt{Iterator} is képezhető, melyet alkalmazva a \textit{JavaScript} vagy a \textit{C\#} generátoraihoz hasonló szerkezetet kapunk.
+
+\section{Összehasonlítás}
+
+Az \ref{ch:peldakEsMeresek}. fejezetben a \textit{Jield} segítségével létrehozott, és a standard könyvtár részét képező \texttt{Stream.generate} metódust alkalmazó generátorok összehasonlítása szerepelt. A teljesítménymérések azt mutatták, hogy mintegy $2-7,5$-szeres különbség van a két megoldás átlagos futási ideje között, a \texttt{Stream.generate} javára. 
+
+Érthetőséget és olvashatóságot tekintve azonban a dolgozatban használt eljárással létrehozott generátorok vannak előnyben. A programozónak mindössze egy annotációt kell elhelyeznie a metóduson, és \texttt{return} utasításokat kell elhelyeznie oda, ahol meg szeretné szakítani a futást, és értéket szeretne visszaadni. A \texttt{Stream.generate} és a \textit{Stream API} ezzel szemben a nyelv haladottabb lehetőségeinek alkalmazását (például névtelen osztályok, lambdák), és az \textit{API} lehetőségeinek ismeretét kívánják meg.
+
+\section{Továbblépési lehetőségek}
+
+Az eljárást következőnek a \texttt{try-catch} és a statikus típusparaméterek használatának lehetőségével szeretném bővíteni. Ezt követően beépülő modulokat is szeretnék készíteni, melyek az integrált fejlesztői eszközökben is lehetővé teszik a \textit{Jield} gördülékeny használatát. Elsősorban az általam is használt \textit{IntelliJ IDEA} eszközhöz szeretnék ilyen modult létrehozni. 
+
+A hiányosságok pótlása és a beépülő modulok után a továbblépésre két út is kínálkozik. Folytatható az annotáció-feldogozás használata, és ennek segítségével megkísérelhető szimmetrikus korutinok generálása. A másik lehetőség a \textit{Java} nyelv és a fordító módósítása a generátorok nyelvi szintre emeléséhez. Azaz a \texttt{yield} kulcsszó bevezetése, és a transzformáció elhelyezése a fordítási folyamatban. Természetesen a két irány nem zárja ki egymást, azonban érdemes lépésenként haladni, a szimmetrikus korutinok nyelvi támogatásának implementálása előtt.
