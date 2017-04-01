@@ -20,6 +20,8 @@
 \graphicspath{ {images/} }
 
 \usepackage{apacite}
+\bibliographystyle{apacite}
+
 \usepackage{url}
 \usepackage{textcomp}
 
@@ -36,6 +38,10 @@
 
     \tableofcontents
 
+    \if\printName1
+        \input{./chapters/koszonetnyilvanitas.tex}
+    \fi
+
     \input{./chapters/01-bevezetes.tex}
 
     \input{./chapters/02-generatorok-es-mas-vezerlesi-szerkezetek.tex}
@@ -48,6 +54,7 @@
 
     \input{./chapters/06-osszefoglalas.tex}
 
-    \bibliographystyle{apacite}
     \bibliography{references.bib}
+
+    \input{./chapters/sajat-munka-leirasa.tex}
 \end{document}
