@@ -12,29 +12,53 @@ Bár ezek a fejlesztések jelentősek, azonban mondhatni folytatás nélkül mar
 
 Természetesen felmerül a kérdés, hogy mégis mennyiben indokolt egy ilyen, új nyelvi elem bevezetése? Egyelőre ahelyett, hogy a generátorok előnyeivel próbálnánk érvelni a bevezetésük mellett, vizsgáljuk meg inkább azt, hogy más, széleskörben használt programozási nyelvek hogyan viszonyulnak a kérdéshez. A legnépszerűbb nyelvek listájához a TIOBE Indexet vettem alapul \cite{TIOBEIndex}. Az \ref{table:1} táblázat adataiból kiolvasható, hogy a legnépszerűbb programozási nyelvek fele natívan támogatja a generátorok létrehozását. Ennek ismeretében már feltételezhetjük, hogy valós igény mutatkozna e struktúra bevezetésére a \textit{Java} nyelvben is. Az említett két tényező biztosította a motivációt, hogy a generátorok \textit{Java} nyelvben történő bevezetésének lehetőségét megvizsgáljam.
 
-\begin{table}
-\captionsetup{justification=centering}
-\centering
-  \begin{tabular}{|| c | c ||}
-  \hline
-  Programozási nyelv & Támogatás \\
-  \hline \hline
-  Java                  & \cellcolor{red!20}Nem \\
-  C                     & \cellcolor{red!20}Nem \\
-  C++                   & \cellcolor{yellow!20}Tervezett \\
-  C\#                   & \cellcolor{green!20}Igen \\
-  Python                & \cellcolor{green!20}Igen \\
-  Visual Basic .NET     & \cellcolor{green!20}Igen \\
-  PHP                   & \cellcolor{green!20}Igen \\
-  JavaScript            & \cellcolor{green!20}Igen \\
-  Delphi/Object Pascal  & \cellcolor{red!20}Nem \\
-  Swift                 & \cellcolor{red!20}Nem \\
-  \hline
-  \end{tabular}
-\caption{Generátorok támogatása a legnépszerűbb programozási nyelvek körében (népszerűség sorrendjében)}  
-\label{table:1}
-\end{table}
-
+\if\useColors1
+  \begin{table}
+  \captionsetup{justification=centering}
+  \centering
+    \begin{tabular}{|| c | c ||}
+    \hline
+    Programozási nyelv & Támogatás \\
+    \hline \hline
+    Java                  & \cellcolor{red!20}Nem \\
+    C                     & \cellcolor{red!20}Nem \\
+    C++                   & \cellcolor{yellow!20}Tervezett \\
+    C\#                   & \cellcolor{green!20}Igen \\
+    Python                & \cellcolor{green!20}Igen \\
+    Visual Basic .NET     & \cellcolor{green!20}Igen \\
+    PHP                   & \cellcolor{green!20}Igen \\
+    JavaScript            & \cellcolor{green!20}Igen \\
+    Delphi/Object Pascal  & \cellcolor{red!20}Nem \\
+    Swift                 & \cellcolor{red!20}Nem \\
+    \hline
+    \end{tabular}
+  \caption{Generátorok támogatása a legnépszerűbb programozási nyelvek körében (népszerűség sorrendjében)}  
+  \label{table:1}
+  \end{table}
+\else
+  \begin{table}
+  \captionsetup{justification=centering}
+  \centering
+    \begin{tabular}{|| c | c ||}
+    \hline
+    Programozási nyelv & Támogatás \\
+    \hline \hline
+    Java                  & Nem \\
+    C                     & Nem \\
+    C++                   & Tervezett \\
+    C\#                   & Igen \\
+    Python                & Igen \\
+    Visual Basic .NET     & Igen \\
+    PHP                   & Igen \\
+    JavaScript            & Igen \\
+    Delphi/Object Pascal  & Nem \\
+    Swift                 & Nem \\
+    \hline
+    \end{tabular}
+  \caption{Generátorok támogatása a legnépszerűbb programozási nyelvek körében (népszerűség sorrendjében)}  
+  \label{table:1}
+  \end{table}
+\fi
 \section{Az eljárás célja}
 
 A dolgozatban ismertetett transzformációs eljárás azzal a céllal került kidolgozásra, hogy alapot vessen a natív támogatás megjelenésének. A kísérleti implementáció által szolgáltatott tapasztalatok birtokában ugyanis megnyílik az út a \textit{Java} fordító módosítása, egy új ajánlás létrehozása, és utolsó lépésként akár a hivatalos támogatás elnyerése előtt. 

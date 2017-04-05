@@ -16,17 +16,17 @@ A \textit{refactoring} is előszeretettel alkalmazza a szubrutinokba szervezést
 
 \section{Korutin (\textit{coroutine})}
 
-A \textit{korutin} fogalmának definiálása helyett, először kövessük Knuth gondolatmenetét \cite[p. 190]{TAoCPVol1}, melynek segítségével azt is megérthetjük, miért volt szükség a szubrutin ismertetésére.
+A \textit{korutin} fogalmának definiálása helyett, először kövessük Knuth gondolatmenetét \cite{TAoCPVol1}, melynek segítségével azt is megérthetjük, miért volt szükség a szubrutin ismertetésére.
 
 Tekintsünk a főprogramra és a szubrutinokra együttesen úgy, mint programok egy csapatára, melyben minden egyes csapattag valamilyen feladatot végez el. A főprogram meghív egy szubrutint, az végrehajtja a megfelelő utasításokat, majd újra a főprogram következik. Tovább folytatva a gondolatsort, képzeljük el, hogy a szubrutin, amikor visszatér, valójában meghívja a főprogramot. 
 
-Az előbbi gondolatokat követve, megkapjuk a korutinokat, amelyek esetében nincsen egyértelmű alá-fölérendeltségi viszony, mint a szubrutin és a főprogram esetén. A ko\-rutinok mind alá-fölérendeltségi, mind mellérendeltségi viszony kialakítására alkalmasak. Ennek megfelelően a szubrutinok valójában speciális korutinok \cite[p. 190]{TAoCPVol1}.
+Az előbbi gondolatokat követve, megkapjuk a korutinokat, amelyek esetében nincsen egyértelmű alá-fölérendeltségi viszony, mint a szubrutin és a főprogram esetén. A ko\-rutinok mind alá-fölérendeltségi, mind mellérendeltségi viszony kialakítására alkalmasak. Ennek megfelelően a szubrutinok valójában speciális korutinok \cite{TAoCPVol1}.
 
 Felmerülhet azonban a kérdés, hogy mi történik abban az esetben, amikor egy korutin egynél többször kerül meghívásra? Míg szubrutinok hívásakor a végrehajtás mindig a szubrutin elejétől indul, addig korutinok esetén a végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt. Ez, és a korutin szempontjából lokális változók értékének megőrzése a hívások között, a korutinok két legfontosabb, definiáló tulajdonsága \cite{Marlin1980}.
 
 \subsection{Szimmetrikus és aszimmetrikus korutinok}
 
-A korutinok (vagyis azok megvalósításainak) különböző szempontok szerint osztályozását adja meg de Moura és Ierusalimschy \citeyear{RevisitingCoroutines}. Egyik lehetséges osztályozási szempont a vezérlés átadásának módja, mely szerint szimmetrikus és aszimmetrikus korutinokat különböztethetünk meg.
+A korutinok (vagyis azok megvalósításainak) különböző szempontok szerinti osztályozását adja meg de Moura és Ierusalimschy \citeyear{RevisitingCoroutines}. Egyik lehetséges osztályozási szempont a vezérlés átadásának módja, mely szerint szimmetrikus és aszimmetrikus korutinokat különböztethetünk meg.
 
 A szimmetria valójában a korutinok egymás közötti viszonyát határozza meg. Ha a korutinok szimmetrikusak, akkor egy korutin tetszőleges másik korutint hívhat meg, felfüggesztve ezzel a saját futását, és aktívvá téve a másikat. Ezzel szemben az aszimmetria azt jelenti, hogy a hívott korutinnak vissza kell adnia a vezérlést a hívónak, felfüggesztve ezzel saját futását. Ez pontosan az a megvalósítás, amit a Knuth-féle gondolatmenet bevezetett. Ilyenkor, bár alárendeltségi viszony alakul ki, a Marlin-féle tulajdonságok továbbra is megmaradnak.
 
@@ -108,7 +108,7 @@ Az iterátorok viszonylag részletes bemutatása meglepő lehet abból a szempon
 
 Ez a rokonság az alapja annak, hogy a korutinokat nem, de iterátorokat ismerő programozási nyelvekben is dolgozhassunk generátorokkal. Az egyik lehetőség, hogy a függvényeket \textit{iterálhatónak} tekintjük. Ebben az esetben a függvény meghívásával egy új \textit{iterátort} kapunk, mely a generátor által lustán előállított elemeken képes iterálni. Ezt alkalmazza például a \textit{JavaScript}. A másik lehetőség, hogy a függvény egy \textit{iterálhatóval} tér vissza, melyet ugyanúgy használhatunk, mint egy iterálható gyűjteményt. E megoldás alkalmazására példa a \textit{C\#}.
 
-A függvény eredeti törzsét azonban nem használhatjuk fel közvetlenül, hiszen korutinok hiányában nem rendelkezünk olyan eszközökkel, melyek lehetővé tennék a lokális változók értékének hívások közötti megőrzését és a végrehajtás folytatását. A függvénytörzset fordítási idejű transzformációnak kell alávetnünk, hogy ezeket a tulajdonságokat szimulálni tudjuk. A dolgozatban ismertetésre kerülő transzformáció célja is pontosan ugyanez.
+A függvény eredeti törzsét azonban nem használhatjuk fel közvetlenül, hiszen ko\-rutinok hiányában nem rendelkezünk olyan eszközökkel, melyek lehetővé tennék a lokális változók értékének hívások közötti megőrzését és a végrehajtás folytatását. A függvénytörzset fordítási idejű transzformációnak kell alávetnünk, hogy ezeket a tulajdonságokat szimulálni tudjuk. A dolgozatban ismertetésre kerülő transzformáció célja is pontosan ugyanez.
 
 % Lehet, hogy el kell majd távolítani
 % \pagebreak

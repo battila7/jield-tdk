@@ -59,7 +59,7 @@ Bár a kényelmes forráskód-generálás vonzó alternatívát jelent, ebben az
 
 A különböző utak részletes kifejtése nélkül ki lehet azonban jelenteni, hogy a láthatóság (vagyis annak hiánya) által okozott kérdések megválaszolása óriási erőfeszítéseket igényel. Vagy bonyolult kerülőutakat kell alkalmazni, hogy a megfelelő deklarációk elérhetőek legyenek, vagy pedig \textit{reflection}t kell használni, mely összetett és fáradságos megoldás.
 
-Bár az osztály létrehozását kivitelezhető a meglevő szintaxisfa módosítása nélkül, azonban ahhoz hogy az eredeti metódus generátormetódussá váljon, tehát az újonnan előállított osztály metódusait hívja, szükséges a felépített szintaxisfa átírása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatnunk.
+Bár az osztály létrehozása kivitelezhető a meglevő szintaxisfa módosítása nélkül, azonban ahhoz hogy az eredeti metódus generátormetódussá váljon, tehát az újonnan előállított osztály metódusait hívja, szükséges a felépített szintaxisfa átírása. Hiába generálunk tehát egy új fordítási egységet, a létező szintaxisfát mindenképpen meg kell változtatnunk.
 
 A félnyilvános, új fordítási egységbe leképezett osztály mellett szól a stabil és kényelmes \textit{API}, amivel generálható, és hogy az annotáció-feldolgozás kifejezetten ezt támogatja. Ellenérvként említendő, hogy csak bonyolultan kivitelezhető, hogy minden, az eredeti metódus által használt deklaráció elérhető legyen. Emellett semmilyen módon nem kerülhető el az eredeti metódus módosítása.
 
@@ -194,7 +194,7 @@ Bounce<T> method2(GeneratorState<T> k) {
 \label{GenLinear}
 \end{center}
 
-A \ref{GenLinear} kódrészlet jobboldala két \texttt{return} utasítást tartalmaz, melyek a kódrészlet két darabba vágását eredményezik. A \texttt{method1} az első \texttt{return} előtt álló utasításokat tartalmazza, valamint az első generált értéket előállító kifejezést. Emellett jelzi a \textit{trampoline} számára, hogy a futásnak legközelebb a \texttt{method2}-vel kell folytatódnia. A \texttt{method2} tartalmazza a még hátralevő kódrészletet, valamint előállítja a második generált értéket. 
+A \ref{GenLinear} kódrészlet baloldala két \texttt{return} utasítást tartalmaz, melyek a kódrészlet két darabba vágását eredményezik. A \texttt{method1} az első \texttt{return} előtt álló utasításokat tartalmazza, valamint az első generált értéket előállító kifejezést. Emellett jelzi a \textit{trampoline} számára, hogy a futásnak legközelebb a \texttt{method2}-vel kell folytatódnia. A \texttt{method2} tartalmazza a még hátralevő kódrészletet, valamint előállítja a második generált értéket. 
 
 Érdemes megfigyelni, hogy mivel ez az utolsó \textit{állapot}, a \textit{trampoline}-nak már közvetlenül a kapott \textit{continuation}t meghívó lambda függvényt ad át, jelezve a számítás végét. Ez a többi vezérlési szerkezet esetén is hasonlóan fog történni.
 
@@ -456,7 +456,7 @@ A transzformáció megtartja a \texttt{switch} utasítást, hiszen továbbra is 
 
 A \texttt{switch} ágaiból képzett metódusok már csak az adott ághoz tartozó utasításokat tartalmazzák. Egy további állapotban történik a vezérlés újraegyesítése, mely semmilyen, az eredeti kódrészletből átemelt utasítást nem tartalmaz.
 
-\subsection{Fordítási idejű CPS}
+\subsection{Fordítási idejű \textit{CPS}}
 
 A vezérlési szerkezetek bemutatásakor egyik oldalon szerepelt a forráskód, a másik oldalon pedig az ebből képzett metódusok. A két oldal közötti mechanika nem került pontos ismertetésre. A transzformáció egzakt működése azonban csak ennek felfedésével lesz megérthető.
 

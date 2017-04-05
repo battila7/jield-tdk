@@ -214,6 +214,6 @@ Előzetesen azt vártam, hogy a \texttt{jield} lassabb lesz, mint a \texttt{stre
 
 A fejezet két példán keresztül mutatta be a \textit{Jield} használatát és teljesítményét. Természetesen ez nem elég ahhoz, hogy általános érvényű következtetéseket vonhassunk le, azonban bizonyos jellemzők megfigyelését lehetővé teszik.
 
-A \textit{Jield} segítségével ugyanúgy írhatunk generátort, mint egy hagyományos metódust, mindössze a \texttt{return} megváltozott szerepére kell tekintettel lenni. Ez lehetővé teszi, közvetlenül az elemek előállítására koncentráljunk, a generátor működési mechanizmusa rejtve marad.
+A \textit{Jield} segítségével ugyanúgy írhatunk generátort, mint egy hagyományos metódust, mindössze a \texttt{return} megváltozott szerepére kell tekintettel lenni. Ez lehetővé teszi, hogy közvetlenül az elemek előállítására koncentráljunk, a generátor működési mechanizmusa rejtve marad.
 
 Az absztrakciónak azonban ára van. A mérésekből kitűnik, hogy legjobb esetben is kétszer, legrosszabb esetben mintegy $7,5$-szer több a \textit{Jield}-féle generátorok átlagos futási ideje, mint a \texttt{Stream}et használó metódusoké. Teljesítménykritikus helyzetekben ezt mindenképpen figyelembe kell venni.
