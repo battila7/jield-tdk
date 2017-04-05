@@ -138,7 +138,7 @@ Az \ref{table:fibComp} táblázat adatai nem nevezhetőek meglepőnek. A generá
 
 \section{\textit{Iterable} elemeinek ismétlése}
 
-A második példa metódusai az \textit{R} \texttt{rep} függvényéhez hasonló működést valósítanak meg. Egy olyan sorozatot képeznek, mely egy \texttt{Iterable} elemeiből áll, és két paraméterrel befolyásholható. A \texttt{times} azt adja meg, hogy az \texttt{Iterable} elemeit hányszor állítsa elő a generátor, az \texttt{each} pedig azt, hogy az így kapott sorozat minden eleme hányszor legyen megismételve. Csak két generikus implementáció került összehasonlításra, az egyik a \textit{Jield}-féle generátor, a másik pedig a \texttt{Stream.generate} metódust veszi alapul.
+A második példa metódusai az \textit{R} nyelv \texttt{rep} függvényéhez hasonló működést valósítanak meg. Egy olyan sorozatot képeznek, mely egy \texttt{Iterable} elemeiből áll, és két paraméterrel befolyásolható. A \texttt{times} azt adja meg, hogy az \texttt{Iterable} elemeit hányszor állítsa elő a generátor, az \texttt{each} pedig azt, hogy az így kapott sorozat minden eleme hányszor legyen megismételve. Csak két generikus implementáció került összehasonlításra, az egyik a \textit{Jield}-féle generátor, a másik pedig a \texttt{Stream.generate} metódust veszi alapul.
 
 \begin{lstlisting}[language=Java, caption={Elemek ismétlése \textit{Jield} segítségével}, escapechar=!, captionpos=b, belowskip=1em, belowcaptionskip=0em]
 @Generator

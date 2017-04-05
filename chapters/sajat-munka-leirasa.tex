@@ -1,10 +1,12 @@
 \chapter*{Saját munka leírása}
 \addcontentsline{toc}{chapter}{Saját munka leírása}
 
-\paragraph{Bagossy Attila}
+\if\printName1
+    \paragraph{Bagossy Attila}
+\fi
 
 \begin{itemize}
-    \item Kidolgoztam a különböző vezérlési szerkezetek és ugró utasítások transzformációjának módját.
-    \item Elkészítettem az eljárás implementációját, a \textit{Jield} könyvtár formájában.
-    \item Példákat és méréseket készítettem, melyek bemutatják a \textit{Jield} használatát és teljesítményét.
+    \item A dolgozat részeként kidolgoztam egy transzformációs eljárást, mely generátorok létrehozását teszi lehetővé \textit{Java}ban. A transzformáció lényegi részét a vezérlési szerkezetek átalakítása adja. A \texttt{try-catch} kivételével ezek mindegyikét képes az eljárás kezelni. Az ugró utasítások, azaz a \texttt{continue} és a \texttt{break} átalakítása is a módszer részét képezi.
+    \item Implementáltam a kidolgozott eljárást a \textit{Jield} nevű programkönyvtár formájában. A megvalósítás annotáció-feldolgozáson alapul, és csak egy annotáció elhelyezését igényli a programozó részéről a transzformálandó metódusokon. A megfelelő annotációval megjelölt metódusok átalakítása automatikus, a programozónak csak arra kell ügyelnie, hogy a \texttt{return} utasítás a generátoron belül nem visszatérést, hanem visszatérést és a vezérlés felfüggesztését jelenti egyben.
+    \item Példákat készítettem, melyek bemutatják az implementáció használatát. Ezeket a példákat leprogramoztam a könyvtár használata nélkül, pusztán a \textit{Java} beépített lehetőségeinek alkalmazásával is. Az így kapott megvalósításokat összehasonlítottam. Ez a \textit{JMH} keretrendszerrel végzett teljesítményméréseket jelent, valamint részét képezte a kódrészletek olvashatóságának szubjektívebb összevetése.
 \end{itemize}

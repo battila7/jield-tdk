@@ -151,7 +151,7 @@ Ez a jellemző olyan erőt ad a programozók és a fordítóprogramok készítő
 
 Ennek ismeretében tegyük fel, hogy a \textit{JavaScript} nyelv egy olyan változatát kell használnunk, mely nem rendelkezik a kivételek kezelésére alkalmas \texttt{try-catch} struktúrával. Lippert \citeyear{Lippert2010} \textit{C\#}-ban készített transzformációját alapul véve, szeretném megmutatni, hogy a \textit{CPS} egy olyan eszköz, ami lehetővé teszi, hogy elméleti \textit{JavaScript} nyelvünk hiányosságát pótoljuk.
 
-Az első lépés a meglevő \texttt{cont} paraméter mellé egy második, \texttt{err} nevű \textit{continuation} paraméter hozzáadása. Ezt a változtatást a kivételkezelés indokolja. A program futása során a vezérlés rendes irányát megszakíthatja egy kivétel kiváltása. Ilyen esetben a futásnak egy kivételkezelő blokkban kell folytatódnia. Az újonnan bevezett \textit{continuation} fogja szimbolizálni a kivételes helyzetekben választandó futási irányt.
+Az első lépés a meglevő \texttt{cont} paraméter mellé egy második, \texttt{err} nevű \textit{continuation} paraméter hozzáadása. Ezt a változtatást a kivételkezelés indokolja. A program futása során a vezérlés rendes irányát megszakíthatja egy kivétel kiváltása. Ilyen esetben a futásnak egy kivételkezelő blokkban kell folytatódnia. Az újonnan bevezetett \textit{continuation} fogja szimbolizálni a kivételes helyzetekben választandó futási irányt.
 
 Kivétel a legtöbb programozási nyelvben egy \texttt{throw} nevű utasítással váltható ki. Ezzel összehangban a modellben is ezt a nevet fogjuk használni.
 
@@ -168,7 +168,7 @@ A teljes szerkezet modellezésére szolgáló függvény elkészítése előtt s
 \begin{itemize}
     \item Ha a \texttt{try} blokkban nem történik \texttt{Throw} hívás, akkor a futásnak \texttt{try-catch} utáni utasítással kell folytatódnia, ami az eredetileg kapott \texttt{cont} paramétert jelenti.
     \item Amennyiben a \texttt{try} blokkon belül kivétel történik, akkor viszont a \texttt{catch} blokkot kell végrehajtani. Ezt kell felhasználni a \texttt{try} blokk \texttt{err} paramétereként.
-    \item A \texttt{catch} blokknak is szüksége van két \textit{continuation}re. Az előző két pontban használt gondolatemenetet alkalmazhatjuk itt is. Ha nem történik kivétel, akkor az eredeti \texttt{cont} paraméter jelentette utat követjük. Kivétel bekövetkeztekor pedig a tartalmazó (eggyel magasabb szintű) \texttt{catch} blokkra támaszkodunk, amit a kapott \texttt{err} paraméter segítségével érünk el.
+    \item A \texttt{catch} blokknak is szüksége van két \textit{continuation}re. Az előző két pontban használt gondolatmenetet alkalmazhatjuk itt is. Ha nem történik kivétel, akkor az eredeti \texttt{cont} paraméter jelentette utat követjük. Kivétel bekövetkeztekor pedig a tartalmazó (eggyel magasabb szintű) \texttt{catch} blokkra támaszkodunk, amit a kapott \texttt{err} paraméter segítségével érünk el.
 \end{itemize}
 
 Összegezve a fentieket, az implementáció a következő:
@@ -203,7 +203,7 @@ A \ref{JSCPSFactTryCatch} kódrészlet egy \texttt{try-catch} szerkezettel egés
 
 \section{\textit{Tail Call Optimization}}
 
-Eddig a \textit{CPS} programvezérlésre kifejtett hatása volt előtérben. Ha újra megvizsáljuk a kódrészleteket, a stílus egy egészen más aspektusára lehetünk figyelmesek. A \ref{JSCPSFactTryCatch} kódrészletben a vezérlés minden lehetséges ágának utolsó utasítása egy függvényhívás. Ez a \textit{CPS} első szabályának következménye. Mivel a függvények sohasem térnek vissza, ezért a függvényhívás után álló utasítások nem fognak végrehajtásra kerülni. Hívás még egy másik függvény argumentuma sem lehet, az ilyen helyzeteket a \textit{continuation} megfelelő szervezésével kell megoldani. Tehát minden hívás úgynevezett \textit{tail call} \cite{CompCont}.
+Eddig a \textit{CPS} programvezérlésre kifejtett hatása volt előtérben. Ha újra megvizsgáljuk a kódrészleteket, a stílus egy egészen más aspektusára lehetünk figyelmesek. A \ref{JSCPSFactTryCatch} kódrészletben a vezérlés minden lehetséges ágának utolsó utasítása egy függvényhívás. Ez a \textit{CPS} első szabályának következménye. Mivel a függvények sohasem térnek vissza, ezért a függvényhívás után álló utasítások nem fognak végrehajtásra kerülni. Hívás még egy másik függvény argumentuma sem lehet, az ilyen helyzeteket a \textit{continuation} megfelelő szervezésével kell megoldani. Tehát minden hívás úgynevezett \textit{tail call} \cite{CompCont}.
 
 Bár a \textit{CPS}-transzformáció következménye az ilyen hívások megjelenése, a \textit{tail call} a \textit{CPS}-től teljesen független fogalom, egyszerűen olyan hívást jelent, mely egy függvény utolsó utasítása. Ha ez a hívás egy rekurzív hívás, akkor \textit{tail recursion}ről beszélünk (bár a szakirodalomban gyakran mindkét esetet így nevezik). \textit{Tail call} esetén a hívó rutinhoz nincs miért visszatérni, hiszen neki csak egyetlen dolga maradt: visszaadni a vezérlést az őt hívónak. Általánosan, ha egy $f$ rutin \textit{tail call} formájában hívja $g$-t, akkor $g$-nek már nem kell visszatérnie $f$-hez, elegendő $f$ hívójához visszatérnie \cite{CompCont}. 
 

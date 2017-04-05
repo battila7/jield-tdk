@@ -8,7 +8,7 @@ Az elméleti háttér és az implementáció szorosan összefonódik, így a ket
 
 A transzformációs eljárás a nyelv és a fordító módosítása nélkül működik. Viszont valamilyen módon a forráskódban jeleznie kell a programozónak, hogy egy metódusból generátormetódust szeretne készíteni. Erre biztosítanak lehetőséget az \textit{annotációk}. Az annotáció egy olyan, programkonstrukcióra vonatkozó metaadat, melynek nincs közvetlen hatása a programvégrehajtásra \cite{JLS8}.
 
-Az annotáció fogalmát a \textit{JSR 175} specifikáció vezette be, és megjelenése óta több közkedvelt programkönytárban is bizonyította sokoldalúságát. Emiatt természetes döntés volt, hogy a generátormetódusokat is egy annotációval kell megjelölni, ez a \texttt{@Generator}.
+Az annotáció fogalmát a \textit{JSR 175} specifikáció vezette be, és megjelenése óta több közkedvelt programkönyvtárban is bizonyította sokoldalúságát. Emiatt természetes döntés volt, hogy a generátormetódusokat is egy annotációval kell megjelölni, ez a \texttt{@Generator}.
 
 Az annotációk feldolgozását a \textit{JSR 269} által leírt \textit{Pluggable Annotation Processing API} részét képező \texttt{javax.annotation.processing.Processor} interfészt megvalósító osztályok végezhetik. Javasolt azonban ennek egy absztrakt megvalósítását, az ugyanabban a csomagban található \texttt{AbstractProcessor} osztályt használni ősosztályként. A \textit{Java} fordító (továbbiakban \texttt{javac}) alapértelmezés szerint a \texttt{classpath}-ban keres feldolgozókat, mely viselkedés felülbírálható a \texttt{processorpath} és \texttt{processor} parancssori kapcsolók révén \cite{JavacOptions}.
 
@@ -51,7 +51,7 @@ A belső osztályt a nevében is szereplő belső volta miatt érdemes használn
 
 \subsection{Félnyilvános (\textit{package private}) osztály}
 
-Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztály generálása gond nélkül kivitelezhető, hiszen ebben az esetben az osztály létrehozásához nem kell a már létező szintaxisfát módosítani, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat forrásfájlokat, melyekkel eredetileg meghívtuk.
+Ez a megoldás egy új fordítási egységben, de azonos csomagban elhelyezett osztály létrehozását jelenti, mely félnyilvános láthatósággal bír. Ilyen osztály generálása gond nélkül kivitelezhető, hiszen ebben az esetben az osztály létrehozásához nem kell a már létező szintaxisfát módosítani, hanem mindössze szöveges forráskódot kell összeállítanunk. Ezt a \texttt{javac} a többkörös fordítási folyamatba illesztve ugyanazon a módon lefordítja, mint azokat a forrásfájlokat, melyekkel eredetileg meghívtuk.
 
 Forráskódot összeállíthatunk karaktersorozatok konkatenációjával is, azonban ez kifejezetten fáradságos. Helyette érdemes valamilyen létező megoldást alkalmazni, például a \textit{javapoet} könyvtárat, melynek segítségével tetszőleges \textit{Java} forráskód előállítható, akár parametrizált módon.
 
@@ -103,7 +103,7 @@ Nem szükséges azonban a programvezérlésre hatással levő minden struktúra 
 
 \section{A vezérlés transzformációja}
 
-A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. A \texttt{try-catch} kivételével ez az összes, \textit{Java}ban használható eszközt jelenti. A transzformált vezérlési struktúrák egyfajta építőkövek lesznek, melyekből a generátor felépíthető. Szükséges még a létrejött darabok összekapcsolása, ezt a feladatot egy speciális \textit{trampoline} fogja ellátni. A különböző szerkezetek átformálását szemlélető sematikus kódrészleteket még megelőzi a használt jelölés- és típusrendszer bemutatása.
+A metódus felbontásának hátterét ismerve következhet az egyes vezérlési szerkezetek átalakításának bemutatása. A \texttt{try-catch} kivételével ez az összes, \textit{Java}ban használható eszközt jelenti. A transzformált vezérlési struktúrák egyfajta építőkövek lesznek, melyekből a generátor felépíthető. Szükséges még a létrejött darabok összekapcsolása, ezt a feladatot egy speciális \textit{trampoline} fogja ellátni. A különböző szerkezetek átformálását szemléltető sematikus kódrészleteket még megelőzi a használt jelölés- és típusrendszer bemutatása.
 
 \subsection{Típusok és jelölések}
 
@@ -128,7 +128,7 @@ A \ref{JavaGenState} kódrészletből látható, hogy a \texttt{GeneratorState} 
 
 \subsubsection{\texttt{Bounce<T>}}
 
-A vágás során képzett metódusok visszatérési típusa lesz \texttt{Bounce<T>}. A névből sejthető, hogy a típus a \textit{trampolining} technikával lesz kapcsolatban, s ez valóban így is van. A metódusok e típus példányainak formájában visszadják a \textit{trampoline} részére a következőnek végrehajtandó metódust (ha van ilyen), valamint egy, az aktuális állapot által generált értéket (ha van ilyen). Ezek az értékek az eredeti, \texttt{@Generator} annotációval ellátott metódus \texttt{return} utasításai után álló kifejezésekből származnak. A \texttt{T} típusparaméter szerepe azonos, mint a \texttt{GeneratorState} esetén.
+A vágás során képzett metódusok visszatérési típusa lesz \texttt{Bounce<T>}. A névből sejthető, hogy a típus a \textit{trampolining} technikával lesz kapcsolatban, s ez valóban így is van. A metódusok e típus példányainak formájában visszaadják a \textit{trampoline} részére a következőnek végrehajtandó metódust (ha van ilyen), valamint egy, az aktuális állapot által generált értéket (ha van ilyen). Ezek az értékek az eredeti, \texttt{@Generator} annotációval ellátott metódus \texttt{return} utasításai után álló kifejezésekből származnak. A \texttt{T} típusparaméter szerepe azonos, mint a \texttt{GeneratorState} esetén.
 
 \begin{lstlisting}[language=Java, caption={A \texttt{Bounce<T>} osztály legfontosabb mezői és metódusai}, captionpos=b, label=JavaBounce, escapechar=$]
 public final class Bounce<T> {
@@ -155,7 +155,7 @@ Az osztály példányait csak úgynevezett \textit{static factory} metódusok ú
 Az eljárás által előállított generátorok motorja egy \textit{trampoline}, mely alapvetően az állapotokat jelképező metódusok meghívásáért felelős. Viszont rendelkezik egy legalább ilyen fontos, másodlagos feladattal is. A legutóbb végrehajtott metódus minden esetben egy \texttt{Bounce<T>} típusú objektumot ad vissza. Ezen objektum vizsgálata után a \textit{trampoline} a következő döntések egyikét hozza:
 
 \begin{itemize}
-    \item Ha van \textit{continuation}, amit legközelebb meg lehet hívni, és nincsen generált érték, akkor meghívja a \textit{continuation}t. Ilyen esetekben a legutoljára végrehajtott metódus egy áthidaló állapot volt, mint például egy transzformált \texttt{for} ciklus inicializását végző állapot, mely nem állít elő semmilyen értéket.
+    \item Ha van \textit{continuation}, amit legközelebb meg lehet hívni, és nincsen generált érték, akkor meghívja a \textit{continuation}t. Ilyen esetekben a legutoljára végrehajtott metódus egy áthidaló állapot volt, mint például egy transzformált \texttt{for} ciklus inicializálását végző állapot, mely nem állít elő semmilyen értéket.
     \item Ha \textit{continuation} és generált érték is rendelkezésre áll, akkor a generátor futása felfüggesztésre kerül. A \textit{trampoline} elmenti a \textit{continuation}t, és visszaadja a generált elemet.
     \item Ha nincs \textit{continuation}, akkor a generátor már nem képes több elem generálására, futása véget ért. Ha volt generált érték, akkor az még visszaadásra kerül.
 \end{itemize}
@@ -241,7 +241,7 @@ Bounce<T> method3(GeneratorState<T> k) {
 
 Az \texttt{if-else} transzformációjának eredményeként megjelenik egy olyan metódus, mely nem ad vissza generált értéket, mindössze azt mondja meg a \textit{trampoline}-nak, hogy a \texttt{then} vagy pedig az \texttt{else} ággal folytatódjon a végrehajtás.
 
-Erre azért van szükség, mert az egyes ágakon belül akár több \texttt{return} is lehet, amelyek mindegyike egy vágási pont lesz. Ezek hatására a megfelelő ágba történő belépés után fel kell tudni függeszteni a generátor végrehajtását. Újabb hívások esetén természetesen onnan kell folytatni a futást, ahol az abbamaradt, ami együtt jár azzal, hogy maradni kell ugyanabban az ágban, amelyet eredetileg választottunk, anélkül, hogy a feltételt újra kiértékelnénk. Ez a működés úgy biztosítható, ha bevezetésre kerül egy olyan állapot, melynek egyetlen feladata a futás irányának kijelölése, a \ref{GenIfElse} kórészletben ez a \texttt{method1}.
+Erre azért van szükség, mert az egyes ágakon belül akár több \texttt{return} is lehet, amelyek mindegyike egy vágási pont lesz. Ezek hatására a megfelelő ágba történő belépés után fel kell tudni függeszteni a generátor végrehajtását. Újabb hívások esetén természetesen onnan kell folytatni a futást, ahol az abbamaradt, ami együtt jár azzal, hogy maradni kell ugyanabban az ágban, amelyet eredetileg választottunk, anélkül, hogy a feltételt újra kiértékelnénk. Ez a működés úgy biztosítható, ha bevezetésre kerül egy olyan állapot, melynek egyetlen feladata a futás irányának kijelölése, a \ref{GenIfElse} kódrészletben ez a \texttt{method1}.
 
 \pagebreak
 
@@ -297,7 +297,7 @@ Nem lehet eléggé kihangsúlyozni, hogy a transzformált kódban a vezérlés �
 
 \subsection{\texttt{foreach} ciklus}
 
-A \texttt{foreach} ciklus egy tömb vagy egy \texttt{Iterable} elemein való iterálást tesz lehetővé. Transzformálását tekintve hasonlít a \texttt{for} ciklushoz, frisssítő metódusra azonban nincsen szükség.
+A \texttt{foreach} ciklus egy tömb vagy egy \texttt{Iterable} elemein való iterálást tesz lehetővé. Transzformálását tekintve hasonlít a \texttt{for} ciklushoz, frissítő metódusra azonban nincsen szükség.
 
 \begin{center}
 \begin{mdframed}[topline=true]
@@ -340,7 +340,7 @@ A feltétel az \texttt{iterator.hasNext()} kifejezés lesz, amely ha teljesül, 
 
 \subsection{\texttt{while} és \texttt{do-while} ciklus}
 
-A \texttt{while} és \texttt{do-while} ciklus hasonlóan működik, mindössze a minimális ismétlések számában különböznek, így a transzformációjuk sem tér el jelentősen.
+A \texttt{while} és \texttt{do-while} ciklus hasonlóan működik, mindössze az ismétlések minimális számában különböznek, így a transzformációjuk sem tér el jelentősen.
 
 \begin{center}
 \begin{mdframed}[topline=true]
@@ -477,7 +477,7 @@ Stream<Integer> generate() {
 }
 \end{lstlisting}
 
-A \ref{GenCompileTimeCPS} kódrészlet \texttt{for} ciklusában látható egy \texttt{break} utasítás, mely a feltétel teljesülése esetén a ciklusból való kilépést fogja okozni. Hogyan lehet megvalósítani ezt a működést? A transzformáció először megvizsgálja, hogy van-e a \texttt{for} ciklus belsejében \texttt{return}. Mivel van, ezért elkezdi felbontani a ciklust a \ref{GenFor} kódrészletben látottakhoz hasonló metódusokra. Mielőtt azonban ezt megtenné, elmenti, hogy a \texttt{for} ciklus befejezése után melyik metódusnak kell következnie. Ha még nincs ilyen, akkor létrehoz egy lezáró metódust. Amikor a ciklusfeltételt tartalmazó metódust hozza létre, abban ennek a megjegyzett metódusnak a hívását helyezi el. Így a transzformált ciklust és a meglevő metódusokat össszekötötte. Ez az elv jelenik meg a \texttt{break} esetén is. Amikor elkezdődik a \texttt{for} transzformációja, akkor elmentésre kerül, hogy egy \texttt{break} vagy egy \texttt{continue} melyik, már létrehozott metódusba irányítaná a vezérlést.
+A \ref{GenCompileTimeCPS} kódrészlet \texttt{for} ciklusában látható egy \texttt{break} utasítás, mely a feltétel teljesülése esetén a ciklusból való kilépést fogja okozni. Hogyan lehet megvalósítani ezt a működést? A transzformáció először megvizsgálja, hogy van-e a \texttt{for} ciklus belsejében \texttt{return}. Mivel van, ezért elkezdi felbontani a ciklust a \ref{GenFor} kódrészletben látottakhoz hasonló metódusokra. Mielőtt azonban ezt megtenné, elmenti, hogy a \texttt{for} ciklus befejezése után melyik metódusnak kell következnie. Ha még nincs ilyen, akkor létrehoz egy lezáró metódust. Amikor a ciklusfeltételt tartalmazó metódust hozza létre, abban ennek a megjegyzett metódusnak a hívását helyezi el. Így a transzformált ciklust és a meglevő metódusokat összekötötte. Ez az elv jelenik meg a \texttt{break} esetén is. Amikor elkezdődik a \texttt{for} transzformációja, akkor elmentésre kerül, hogy egy \texttt{break} vagy egy \texttt{continue} melyik, már létrehozott metódusba irányítaná a vezérlést.
 
 Egymásba ágyazott szerkezetek és címkék is megvalósíthatóak ezzel a módszerrel. Egy \textit{break-}, valamint \textit{continue-continuation} mindaddig érvényben marad, míg felülírásra nem kerül (például egy beágyazott ciklus által), vagy a transzformáció följebb nem lép a szintaxisfában. Amikor az eljárás egy címkézett utasítást talál, akkor pedig egy címkézett \textit{continuation}t alkalmazva tartja nyilván, hogyan kell majd a vezérlést szabályozni. Így a transzformáció eredményeként előálló kód már nem fog tartalmazni se címkéket, se ugró utasításokat, hiszen nincsen rájuk szükség. Ezek hatása is explicitté vált.
 
