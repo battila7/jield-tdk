@@ -1,0 +1,278 @@
+\section{A generátor és rokonai}
+
+
+\begin{frame}[fragile]{Szubrutin \textit{(subroutine)}}
+Alkalmas kódrészletek kiemelésére, csökkentve a duplikációt.
+
+Meghívása után a hívó kód végrehajtása felfüggesztésre kerül a visszatérésig.
+\\
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[title=Hívó, frame=t, escapechar=!]
+!\tikz[remember picture] \node [] (a) {};!/*
+  * Kódrészlet
+  */
+!\tikz[remember picture] \node [] (b) {};! add(2, 2); !\tikz[remember picture] \node [] (c) {};!
+ /*
+  * Kódrészlet
+  */
+!\tikz[remember picture] \node [] (f) {};!
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[title=Szubrutin, frame=t, escapechar=!, showlines=true]
+!\tikz[remember picture] \node [] (d) {};! int add(int a, int b)
+  {
+    /*
+     * Kódrészlet
+     */
+!\tikz[remember picture] \node [] (e) {};! }
+
+
+\end{lstlisting}
+\end{minipage}
+\begin{tikzpicture}[remember picture, overlay,
+    every edge/.append style = { ->, thick, transparent, >=stealth, line width = 1pt }] 
+  \draw (a.north) + (0, 0) coordinate(x1) edge (x1|-b.north);
+  \draw (c.east) + (0, 0.15) edge (d.west);
+  \draw (d.south) + (0, 0) edge (e.north);
+  \draw (e.west) + (0, 0) edge (c.east) + (0, -0.15);
+  \draw (b.south) + (0, 0) edge (f.north);
+\end{tikzpicture} 
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Szubrutin \textit{(subroutine)}}
+Alkalmas kódrészletek kiemelésére, csökkentve a duplikációt.
+
+Meghívása után a hívó kód végrehajtása felfüggesztésre kerül a visszatérésig.
+\\
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[title=Hívó, frame=t, escapechar=!]
+!\tikz[remember picture] \node [] (a) {};!/*
+  * Kódrészlet
+  */
+!\tikz[remember picture] \node [] (b) {};! add(2, 2); !\tikz[remember picture] \node [] (c) {};!
+ /*
+  * Kódrészlet
+  */
+!\tikz[remember picture] \node [] (f) {};!
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[title=Szubrutin, frame=t, escapechar=!, showlines=true]
+!\tikz[remember picture] \node [] (d) {};! int add(int a, int b)
+  {
+    /*
+     * Kódrészlet
+     */
+!\tikz[remember picture] \node [] (e) {};! }
+
+
+\end{lstlisting}
+\end{minipage}
+\begin{tikzpicture}[remember picture, overlay,
+    every edge/.append style = { ->, thick, >=stealth, line width = 1pt }] 
+  \draw (a.north) + (0, 0) coordinate(x1) edge (x1|-b.north);
+  \draw (c.east) + (0, 0.15) edge (d.west);
+  \draw (d.south) + (0, 0) edge (e.north);
+  \draw (e.west) + (0, 0) edge (c.east) + (0, -0.15);
+  \draw (b.south) + (0, 0) edge (f.north);
+\end{tikzpicture} 
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Korutin (\textit{coroutine})}
+A végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt.
+
+A lokális változók értéke megőrződik a hívások között.
+\\
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[escapechar=!, keywords={coroutine, yield}]
+coroutine A()
+{
+    /* ... */
+    yield B; !\tikz[remember picture] \node [] (a) {};!
+    /* ... */!\tikz[remember picture] \node [] (d) {};!
+    yield B; !\tikz[remember picture] \node [] (e) {};!
+}
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[escapechar=!, showlines=true, keywords={coroutine, yield}]
+coroutine B()
+{
+    !\tikz[remember picture] \node [] (b) {};! /* ... */
+    !\tikz[remember picture] \node [] (c) {};! yield A; 
+    !\tikz[remember picture] \node [] (f) {};! /* ... */
+}
+
+\end{lstlisting}
+\end{minipage}
+\begin{tikzpicture}[remember picture, overlay,
+    every edge/.append style = { ->, thick, transparent, >=stealth, line width = 1pt }] 
+  \draw (a.east) + (0, 0) edge (b.west);
+  \draw (c.west) + (0, 0) edge (d.east);
+  \draw (e.east) + (0, 0) edge (f.west);
+\end{tikzpicture} 
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Korutin (\textit{coroutine})}
+A végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt.
+
+A lokális változók értéke megőrződik a hívások között.
+\\
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[escapechar=!, keywords={coroutine, yield}]
+coroutine A()
+{
+    /* ... */
+    yield B; !\tikz[remember picture] \node [] (a) {};!
+    /* ... */!\tikz[remember picture] \node [] (d) {};!
+    yield B; !\tikz[remember picture] \node [] (e) {};!
+}
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[escapechar=!, showlines=true, keywords={coroutine, yield}]
+coroutine B()
+{
+    !\tikz[remember picture] \node [] (b) {};! /* ... */
+    !\tikz[remember picture] \node [] (c) {};! yield A; 
+    !\tikz[remember picture] \node [] (f) {};! /* ... */
+}
+
+\end{lstlisting}
+\end{minipage}
+\begin{tikzpicture}[remember picture, overlay,
+    every edge/.append style = { ->, thick, >=stealth, line width = 1pt }] 
+  \draw[orange] (a.east) + (0, 0) edge (b.west);
+  \draw[transparent] (c.west) + (0, 0) edge (d.east);
+  \draw[transparent] (e.east) + (0, 0) edge (f.west);
+\end{tikzpicture} 
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Korutin (\textit{coroutine})}
+A végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt.
+
+A lokális változók értéke megőrződik a hívások között.
+\\
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[escapechar=!, keywords={coroutine, yield}]
+coroutine A()
+{
+    /* ... */
+    yield B; !\tikz[remember picture] \node [] (a) {};!
+    /* ... */!\tikz[remember picture] \node [] (d) {};!
+    yield B; !\tikz[remember picture] \node [] (e) {};!
+}
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[escapechar=!, showlines=true, keywords={coroutine, yield}]
+coroutine B()
+{
+    !\tikz[remember picture] \node [] (b) {};! /* ... */
+    !\tikz[remember picture] \node [] (c) {};! yield A; 
+    !\tikz[remember picture] \node [] (f) {};! /* ... */
+}
+
+\end{lstlisting}
+\end{minipage}
+\begin{tikzpicture}[remember picture, overlay,
+    every edge/.append style = { ->, thick, , >=stealth, line width = 1pt }] 
+  \draw (a.east) + (0, 0) edge (b.west);
+  \draw[orange] (c.west) + (0, 0) edge (d.east);
+  \draw[transparent] (e.east) + (0, 0) edge (f.west);
+\end{tikzpicture} 
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Korutin (\textit{coroutine})}
+A végrehajtás mindig ott folytatódik, ahol a legutóbbi hívás esetén abbamaradt.
+
+A lokális változók értéke megőrződik a hívások között.
+\\
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[escapechar=!, keywords={coroutine, yield}]
+coroutine A()
+{
+    /* ... */
+    yield B; !\tikz[remember picture] \node [] (a) {};!
+    /* ... */!\tikz[remember picture] \node [] (d) {};!
+    yield B; !\tikz[remember picture] \node [] (e) {};!
+}
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[escapechar=!, showlines=true, keywords={coroutine, yield}]
+coroutine B()
+{
+    !\tikz[remember picture] \node [] (b) {};! /* ... */
+    !\tikz[remember picture] \node [] (c) {};! yield A; 
+    !\tikz[remember picture] \node [] (f) {};! /* ... */
+}
+
+\end{lstlisting}
+\end{minipage}
+\begin{tikzpicture}[remember picture, overlay,
+    every edge/.append style = { ->, thick, >=stealth, line width = 1pt }] 
+  \draw (a.east) + (0, 0) edge (b.west);
+  \draw (c.west) + (0, 0) edge (d.east);
+  \draw[orange] (e.east) + (0, 0) edge (f.west);
+\end{tikzpicture} 
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Generátor (\textit{generator})}
+Aszimmetrikus korutin, amely elemek sorozatát állítja elő.
+
+\hfill \\
+
+Minden egyes hívás alkalmával a sorozat egy elemét képzi.
+
+\begin{center}
+\begin{minipage}{.40\textwidth}
+\begin{lstlisting}[escapechar=!, showlines=true, keywords={for, in, print}]
+for ch in alphabet()
+{
+    print ch
+}
+
+
+
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstlisting}[escapechar=!, showlines=true, keywords={generator, yield}]
+generator alphabet()
+{
+    yield 'a';
+    yield 'b';
+    yield 'c';
+    /* ... */
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\par
+\end{frame}

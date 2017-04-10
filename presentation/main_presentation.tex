@@ -5,18 +5,37 @@
 \usepackage[magyar]{babel}
 \usepackage[useregional]{datetime2}
 
-\newcommand{\presentationdate}{\DTMdisplaydate{2017}{4}{20}{-1}}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
+\usepackage{listingsutf8}
+
+\lstset{
+  language=C,
+  basicstyle=\small,
+  breaklines=true
+  }
+
+\lstset{literate=
+ {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+ {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+ {ö}{{\"o}}1 {ü}{{\"u}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+ {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+}
 
 \usetheme{metropolis}
 \title{Generátorok előállítása \textit{CPS}-transzformációval Java nyelven}
-\date{\presentationdate}
-\author{Bagossy Attila}
-\institute{Centre for Modern Beamer Themes}
+\date{2017. április 20.}
+\author[My name]{Bagossy Attila\\ \footnotesize Témavezetők: Dr. Battyányi Gyula Péter, Balla Tibor \vspace{5em}}
+\institute{Debreceni Egyetem, Informatikai Kar, Számítógéptudományi Tanszék}
 
 \begin{document}
   \maketitle
-  \section{First Section}
-  \begin{frame}{First Frame}
-    Hello, world!
+
+  \begin{frame}{Áttekintés}
+    \setbeamertemplate{section in toc}[sections numbered]
+    \tableofcontents[hideallsubsections]
   \end{frame}
+
+  \input{./sections/01-a-generator-es-rokonai.tex}
 \end{document}

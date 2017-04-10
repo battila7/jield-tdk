@@ -23,5 +23,40 @@
 \usepackage[linewidth=0.33pt, rightline=false, leftline=false, framemethod=tikz]{mdframed}
 
 \begin{document}
+\section{Címlap}
+Üdvözlöm a bíráló bizottság tagjait, a kar oktatóit és hallgatóit, valamint a megjelent érdeklődőket. Bagossy Attila vagyok, a dolgozatom és az előadásom címe \textit{Generátorok előállítása CPS-transzformációval Java nyelven}. A témavezetőim Dr. Battyányi Gyula Péter és Balla Tibor.
+
+\section{Áttekintés}
+Az előadásom összeállításakor úgy gondoltam, hogy nem fogom szigorúan követni a dolgozatom felépítését. A generátorokkal rokon szerkezetek, a \textit{continuation passing style}, valamint a kidolgozott eljárás mögötti megfontolások részletes ismertetése helyett inkább a gyakorlati oldalt szeretném megmutatni. 
+
+Természetesen ahhoz, hogy az előadás önmagában is értelmezhető legyen, szükséges az alapfogalmak bevezetése. Ezt követően azonban a dolgozattól eltérve a transzformációs eljárás pontos bemutatása helyett érvelni szeretnék annak léte, s újdonsága mellett. Először a generátorok más nyelvekben való elterjedtségére és széleskörű felhasználási lehetőségeire rámutatva fogom indokolni a \textit{Java}ban való bevezetésük szükségességét. Mivel nem az én eljárásom az első, mely ezt kívánja megvalósítani, a meglevő \textit{Java} nyelvű implementációk ismertetésével folytatom, kiemelve az eltéréseket. Zárásként egy összetett kódrészlet transzformálásának lépésein kalauzolom végig a hallgatóságot, mely rámutat arra, hogy a \textit{CPS} mennyire elegáns megoldást ad egy ilyen komplex problémára.
+
+\section{A generátor és rokonai}
+
+Az áttekintést követően vegyük szemügyre, hogy mi az a \textit{generátor}, és milyen más eszközökkel van kapcsolatban.
+
+\section{Szubrutin (\textit{subroutine})}
+
+\begin{enumerate}
+\item
+A szubrutin az egyik leggyakrabban használt eszköz a programok szervezésére. Emiatt bemutatása szüksgételennek tűnhet, azonban ez az első lépcsőfok a generátorokhoz vezető úton. A szubrutinok használhatóak gyakran használt kódrészletek kiemelésére, ami csökkenti kódduplikációt, emellett az implementáció elrejtésével növelhetik az absztrakciós szintet, akár könyvtárak képezhetők belőlük. Jelen esetben azonban a programvezérlésre kifejtett hatásukat szeretném kihangsúlyozni. Amikor meghívunk egy szubrutint, a vezérlés végighalad annak első utasításától az utolsóig, majd visszatér a hívóhoz. A hívó kód végrehajtása csak ezután folytatódhat tovább. Ez egyfajta alé-fölérendeltségi viszonyt jelent.
+\item
+Az ábra két oldala a hívót és a meghívott szubrutint ábrázolja. A nyilak a vezérlés irányát jelzik. Bár az ábrán nem látszik, de ki kell emelni, hogy a szubrutin végrehajtása minden egyes meghívásakor a legelső utasításánál kezdődik.
+\end{enumerate}
+
+\section{Korutin (\textit{coroutine})}
+
+\begin{enumerate}
+\item
+A szubrutin mindig alárendelt szerepet játszott a hívó kódhoz képest. Ezzel szemben a korutinok alárendeltségi viszony mellett mellérendeltség kialakítására is alkalmasak, akár meghatározhatatlanná téve, hogy valójában ki hív kit. Ezt az teszi lehetővé, hogy futásuk felfüggeszthető és folytatható, és a hívások között megőrzik a lokális változóik értékét. Attól függően, hogy egy korutin tetszőleges másik korutint hívhat meg, vagy pedig muszáj visszaadnia valamikor a vezérlést az őt hívó korutinnak, beszélhetünk szimmetrikus és aszimmetrikus korutinokról.
+\item
+A fólián látható kódrészletekben szimmetrikus korutinok szerepelnek, melyek a \texttt{yield} utasítás segítségével adják át egymásnak a vezérlést. Miután \texttt{A} meghívta \texttt{B}-t, felfüggesztésre kerül, mindaddig, míg \texttt{B} vagy egy másik korutin újra meg nem hívja. Ekkor a szubrutinoktól eltérően ugyanonnan fog folytatódni a végrehajtás, ahol abbamaradt, tehát a \texttt{B}-t hívó \texttt{yield}-től.
+\end{enumerate}
+
+\section{Generátor (\textit{generator})}
+
+A korutinok ismeretében már kifejezhető a generátor is, mely egy olyan aszimmetrikus korutin, mely egy sorozatot állít elő. A legnagyszerűbb tulajdonsága, hogy egyszerre csak egy elemet generál, ami azt jelenti, hogy lustán képzi a sorozatot. Ennek köszönhetően akár végtelen sorozatok reprezentálására alkalmas eszközt kínál. Megjegyzendő, hogy néhány programozási nyelv iterátornak nevezi a generátorokat.
+
+Az ábra jobboldalán az ábécét előállító generátor szerepel, a baloldalán pedig ennek a meghívása egy \texttt{for} cikluson belül. Minden egyes iteráció alkalmával egy újabb elemet kérünk a generátortól, mindaddig, amíg a generált sorozat véget nem ér.
 
 \end{document}
