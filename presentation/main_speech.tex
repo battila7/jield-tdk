@@ -29,7 +29,7 @@
 \section{Áttekintés}
 Az előadásom összeállításakor úgy gondoltam, hogy nem fogom szigorúan követni a dolgozatom felépítését. A generátorokkal rokon szerkezetek, a \textit{continuation passing style}, valamint a kidolgozott eljárás mögötti megfontolások részletes ismertetése helyett inkább a gyakorlati oldalt szeretném megmutatni. 
 
-Természetesen ahhoz, hogy az előadás önmagában is értelmezhető legyen, szükséges az alapfogalmak bevezetése. Ezt követően azonban a dolgozattól eltérve a transzformációs eljárás pontos bemutatása helyett érvelni szeretnék annak léte, s újdonsága mellett. Először a generátorok más nyelvekben való elterjedtségére és széleskörű felhasználási lehetőségeire rámutatva fogom indokolni a \textit{Java}ban való bevezetésük szükségességét. Mivel nem az én eljárásom az első, mely ezt kívánja megvalósítani, a meglevő \textit{Java} nyelvű implementációk ismertetésével folytatom, kiemelve az eltéréseket. Zárásként egy összetett kódrészlet transzformálásának lépésein kalauzolom végig a hallgatóságot, mely rámutat arra, hogy a \textit{CPS} mennyire elegáns megoldást ad egy ilyen komplex problémára.
+Természetesen ahhoz, hogy az előadás önmagában is értelmezhető legyen, szükséges az alapfogalmak bevezetése. Ezt követően azonban a dolgozattól eltérve a transzformációs eljárás pontos bemutatása helyett érvelni szeretnék annak léte, s újdonságtartalma mellett. Először a generátorok más nyelvekben való elterjedtségére és széleskörű felhasználási lehetőségeire rámutatva fogom indokolni a \textit{Java}ban való bevezetésük szükségességét. Mivel nem az én eljárásom az első, mely ezt kívánja megvalósítani, a meglevő \textit{Java} nyelvű implementációk ismertetésével folytatom, kiemelve az eltéréseket. Az előadás második felében egy összetett kódrészlet transzformálásának lépésein kalauzolom végig a hallgatóságot, mely bemutatja az eljárást, s egyben rávilágít arra, hogy a \textit{CPS} mennyire elegáns megoldást ad egy ilyen komplex problémára.
 
 \section{A generátor és rokonai}
 
@@ -39,7 +39,7 @@ Az áttekintést követően vegyük szemügyre, hogy mi az a \textit{generátor}
 
 \begin{enumerate}
 \item
-A szubrutin az egyik leggyakrabban használt eszköz a programok szervezésére. Emiatt bemutatása szüksgételennek tűnhet, azonban ez az első lépcsőfok a generátorokhoz vezető úton. A szubrutinok használhatóak gyakran használt kódrészletek kiemelésére, ami csökkenti kódduplikációt, emellett az implementáció elrejtésével növelhetik az absztrakciós szintet, akár könyvtárak képezhetők belőlük. Jelen esetben azonban a programvezérlésre kifejtett hatásukat szeretném kihangsúlyozni. Amikor meghívunk egy szubrutint, a vezérlés végighalad annak első utasításától az utolsóig, majd visszatér a hívóhoz. A hívó kód végrehajtása csak ezután folytatódhat tovább. Ez egyfajta alé-fölérendeltségi viszonyt jelent.
+A szubrutin az egyik leggyakrabban használt eszköz a programok szervezésére. Emiatt bemutatása szükségtelennek tűnhet, azonban ez az első lépcsőfok a generátorokhoz vezető úton. A szubrutinok alkalmasak gyakran használt kódrészletek kiemelésére, ami csökkenti a kódduplikációt. Emellett az implementáció elrejtésével növelhetik az absztrakciós szintet, és akár könyvtárak képezhetőek belőlük. Jelen esetben azonban a programvezérlésre kifejtett hatásukat szeretném kihangsúlyozni. Amikor meghívunk egy szubrutint, a vezérlés végighalad annak első utasításától az utolsóig, majd visszatér a hívóhoz. A hívó kód végrehajtása csak ezután folytatódhat tovább. Ez egyfajta alé-fölérendeltségi viszonyt jelent.
 \item
 Az ábra két oldala a hívót és a meghívott szubrutint ábrázolja. A nyilak a vezérlés irányát jelzik. Bár az ábrán nem látszik, de ki kell emelni, hogy a szubrutin végrehajtása minden egyes meghívásakor a legelső utasításánál kezdődik.
 \end{enumerate}
@@ -58,5 +58,29 @@ A fólián látható kódrészletekben szimmetrikus korutinok szerepelnek, melye
 A korutinok ismeretében már kifejezhető a generátor is, mely egy olyan aszimmetrikus korutin, mely egy sorozatot állít elő. A legnagyszerűbb tulajdonsága, hogy egyszerre csak egy elemet generál, ami azt jelenti, hogy lustán képzi a sorozatot. Ennek köszönhetően akár végtelen sorozatok reprezentálására alkalmas eszközt kínál. Megjegyzendő, hogy néhány programozási nyelv iterátornak nevezi a generátorokat.
 
 Az ábra jobboldalán az ábécét előállító generátor szerepel, a baloldalán pedig ennek a meghívása egy \texttt{for} cikluson belül. Minden egyes iteráció alkalmával egy újabb elemet kérünk a generátortól, mindaddig, amíg a generált sorozat véget nem ér.
+
+\section{Generátorok ismert nyelvekben}
+
+Miután megismertük, mi az a generátor, folytassuk a támogatás vizsgálatával. Mely nyelvekben jelenik meg, milyen szerepet játszik? Hogyan könnyíti meg a programozók munkáját?
+
+\section{Támogatást biztosító nyelvek}
+
+A ma is ismert generátorokhoz hasonló szerkezetek először az \textit{IPL-V} és az \textit{Alphard} nyelvekben jelentek meg. Jelenleg használatos formájukat pedig a Barbara Liskov és munkatársai által kifejlesztett \textit{CLU} nyelvben nyerték el, bár a nyelv iterátornak nevezi őket. Azonban itt jelent meg először \textit{yield} kulcsszó használata. A \textit{CLU} generátorai korlátozottak voltak abban a tekintetben, hogy csak \texttt{for} ciklussal karöltve lehetett őket használni, és nem tették lehetővé a rekurziót.
+
+A TIOBE minden hónapban kiadott, programozási nyelvek népszerűségét mérő listájának 10 legnépszerűbb nyelve között 5 olyan is van, mely nyelvi szintű támogatást ad a generátorok írásához. Ezek a C\#, Python, VB.NET, PHP és a JavaScript. Ez mindenképpen figyelemre méltó, hiszen ezek közül például a C\# a Java közvetlen konkurensének tekinthető, kiváltképp az elmúlt hónapok tendenciáit tekintve, melyek megszüntetik a .NET platform és így a C\# Windows-függőségét.
+
+\section{Felhasználási lehetőségek -- 1}
+
+A generátor egy elegáns szerkezet lehet a programozók eszköztárában. Nem csak elegáns azonban, hanem rendkívül erőteljes is, számtalan felhasználási lehetőséggel.
+
+A sorozat fogalmat itt most nem matematikai értelemben használjuk, hanem egyszerűen csak egymást követő, azonos típusú elemeket jelent. Alkalmas a generátor végtelen sorozatok előállítására, ilyen például a Fibonacci-sorozat, vagy az összes prímszám. Használható véletlen értékek forrásaként. Ilyen formában alkalmazza a generátorokat a QuickCheck tesztelési keretrendszer is.
+
+Véges sorozatok képzésére gyakran ott is bevethető a generátor, ahol nem is sejtenénk. Ilyen lehet például a reguláris kifejezések illesztése. A generátor mindig a következő illeszkedő karaktersorozatot adja vissza, lustán képezve valójában az összes illeszkedést. Fájlok beolvasására is alkalmazhatóak a generátorok, mindig csak egy sort vagy darabot beolvasva, \textit{on demand} módon, azaz igény szerint. Egy teljesen különböző ötlet paraméteres görbék pontjainak előállítása. A kliens kódnak semmit sem kell tudnia a görbe paramétertartományáról és megvalósítási részleteiről, csak sorban kéri a pontokat, amiket a generátor egyenként kiszámol.
+
+\section{Felhasználási lehetőségek -- 2}
+
+Az előző példák a generátorok hagyományos felhasználási lehetőségeit szemléltették. Azonban a generátorok aszimmetrikus korutin voltát még sokféleképpen ki lehet aknázni.
+
+Meglepő lehet, de szimmetrikus korutinok megvalósítására is képesek. Ehhez egy \textit{trampoline} szükséges, melyen keresztül a generátorok hívni tudják egymást. Az \texttt{async/await} szerkezet leegyszerűsíti az aszinkron kód írását. A \textit{Babel} \textit{JavaScript} \textit{transpiler} valójában generátor-alapú kódot hoz létre az \texttt{async/await} szimulálására. Konkurens végrehajtásra is lehetőséget adnak a generátorok, mikroszálak segítségével. Ezek az operációs rendszer szintű szálaknál sokkal alacsonyabb erőforrásigénnyel rendelkeznek, és kooperatív multitaszkingot valósítanak meg. A generátorok jelképezik a mikroszálakat, melyek \texttt{yield} utasítással térnek vissza az ütemezőhöz, mely ekkor kiválaszt egy másik mikroszálat, és azt kezdi futtatni.
 
 \end{document}
