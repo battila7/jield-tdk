@@ -1,0 +1,97 @@
+\section{Az eljárás egy példán keresztül}
+
+\begin{frame}{Az eljárás jellemzői}
+A \textit{Pluggable Annotation Processing} API-t használja
+
+
+\hfill \\
+
+\pause
+A \texttt{return} utasítás jelképezi a \texttt{yield} utasítást
+
+
+\hfill \\
+
+\pause
+\textit{Continuation Passing Style}-alapú megvalósítás
+\end{frame}
+
+
+\begin{frame}[fragile]{Prímek generálása}
+\begin{center}
+\begin{lstlisting}[language=java, xleftmargin=15pt,
+        basicstyle=\fontsize{7}{9}\selectfont,
+        numbers=left,
+        numbersep=5pt, escapechar=!,
+        linebackgroundcolor={
+            \btLstHL<1>{30} % No highlighting
+            \btLstHL<2>{5}
+            \btLstHL<3>{20}
+        }]
+@Generator
+private Stream<Integer> generatePrimes() {
+    LinkedList<Integer> primes = new LinkedList<>();
+    primes.add(2);
+    return 2;
+
+    int current = 1;
+
+    loop:
+    do {
+        current += 2;
+        for (int i : primes) {
+            if (current % i == 0) {
+                continue loop;
+            }
+        }
+
+        primes.add(current);
+
+        return current;
+    } while (true);
+}
+\end{lstlisting}
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{Prímek generálása -- Vágás}
+\begin{center}
+\begin{lstlisting}[language=java, xleftmargin=15pt,
+        basicstyle=\fontsize{7}{9}\selectfont,
+        numbers=left,
+        numbersep=5pt, escapechar=!,
+        linebackgroundcolor={
+            \btLstHL<1>{30} % No highlighting
+            \btLstHL<2>{5, 20}
+            \btLstHL<3>{10, 21}
+            \btLstHL<4>{14}
+            \btLstHL<5>{12-16}
+        }]
+@Generator
+private Stream<Integer> generatePrimes() {
+    LinkedList<Integer> primes = new LinkedList<>();
+    primes.add(2);
+    return 2;
+
+    int current = 1;
+
+    loop:
+    do {
+        current += 2;
+        for (int i : primes) {
+            if (current % i == 0) {
+                continue loop;
+            }
+        }
+
+        primes.add(current);
+
+        return current;
+    } while (true);
+}
+\end{lstlisting}
+\end{center}
+\par
+\end{frame}

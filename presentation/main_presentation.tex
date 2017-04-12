@@ -8,7 +8,11 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes}
-\usepackage{listingsutf8}
+\usepackage{listings}
+\usepackage{lstlinebgrd}
+\usepackage{pgf, pgffor}
+
+\input{./misc/highlight.tex}
 
 \lstset{
   language=C,
@@ -42,6 +46,8 @@
   \input{./sections/02-generatorok-ismert-nyelvekben.tex}
 
   \input{./sections/03-korabbi-java-implementaciok.tex}
+
+  \input{./sections/04-az-eljaras-egy-peldan-keresztul.tex}
 
   % \input{./sections/0x-continuation-passing-style.tex}
 \end{document}

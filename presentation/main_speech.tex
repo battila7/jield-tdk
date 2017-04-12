@@ -106,4 +106,47 @@ A \textit{java-generator-functions} könyvtár egy ősosztályt biztosít, melyn
 
 \section{lombok-pg}
 A \textit{lombok-pg} az elterjedt \textit{Lombok} könyvtár kiegészítéseit tartalmazza. Azonban a fejlesztése mintegy 5 éve megszakadt, és a jelenlegi \textit{Lombok} verzióval már nem kompatibilis. Itt is a megjelenik a szemantikailag megkérdőjelezhető függvény használata. Emellett a generátor paramétereit kötelező a \textit{final} módosítóval ellátni. Előnye viszont ennek a megoldásnak, hogy annotáció-feldolgozást használ, és egy állapotgépnek megfelelő kódot generál. Ez tekinthető az egyik legjobb megoldásnak.
+
+\section{Az eljárás egy példán keresztül}
+Az előadás következő részében a dolgozatom eredményét jelentő eljárást fogom bemutatni egy példán keresztül.
+
+\section{Legfontosabb jellemzők}
+
+A példa előtt címszavakban vázolnám az eljárás legfontosabb jellemzőit.
+
+\begin{enumerate}
+    \item
+    A módszer a \textit{Pluggable Annotation Processing API}-t használja, mely a fordítási folyamatba ékelve teszi lehetővé az annotációkon alapuló kódanalízist, és forráskódgenerálást. Az implementáció része egy annotáció, melyet azokon a metódusokon kell elhelyezni, melyeket generátorrá szeretnénk alakítani. Ezután a könyvtár a fordítás közben megkeresi ezeket a metódusokat, és elvégzi a szükséges transzformációkat.
+    \item
+    Különböző függvényhívások helyett a könyvtárat használó programozó a jól ismert \texttt{return} utasítással adhat vissza értékeket a generátorokból. E módon a \texttt{yield} szemantikájával ruházzuk fel a \texttt{return}-t, ezeknél fog megállni a generátor, majd innen fog tovább folytatódni.
+    \item
+    A \textit{CPS} elsősorban a funkcionális programozási nyelvekben elterjedt stílus, de használják fordítóprogramok belső reprezentációjaként is. Előnye, hogy alkalmazásakor a programvezérlés teljesen explicitté válik, könnyen manipulálható a futás iránya. Egy ilyen könyvtár esetén pont erre van szükségünk. Fordítási időben folyamatosan követni fogjuk a \textit{continuation}öket, futási időben pedig egy \textit{trampoline} segítségével valósítjuk meg a technikát. Az említett \textit{continuation} nem más, mint a hátralevő teendőket jelképező struktúra.
+\end{enumerate}
+
+\section{Prímek generálása}
+
+\begin{enumerate}
+    \item
+    A kódrészlet prímszámok végtelen sorozatát generálja kettőtől kezdve. A megvalósítás egyetlen célja, hogy szemléltesse az eljárás működését, ebből fakad viszonylag primitív volta.
+    \item
+    A generátor először kettőt fog visszadni, az ötödik sorban található \texttt{return} utasításnak köszönhetően.
+    \item
+    Ezt követi úgymond az összes többi prímszám a 20. sor \texttt{return}je miatt.  Az előállított prímek tárolásra kerülnek, egy páratlan szám akkor lesz prím, ha az összes eltárolt érték egyike sem osztja.
+\end{enumerate}
+
+\section{Prímek generálása -- Vágás}
+
+\begin{enumerate}
+   \item
+   A generátorok jellemzője, hogy a \texttt{yield} segítségével futásuk felfüggeszthető, majd ettől a ponttól újra folytatható. Ennek megvalósításához szét kell vágnunk az eredeti metódust kisebb darabokra. A futás folytatásakor mindig a következő darabot fogjuk elővenni. Hol kell azonban elvégezni ezeket a vágásokat? Úgynevezett explicit és implicit vágási pontokat azonosíthatunk a kódban.
+   \item
+   Explicit vágási pont lesz a \texttt{yield}, azaz valójában \texttt{return} utasítás. Ezt látva biztosan vágnunk kell, mivel a \texttt{yield} függeszti fel a generátort és ad vissza egy értéket.
+   \item
+   Implicit vágási pontokat a különböző vezérlési szerkezetek vezethetnek be. Fontos megjegyezni, hogy ezeket a vágási pontokat csak akkor kell figyelembe venni, ha az adott vezérlési szerkezet tartalmaz egy explicit vágási pontot is. Az egyetlen vezérlési struktúra, mely \texttt{return}t tartalmaz, a \textit{do-while} ciklus, így csak ennek az eleje és a vége lesz implicit vágási pont.
+   \item
+   A \textit{do-while} ciklust tehát darabokra kell bontanunk. Ez a tartalmazott más vezérlési szerkezeteket alapesetben nem érinti, azonban a 14. sorban található, \texttt{loop} címkével ellátott \texttt{continue} utasítás a szétdarabolt ciklust szeretné léptetni.
+   \item
+   Emiatt szükséges a \texttt{continue}-t befoglaló elágazás és \texttt{foreach} ciklus feldarabolása is. Az így létrejövő kis metódustöredékek lesznek a \textit{continuation}ök, melyekkel mindig folytatódni fog a futás.
+\end{enumerate}
+
 \end{document}
