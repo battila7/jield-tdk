@@ -1,0 +1,88 @@
+\section{Korábbi Java implementációk}
+
+\begin{frame}{Általános problémák}
+Csak régebbi \textit{Java} verziók támogatása (\textit{Java SE} 6-7)
+
+
+\hfill \\
+
+\pause
+Kényelmetlen interfész
+
+
+\hfill \\
+
+\pause
+Rugalmatlan, kevésbé megbízható megvalósítás
+\end{frame}
+
+
+\begin{frame}[fragile]{jyield}
+\begin{center}
+\begin{lstlisting}[language=java, xleftmargin=15pt,
+        basicstyle=\scriptsize,
+        numbers=left,
+        numbersep=5pt, escapechar=!]
+@Continuable
+public Iterable<Integer> power(int number, int exponent) 
+{
+        int counter = 0;
+        int result = 1;
+        while (counter++ < exponent) {
+                result = result * number;
+
+                System.out.print("[" + result + "]");
+
+                Yield.ret(result);
+        }
+        return Yield.done();
+}
+\end{lstlisting}
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{java-generator-functions}
+\begin{center}
+\begin{lstlisting}[language=java, xleftmargin=15pt,
+        basicstyle=\scriptsize,
+        numbers=left,
+        numbersep=5pt, escapechar=!]
+Generator<Integer> simpleGenerator = 
+  new Generator<Integer>() {
+    public void run() throws InterruptedException {
+        yield(1);
+        /* ... */
+        yield(2);
+    }
+};
+\end{lstlisting}
+\end{center}
+\par
+\end{frame}
+
+
+\begin{frame}[fragile]{lombok-pg}
+\begin{center}
+\begin{lstlisting}[language=java, xleftmargin=15pt,
+        basicstyle=\scriptsize,
+        numbers=left,
+        numbersep=5pt, escapechar=!]
+public Iterable<Integer>
+  power(final int number, final int exponent) 
+{
+        int counter = 0;
+        int result = 1;
+        while (counter++ < exponent) {
+                result = result * number;
+
+                System.out.print("[" + result + "]");
+
+                yield(result);
+        }
+}
+\end{lstlisting}
+\end{center}
+\par
+\end{frame}

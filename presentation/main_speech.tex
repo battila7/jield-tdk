@@ -23,6 +23,7 @@
 \usepackage[linewidth=0.33pt, rightline=false, leftline=false, framemethod=tikz]{mdframed}
 
 \begin{document}
+\setcounter{section}{-1}
 \section{Címlap}
 Üdvözlöm a bíráló bizottság tagjait, a kar oktatóit és hallgatóit, valamint a megjelent érdeklődőket. Bagossy Attila vagyok, a dolgozatom és az előadásom címe \textit{Generátorok előállítása CPS-transzformációval Java nyelven}. A témavezetőim Dr. Battyányi Gyula Péter és Balla Tibor.
 
@@ -39,7 +40,7 @@ Az áttekintést követően vegyük szemügyre, hogy mi az a \textit{generátor}
 
 \begin{enumerate}
 \item
-A szubrutin az egyik leggyakrabban használt eszköz a programok szervezésére. Emiatt bemutatása szükségtelennek tűnhet, azonban ez az első lépcsőfok a generátorokhoz vezető úton. A szubrutinok alkalmasak gyakran használt kódrészletek kiemelésére, ami csökkenti a kódduplikációt. Emellett az implementáció elrejtésével növelhetik az absztrakciós szintet, és akár könyvtárak képezhetőek belőlük. Jelen esetben azonban a programvezérlésre kifejtett hatásukat szeretném kihangsúlyozni. Amikor meghívunk egy szubrutint, a vezérlés végighalad annak első utasításától az utolsóig, majd visszatér a hívóhoz. A hívó kód végrehajtása csak ezután folytatódhat tovább. Ez egyfajta alé-fölérendeltségi viszonyt jelent.
+A szubrutin az egyik leggyakrabban használt eszköz a programok szervezésére. Emiatt bemutatása szükségtelennek tűnhet, azonban ez az első lépcsőfok a generátorokhoz vezető úton. A szubrutinok alkalmasak gyakran használt kódrészletek kiemelésére, ami csökkenti a kódduplikációt. Emellett az implementáció elrejtésével növelhetik az absztrakciós szintet, és akár könyvtárak képezhetőek belőlük. Jelen esetben azonban a programvezérlésre kifejtett hatásukat szeretném kihangsúlyozni. Amikor meghívunk egy szubrutint, a vezérlés végighalad annak első utasításától az utolsóig, majd visszatér a hívóhoz. A hívó kód végrehajtása csak ezután folytatódhat tovább.
 \item
 Az ábra két oldala a hívót és a meghívott szubrutint ábrázolja. A nyilak a vezérlés irányát jelzik. Bár az ábrán nem látszik, de ki kell emelni, hogy a szubrutin végrehajtása minden egyes meghívásakor a legelső utasításánál kezdődik.
 \end{enumerate}
@@ -57,7 +58,7 @@ A fólián látható kódrészletekben szimmetrikus korutinok szerepelnek, melye
 
 A korutinok ismeretében már kifejezhető a generátor is, mely egy olyan aszimmetrikus korutin, mely egy sorozatot állít elő. A legnagyszerűbb tulajdonsága, hogy egyszerre csak egy elemet generál, ami azt jelenti, hogy lustán képzi a sorozatot. Ennek köszönhetően akár végtelen sorozatok reprezentálására alkalmas eszközt kínál. Megjegyzendő, hogy néhány programozási nyelv iterátornak nevezi a generátorokat.
 
-Az ábra jobboldalán az ábécét előállító generátor szerepel, a baloldalán pedig ennek a meghívása egy \texttt{for} cikluson belül. Minden egyes iteráció alkalmával egy újabb elemet kérünk a generátortól, mindaddig, amíg a generált sorozat véget nem ér.
+Az ábra jobboldalán az ábécét előállító generátor szerepel, a baloldalán pedig ennek a meghívása egy \texttt{for} ciklus segítségével. Minden egyes iteráció alkalmával egy újabb elemet kérünk a generátortól, mindaddig, amíg a generált sorozat véget nem ér.
 
 \section{Generátorok ismert nyelvekben}
 
@@ -65,9 +66,9 @@ Miután megismertük, mi az a generátor, folytassuk a támogatás vizsgálatáv
 
 \section{Támogatást biztosító nyelvek}
 
-A ma is ismert generátorokhoz hasonló szerkezetek először az \textit{IPL-V} és az \textit{Alphard} nyelvekben jelentek meg. Jelenleg használatos formájukat pedig a Barbara Liskov és munkatársai által kifejlesztett \textit{CLU} nyelvben nyerték el, bár a nyelv iterátornak nevezi őket. Azonban itt jelent meg először \textit{yield} kulcsszó használata. A \textit{CLU} generátorai korlátozottak voltak abban a tekintetben, hogy csak \texttt{for} ciklussal karöltve lehetett őket használni, és nem tették lehetővé a rekurziót.
+A ma is ismert generátorokhoz hasonló szerkezetek először az \textit{IPL-V} és az \textit{Alphard} nyelvekben jelentek meg. Jelenleg használatos formájukat pedig a Barbara Liskov és munkatársai által kifejlesztett \textit{CLU} nyelvben nyerték el, bár a nyelv iterátornak nevezi őket. A \textit{CLU}-ban jelent meg először \textit{yield} kulcsszó használata.
 
-A TIOBE minden hónapban kiadott, programozási nyelvek népszerűségét mérő listájának 10 legnépszerűbb nyelve között 5 olyan is van, mely nyelvi szintű támogatást ad a generátorok írásához. Ezek a C\#, Python, VB.NET, PHP és a JavaScript. Ez mindenképpen figyelemre méltó, hiszen ezek közül például a C\# a Java közvetlen konkurensének tekinthető, kiváltképp az elmúlt hónapok tendenciáit tekintve, melyek megszüntetik a .NET platform és így a C\# Windows-függőségét.
+A TIOBE minden hónapban kiadott, programozási nyelvek népszerűségét mérő listájának 10 legnépszerűbb nyelve között 5 olyan is van, mely nyelvi szintű támogatást ad a generátorok írásához. Ezek a C\#, a Python, a VB.NET, a PHP és a JavaScript. Ez mindenképpen figyelemre méltó, hiszen ezek közül például a C\# a Java közvetlen konkurensének tekinthető.
 
 \section{Felhasználási lehetőségek -- 1}
 
@@ -81,6 +82,28 @@ Véges sorozatok képzésére gyakran ott is bevethető a generátor, ahol nem i
 
 Az előző példák a generátorok hagyományos felhasználási lehetőségeit szemléltették. Azonban a generátorok aszimmetrikus korutin voltát még sokféleképpen ki lehet aknázni.
 
-Meglepő lehet, de szimmetrikus korutinok megvalósítására is képesek. Ehhez egy \textit{trampoline} szükséges, melyen keresztül a generátorok hívni tudják egymást. Az \texttt{async/await} szerkezet leegyszerűsíti az aszinkron kód írását. A \textit{Babel} \textit{JavaScript} \textit{transpiler} valójában generátor-alapú kódot hoz létre az \texttt{async/await} szimulálására. Konkurens végrehajtásra is lehetőséget adnak a generátorok, mikroszálak segítségével. Ezek az operációs rendszer szintű szálaknál sokkal alacsonyabb erőforrásigénnyel rendelkeznek, és kooperatív multitaszkingot valósítanak meg. A generátorok jelképezik a mikroszálakat, melyek \texttt{yield} utasítással térnek vissza az ütemezőhöz, mely ekkor kiválaszt egy másik mikroszálat, és azt kezdi futtatni.
+Meglepő lehet, de szimmetrikus korutinok megvalósítására is képesek. Ehhez egy \textit{trampoline} szükséges, melyen keresztül a generátorok hívni tudják egymást. Az \texttt{async/await} szerkezet leegyszerűsíti az aszinkron kód írását. A \textit{Babel} \textit{JavaScript} \textit{transpiler} valójában generátor-alapú kódot hoz létre az \texttt{async/await} szimulálására. Konkurens végrehajtásra is lehetőséget adnak a generátorok, mikroszálak segítségével. Ezek az operációs rendszer szintű szálaknál sokkal alacsonyabb erőforrásigénnyel rendelkeznek, és kooperatív multitaszkingot valósítanak meg.
 
+\section{Korábbi \textit{Java} implementációk}
+
+A generátorok \textit{Java}ban történő megvalósítására már több próbálkozás is történt. Mi ezekkel a probléma, miért érdemes még egy implementációt készíteni?
+
+\section{Általános problémák}
+\begin{enumerate}
+    \item
+    A rendelkezésre álló könyvtárak többségét már nem támogatják, a legutolsó módosítás jellemzően még a \textit{Java SE} 6-os vagy 7-es verziója idején történt. Ennek folytán bizonyos szerkezetek támogatása, mint például a \textit{try-with-resources}, a lambda függvények, vagy az interfészek \textit{default} metódusai nincsenek jelen ezen könyvtárakban.
+    \item
+    Többségében kényelmetlen, akár átgondolatlan interfészt kell a programozónak használnia. Természetesen a \textit{yield} kulcsszót csak a \textit{Java} fordító módosításával lehet bevezetni, amire egyik könyvtár sem vállalkozik. Más megoldáshoz folyamodva, legtöbbször különféle függvényhívásokkal érhető el a generátorokra jellemző működés.
+    \item
+    A különböző megvalósítások mögött sokféle, eltérő technika áll. Van példa bájtkód-instrumentációra, szálak használatára, illetve egyszerű programkönyvtárakra. Ezek egyike sem mondható optimálisnak. A bájtkód-instrumentáció kevésbé megbízható, mint az annotáció-feldolgozás, mivel a fordító nem ellenőrzi a generált kódot. Érvénytelen bájtkód esetén a \textit{JVM} megtagadhatja az osztály betöltését. A szálak elsősorban erőforrás-igényüket tekintve okoznak gondot. Az egyszerű programkönyvtárak egy ősosztályt biztosítanak, melynek gyermekei lesznek a generátorok. Ez nem kifejezetten elegáns és rugalmas megoldás.
+\end{enumerate}
+
+\section{jyield}
+A kódrészlet a \textit{jyield} könyvtár példakódjainak egyike. Ez a könyvtár 7 éve lett frissítve utoljára, még a \textit{Java SE} 6 idején. Bájtkód-instrumentációt használ, és a \textit{Yield} osztály statikus metódusait kell hívni, ahogy a 8. és a 10. sorokban látható. A metódusok használata szemantikailag hibás, hiszen míg a \textit{yield} egy utasítás, addig a metódusok kifejezések. Ez félreértéseket, hibás működést okozhat.
+
+\section{java-generator-functions}
+A \textit{java-generator-functions} könyvtár egy ősosztályt biztosít, melynek gyermekosztályai lehetnek a generátorok. Ez kisebbfajta kényelmetlenséget jelent, hiszen nem elég csak egy annotációt elhelyezni a megfelelő metóduson. A könyvtár a háttérben szálakat használ, amiknek a száma korlátozott, és memóriaigényük sem elhanyagolható.
+
+\section{lombok-pg}
+A \textit{lombok-pg} az elterjedt \textit{Lombok} könyvtár kiegészítéseit tartalmazza. Azonban a fejlesztése mintegy 5 éve megszakadt, és a jelenlegi \textit{Lombok} verzióval már nem kompatibilis. Itt is a megjelenik a szemantikailag megkérdőjelezhető függvény használata. Emellett a generátor paramétereit kötelező a \textit{final} módosítóval ellátni. Előnye viszont ennek a megoldásnak, hogy annotáció-feldolgozást használ, és egy állapotgépnek megfelelő kódot generál. Ez tekinthető az egyik legjobb megoldásnak.
 \end{document}
