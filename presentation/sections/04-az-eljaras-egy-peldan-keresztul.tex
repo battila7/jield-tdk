@@ -56,7 +56,7 @@ private Stream<Integer> generatePrimes() {
 \end{frame}
 
 
-\begin{frame}[fragile]{Prímek generálása -- Vágás}
+\begin{frame}[fragile]{Prímek generálása -- Vágási pontok}
 \begin{center}
 \begin{lstlisting}[language=java, xleftmargin=15pt,
         basicstyle=\fontsize{7}{9}\selectfont,
@@ -94,4 +94,45 @@ private Stream<Integer> generatePrimes() {
 \end{lstlisting}
 \end{center}
 \par
+\end{frame}
+
+
+\begin{frame}[t, fragile]{A metódus darabjai}
+\noindent
+\begin{minipage}[t][0.4\textheight][t]{\textwidth}
+    \noindent
+    \begin{minipage}{.50\textwidth}
+    \noindent
+    \begin{center}\textbf{Eredeti kód}\end{center}
+    \begin{lstlisting}[language=java, basicstyle=\scriptsize]
+    if (current % i == 0) {
+        continue loop;
+    }
+    \end{lstlisting}
+    \end{minipage}\hfill
+    \begin{minipage}{.50\textwidth}
+    \begin{center}\textbf{Continuation}\end{center}
+    \begin{center}
+        \begin{tabular}{l | c}
+            \texttt{if} & 1 \\
+            \texttt{else} & 2 \\
+            \texttt{continue} & 3 \\
+            \texttt{continue loop} & 3 \\
+            \texttt{break} & 3 \\
+            \texttt{break loop} & 3
+        \end{tabular}
+    \end{center}
+    \end{minipage}
+\end{minipage} \\
+\begin{minipage}[b][0.6\textheight][t]{\textwidth}
+    \begin{center}\textbf{Új darab}\end{center}
+    \begin{lstlisting}[language=java, basicstyle=\scriptsize]
+    private Bounce<Integer> primes_8(GeneratorState<Integer> contParam) {
+        if (current % i == 0) {
+            return Bounce.cont(()->primes_4(contParam));
+        }
+        return Bounce.cont(()->primes_7(contParam));
+    }
+    \end{lstlisting}
+\end{minipage}
 \end{frame}
