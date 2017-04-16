@@ -8,6 +8,7 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes}
+\usetikzlibrary{arrows.meta}
 \usepackage{listings}
 \usepackage{lstlinebgrd}
 \usepackage{pgf, pgffor}
@@ -49,6 +50,26 @@
   \input{./sections/03-korabbi-java-implementaciok.tex}
 
   \input{./sections/04-az-eljaras-egy-peldan-keresztul.tex}
+
+  \begin{frame}{Összefoglalás}
+    A generátorok bevezetése \textit{Java}ban indokolt, hiszen rendkívül rugalmasan felhasználhatóak.
+
+    \hfill \\
+
+    A bemutatott eljárás mindössze egy annotáció elhelyezését igényli a programozó részéről.
+
+    \hfill \\
+
+    A háttérben a metódusok kisebb darabokra vágása történik meg, melyeket futásidőben egy \textit{trampoline} vezérel.
+
+    \hfill \\
+
+    A vezérlési szerkezeteket elágazások és megfelelő módon szervezett \textit{continuation}ök modellezik.
+  \end{frame}
+
+  \begin{frame}[standout]
+    Köszönöm a figyelmet!
+  \end{frame}
 
   % \input{./sections/0x-continuation-passing-style.tex}
 \end{document}

@@ -97,42 +97,295 @@ private Stream<Integer> generatePrimes() {
 \end{frame}
 
 
-\begin{frame}[t, fragile]{A metódus darabjai}
-\noindent
-\begin{minipage}[t][0.4\textheight][t]{\textwidth}
-    \noindent
-    \begin{minipage}{.50\textwidth}
-    \noindent
-    \begin{center}\textbf{Eredeti kód}\end{center}
-    \begin{lstlisting}[language=java, basicstyle=\scriptsize]
-    if (current % i == 0) {
-        continue loop;
-    }
-    \end{lstlisting}
-    \end{minipage}\hfill
-    \begin{minipage}{.50\textwidth}
-    \begin{center}\textbf{Continuation}\end{center}
-    \begin{center}
-        \begin{tabular}{l | c}
-            \texttt{if} & 1 \\
-            \texttt{else} & 2 \\
-            \texttt{continue} & 3 \\
-            \texttt{continue loop} & 3 \\
-            \texttt{break} & 3 \\
-            \texttt{break loop} & 3
-        \end{tabular}
-    \end{center}
-    \end{minipage}
-\end{minipage} \\
-\begin{minipage}[b][0.6\textheight][t]{\textwidth}
-    \begin{center}\textbf{Új darab}\end{center}
-    \begin{lstlisting}[language=java, basicstyle=\scriptsize]
-    private Bounce<Integer> primes_8(GeneratorState<Integer> contParam) {
-        if (current % i == 0) {
-            return Bounce.cont(()->primes_4(contParam));
-        }
-        return Bounce.cont(()->primes_7(contParam));
-    }
-    \end{lstlisting}
-\end{minipage}
+\begin{frame}{A vezérlés útja}
+\begin{center}
+\begin{tikzpicture}
+\begin{scope}
+    \draw[thick, rounded corners=6pt]  (-4.55, -1.57) rectangle (4.5, -6.67);
+
+    \draw[thick, rounded corners=6pt]  (-4.3, -3.10) rectangle (4.19, -4.4);
+\end{scope}
+
+\begin{scope}
+  \node at (-3.75, -1.4) {\texttt{do-while}};
+
+  \node at (-3.6, -2.93) {\texttt{foreach}};
+\end{scope}
+
+\begin{scope}[every node/.style={thick,draw, rounded corners=4pt}]
+  \node (1) at (0, 0) {\texttt{primes\_1}};
+  \node (2) at (0, -1) {\texttt{primes\_2}};
+  \node (3) at (0, -2.5) {\texttt{primes\_3}};
+  \node (5) at (0, -5) {\texttt{primes\_5}};
+  \node (4) at (0, -6) {\texttt{primes\_4}};
+  \node (6) at (-3, -3.75) {\texttt{primes\_6}};
+  \node (7) at (0, -3.75) {\texttt{primes\_7}};
+  \node (8) at (3, -3.75) {\texttt{primes\_8}};
+  \node (0) at (0, -7.33) {\texttt{primes\_0}};
+\end{scope}
+
+\begin{scope}[>={Stealth[black]},
+              every edge/.style={draw=orange, very thick}]
+    \path [->] (1) edge (2);
+    \path [->] (2) edge (3);
+    \path [->] (3) edge (6);
+    \path [->] (6) edge (7);
+    \path [->] (7) edge[bend right=30] (8);
+    \path [->] (8) edge[bend right=30] (7);
+    \path [->] (7) edge (5);
+    \path [->] (5) edge (4);
+    \path [->] (4) edge (0);
+    \path (4) edge[bend right=60]  (4.33, -4);
+    \path[->] (4.33, -4) edge[bend right=70] (3);
+\end{scope}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\lstset{language=java, xleftmargin=15pt,
+        basicstyle=\scriptsize,
+        numbers=left,
+        numbersep=5pt, escapechar=!}
+
+\begin{frame}[fragile]{A transzformáció lépései -- 1}
+\begin{lstlisting}
+private Bounce<Integer> primes_0(GenState<Integer> k) {
+    return Bounce.cont(()->k.apply(GenState.empty()));
+}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]{A transzformáció lépései -- 2}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{30} % No highlighting
+            \btLstHL<2>{1}
+            \btLstHL<3>{3}
+        }]
+ LinkedList<Integer> primes = new LinkedList<>();
+ primes.add(2);
+ return 2;
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{30} % No highlighting
+            \btLstHL<2>{2}
+            \btLstHL<3>{4}
+        }]
+ private Bounce<Integer> primes_1(GenState<Integer> k) {
+     primes = new LinkedList<>();
+     primes.add(2);
+     return Bounce.cont(()->primes_2(k), 2);
+ }
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]{A transzformáció lépései -- 3}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{30} % No highlighting
+            \btLstHL<2>{6}
+            \btLstHL<3>{30} % No highlighting
+            \btLstHL<4>{30} % No highlighting
+        }]
+ loop:
+ do {
+     /*
+      * Törzs
+      */
+ } while (true);
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{30} % No highlighting
+            \btLstHL<2>{2}
+            \btLstHL<3>{3}
+            \btLstHL<4>{5}
+        }]
+ private Bounce<Integer> primes_4(GenState<Integer> k) {
+     if (true) {
+         return Bounce.cont(()->primes_3(k));
+     }
+     return Bounce.cont(()->primes_0(k));
+ }
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]{A transzformáció lépései -- 4}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{1}
+        }]
+ current += 2;
+ for (int i : primes) {
+     if (current % i == 0) {
+         continue loop;
+     }
+ }
+ 
+ primes.add(current);
+ 
+ return current;
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}
+ private Bounce<Integer> primes_3(GenState<Integer> k) {
+     current += 2;
+     return Bounce.cont(()->primes_6(k));
+ }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{A transzformáció lépései -- 4}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{8-10}
+        }]
+ current += 2;
+ for (int i : primes) {
+     if (current % i == 0) {
+         continue loop;
+     }
+ }
+ 
+ primes.add(current);
+ 
+ return current;
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}
+ private Bounce<Integer> primes_5(GenState<Integer> k) {
+     primes.add(current);
+     return Bounce.cont(()->primes_4(k), current);
+ }
+\end{lstlisting}
+\addtocounter{framenumber}{-1}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{A transzformáció lépései -- 5}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{1}
+        }]
+ for (int i : primes) {
+     if (current % i == 0) {
+         continue loop;
+     }
+ }
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}
+ private Bounce<Integer> primes_6(GeState<Integer> k) {
+     iterator = CPSUtil.iterator(primes);
+     return Bounce.cont(()->primes_7(k));
+ }
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]{A transzformáció lépései -- 5}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{1}
+        }]
+ for (int i : primes) {
+     if (current % i == 0) {
+         continue loop;
+     }
+ }
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}
+ private Bounce<Integer> primes_7(GenState<Integer> k) {
+     if (iterator.hasNext()) {
+         i = iterator.next();
+         return Bounce.cont(()->primes_8(k));
+     }
+     return Bounce.cont(()->primes_5(k));
+ }
+\end{lstlisting}
+\addtocounter{framenumber}{-1}
+\end{frame}
+
+
+\begin{frame}[fragile]{A transzformáció lépései -- 5}
+\begin{center}\textbf{Eredeti kód}\end{center}
+\begin{lstlisting}[linebackgroundcolor={
+            \btLstHL<1>{2-4}
+        }]
+ for (int i : primes) {
+     if (current % i == 0) {
+         continue loop;
+     }
+ }
+\end{lstlisting}
+
+\begin{center}\textbf{Transzformált kód}\end{center}
+\begin{lstlisting}
+ private Bounce<Integer> primes_8(GenState<Integer> k) {
+     if (current % i == 0) {
+         return Bounce.cont(()->primes_4(k));
+     }
+     return Bounce.cont(()->primes_7(k));
+ }
+\end{lstlisting}
+\addtocounter{framenumber}{-1}
+\end{frame}        
+
+
+\begin{frame}{A vezérlés útja}
+\begin{center}
+\begin{tikzpicture}
+\begin{scope}
+    \draw[thick, rounded corners=6pt]  (-4.55, -1.57) rectangle (4.5, -6.67);
+
+    \draw[thick, rounded corners=6pt]  (-4.3, -3.10) rectangle (4.19, -4.4);
+\end{scope}
+
+\begin{scope}
+  \node at (-3.75, -1.4) {\texttt{do-while}};
+
+  \node at (-3.6, -2.93) {\texttt{foreach}};
+\end{scope}
+
+\begin{scope}[every node/.style={thick,draw, rounded corners=4pt}]
+  \node (1) at (0, 0) {\texttt{primes\_1}};
+  \node (2) at (0, -1) {\texttt{primes\_2}};
+  \node (3) at (0, -2.5) {\texttt{primes\_3}};
+  \node (5) at (0, -5) {\texttt{primes\_5}};
+  \node (4) at (0, -6) {\texttt{primes\_4}};
+  \node (6) at (-3, -3.75) {\texttt{primes\_6}};
+  \node (7) at (0, -3.75) {\texttt{primes\_7}};
+  \node (8) at (3, -3.75) {\texttt{primes\_8}};
+  \node (0) at (0, -7.33) {\texttt{primes\_0}};
+\end{scope}
+
+\begin{scope}[>={Stealth[black]},
+              every edge/.style={draw=orange, very thick}]
+    \path [->] (1) edge (2);
+    \path [->] (2) edge (3);
+    \path [->] (3) edge (6);
+    \path [->] (6) edge (7);
+    \path [->] (7) edge[bend right=30] (8);
+    \path [->] (8) edge[bend right=30] (7);
+    \path [->] (7) edge (5);
+    \path [->] (5) edge (4);
+    \path [->] (4) edge (0);
+    \path (4) edge[bend right=60]  (4.33, -4);
+    \path[->] (4.33, -4) edge[bend right=70] (3);
+\end{scope}
+\end{tikzpicture}
+\end{center}
 \end{frame}
