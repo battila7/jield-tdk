@@ -28,7 +28,7 @@
 Üdvözlöm a bíráló bizottság tagjait, a kar oktatóit és hallgatóit, valamint a megjelent érdeklődőket. Bagossy Attila vagyok, a dolgozatom és az előadásom címe \textit{Generátorok előállítása CPS-transzformációval Java nyelven}. A témavezetőim Dr. Battyányi Gyula Péter és Balla Tibor.
 
 \section{Áttekintés}
-Az előadásom összeállításakor úgy gondoltam, hogy nem fogom szigorúan követni a dolgozatom felépítését. A generátorokkal rokon szerkezetek, a \textit{continuation passing style}, valamint a kidolgozott eljárás mögötti megfontolások részletes ismertetése helyett inkább a gyakorlati oldalt szeretném megmutatni. 
+Az előadásom összeállításakor úgy döntöttem, hogy nem fogom szigorúan követni a dolgozatom felépítését. A generátorokkal rokon szerkezetek, a \textit{continuation passing style}, valamint a kidolgozott eljárás mögötti megfontolások részletes ismertetése helyett inkább a gyakorlati oldalt szeretném megmutatni. 
 
 Természetesen ahhoz, hogy az előadás önmagában is értelmezhető legyen, szükséges az alapfogalmak bevezetése. Ezt követően azonban a dolgozattól eltérve a transzformációs eljárás pontos bemutatása helyett érvelni szeretnék annak léte, s újdonságtartalma mellett. Először a generátorok más nyelvekben való elterjedtségére és széleskörű felhasználási lehetőségeire rámutatva fogom indokolni a \textit{Java}ban való bevezetésük szükségességét. Mivel nem az én eljárásom az első, mely ezt kívánja megvalósítani, a meglevő \textit{Java} nyelvű implementációk ismertetésével folytatom, kiemelve az eltéréseket. Az előadás második felében egy összetett kódrészlet transzformálásának lépésein kalauzolom végig a hallgatóságot, mely bemutatja az eljárást, s egyben rávilágít arra, hogy a \textit{CPS} mennyire elegáns megoldást ad egy ilyen komplex problémára.
 
@@ -56,7 +56,7 @@ A fólián látható kódrészletekben szimmetrikus korutinok szerepelnek, melye
 
 \section{Generátor (\textit{generator})}
 
-A korutinok ismeretében már kifejezhető a generátor is, mely egy olyan aszimmetrikus korutin, mely egy sorozatot állít elő. A legnagyszerűbb tulajdonsága, hogy egyszerre csak egy elemet generál, ami azt jelenti, hogy lustán képzi a sorozatot. Ennek köszönhetően akár végtelen sorozatok reprezentálására alkalmas eszközt kínál. 
+A korutinok ismeretében már kifejezhető a generátor is, ami egy olyan aszimmetrikus korutin, mely egy sorozatot állít elő. A legnagyszerűbb tulajdonsága, hogy egyszerre csak egy elemet generál, ami azt jelenti, hogy lustán képzi a sorozatot. Ennek köszönhetően akár végtelen sorozatok reprezentálására alkalmas eszközt kínál. 
 
 Az ábra jobboldalán az ábécét előállító generátor szerepel, a baloldalán pedig ennek a meghívása egy \texttt{for} ciklus segítségével. Minden egyes iteráció alkalmával egy újabb elemet kérünk a generátortól, mindaddig, amíg a generált sorozat véget nem ér.
 
@@ -93,13 +93,13 @@ A generátorok \textit{Java}ban történő megvalósítására már több prób�
     \item
     A rendelkezésre álló könyvtárak többségét már nem támogatják, a legutolsó módosítás jellemzően még a \textit{Java SE} 6-os vagy 7-es verziója idején történt. Ennek folytán bizonyos szerkezetek támogatása, mint például a \textit{try-with-resources}, a lambda függvények, vagy az interfészek \textit{default} metódusai nincsenek jelen ezen könyvtárakban.
     \item
-    Többségében kényelmetlen, akár átgondolatlan interfészt kell a programozónak használnia. Természetesen a \textit{yield} kulcsszót csak a \textit{Java} fordító módosításával lehet bevezetni, amire egyik könyvtár sem vállalkozik. Más megoldáshoz folyamodva, legtöbbször különféle függvényhívásokkal érhető el a generátorokra jellemző működés.
+    Többségében kényelmetlen, akár átgondolatlan interfészt kell a programozónak használnia. Természetesen a \textit{yield} kulcsszót csak a \textit{Java} fordító módosításával lehetne bevezetni, amire egyik könyvtár sem vállalkozik. Más megoldáshoz folyamodva, legtöbbször különféle függvényhívásokkal érhető el a generátorokra jellemző működés.
     \item
     A különböző megvalósítások mögött sokféle, eltérő technika áll. Van példa bájtkód-instrumentációra, szálak használatára, illetve egyszerű programkönyvtárakra. Ezek egyike sem mondható optimálisnak. A bájtkód-instrumentáció kevésbé megbízható, mint az annotáció-feldolgozás, mivel a fordító nem ellenőrzi a generált kódot. Érvénytelen bájtkód esetén a \textit{JVM} megtagadhatja az osztály betöltését. A szálak elsősorban erőforrás-igényüket tekintve okoznak gondot. Az egyszerű programkönyvtárak egy ősosztályt biztosítanak, melynek gyermekei lesznek a generátorok. Ez nem kifejezetten elegáns és rugalmas megoldás.
 \end{enumerate}
 
 \section{jyield}
-A kódrészlet a \textit{jyield} könyvtár példakódjainak egyike. Ez a könyvtár 7 éve lett frissítve utoljára, még a \textit{Java SE} 6 idején. Bájtkód-instrumentációt használ, és a \textit{Yield} osztály statikus metódusait kell hívni, ahogy a 8. és a 10. sorokban látható. A metódusok használata szemantikailag hibás, hiszen míg a \textit{yield} egy utasítás, addig a metódusok kifejezések. Ez félreértéseket, hibás működést okozhat.
+A kódrészlet a \textit{jyield} könyvtár példakódjainak egyike. Ez a könyvtár 7 éve lett frissítve utoljára, még a \textit{Java SE} 6 idején. Bájtkód-instrumentációt használ, és a \textit{Yield} nevű osztály statikus metódusait kell hívni, ahogy a 8. és a 10. sorokban látható. A metódusok használata szemantikailag hibás, hiszen míg a \textit{yield} egy utasítás, addig a metódushívások kifejezések. Ez félreértéseket, hibás működést okozhat.
 
 \section{java-generator-functions}
 A \textit{java-generator-functions} könyvtár egy ősosztályt biztosít, melynek gyermekosztályai lehetnek a generátorok. Ez kisebbfajta kényelmetlenséget jelent, hiszen nem elég csak egy annotációt elhelyezni a megfelelő metóduson. A könyvtár a háttérben szálakat használ, amiknek a száma korlátozott, és memóriaigényük sem elhanyagolható.
@@ -127,22 +127,22 @@ A példa előtt vázolnám az eljárás legfontosabb jellemzőit.
 
 \begin{enumerate}
     \item
-    A kódrészlet a prímszámok végtelen sorozatát generálja. A megvalósítás egyetlen célja, hogy szemléltesse az eljárás működését, ebből fakad viszonylag primitív volta.
+    A kódrészlet a prímszámok végtelen sorozatát generálja. A megvalósítás egyetlen célja, hogy szemléltesse az eljárás működését, ebből fakad viszonylag primitív volta. Kiemelném a ciklust megelőző \texttt{loop} címkét és a \texttt{continue} utasítást, melyek kifejezetten azért kerültek a példába, hogy bemutassák, milyen komplexitással kell a transzformációnak megbirkóznia.
     \item
     A generátor először kettőt fog visszadni, az ötödik sorban található \texttt{return} utasításnak köszönhetően.
     \item
-    Ezt követi úgymond az összes többi prímszám a 20. sor \texttt{return}je miatt.  Az előállított prímek tárolásra kerülnek, egy soron következő páratlan szám akkor lesz prím, ha az összes eltárolt érték egyike sem osztja.
+    Ezt követi úgymond az összes többi prímszám a 20. sor \texttt{return}je miatt.  Az előállított prímek tárolásra kerülnek; egy soron következő páratlan szám akkor lesz prím, ha az összes eltárolt érték egyike sem osztja.
 \end{enumerate}
 
 \section{Prímek generálása -- Vágási pontok}
 
 \begin{enumerate}
    \item
-   A generátorok jellemzője, hogy a \texttt{yield} segítségével futásuk felfüggeszthető, majd ettől a ponttól újra folytatható. Ennek megvalósításához szét kell vágnunk az eredeti metódust kisebb darabokra. A vágást követően a darabok között a generátor végrehajtása megszakad és lehetőségünk nyílik értékeket visszaadni. Hol kell azonban elvégezni ezeket a vágásokat? Úgynevezett explicit és implicit vágási pontok mentén.
+   A generátorok jellemzője, hogy a \texttt{yield} segítségével futásuk felfüggeszthető, majd ettől a ponttól újra folytatható. Ennek megvalósításához szét kell vágnunk az eredeti metódust kisebb darabokra. A vágás eredményeként előálló darabok között a generátor végrehajtása megszakad, és lehetőségünk nyílik értékeket visszaadni. Hol kell azonban elvégezni ezeket a vágásokat? Úgynevezett explicit és implicit vágási pontok mentén.
    \item
    Explicit vágási pont lesz a \texttt{yield}, azaz valójában a \texttt{return} utasítás. Ezt látva biztosan vágnunk kell, mivel a \texttt{yield} függeszti fel a generátort és ad vissza értéket.
    \item
-   Implicit vágási pontokat a különböző vezérlési szerkezetek vezethetnek be. Fontos megjegyezni, hogy ezeket a vágási pontokat csak akkor kell figyelembe venni, ha az adott vezérlési szerkezet tartalmaz egy explicit vágási pontot is. Az egyetlen vezérlési struktúra, mely \texttt{return}t tartalmaz, a \textit{do-while} ciklus, így csak ennek az eleje és a vége lesz implicit vágási pont. Ha nem bontanánk fel ezeket a struktúrákat, akkor nem lenne lehetséges egy \texttt{yield} után az utasítások folytatása.
+   Implicit vágási pontokat a különböző vezérlési szerkezetek vezethetnek be. Fontos megjegyezni, hogy ezeket a vágási pontokat csak akkor kell figyelembe venni, ha az adott vezérlési szerkezet tartalmaz egy explicit vágási pontot is, vagy egy megfelelő címkével ellátott \texttt{break} vagy \texttt{continue} utasítást. Most az egyetlen vezérlési struktúra, mely \texttt{return}t tartalmaz, a \textit{do-while} ciklus, így ennek az eleje és a vége biztosan implicit vágási pont lesz. Ha nem bontanánk fel az ilyen struktúrákat, akkor nem lenne lehetséges egy \texttt{yield} után az utasítások folytatása.
    \item
    A \textit{do-while} ciklust tehát darabokra kell bontanunk. Ez a tartalmazott más vezérlési szerkezeteket alapesetben nem érinti, azonban a 14. sorban található, \texttt{loop} címkével ellátott \texttt{continue} utasítás a szétdarabolt ciklust szeretné léptetni.
    \item
@@ -163,7 +163,7 @@ Az áttekintés után nézzük meg, hogy milyen kód kerül az egyes metódusokb
     \item
     Folytassuk a transzformációt már valóban a \texttt{primes} metódus törzsével! A 3. sor \texttt{return} utasítása egy explicit vágási pont, így az, és a megelőző utasítások egy saját metódusba kerülnek.
     \item
-    Vegyük észre, hogy a deklarációból egy szimpla értékadás lett, mivel a változó ki lett emelve a metódusokat befoglaló osztály mezőjévé. Erre azért van szükség, hogy a változó több metódusban is hozzáférhető legyen.
+    Vegyük észre, hogy a deklarációból egy egyszerű értékadás lett, mivel a változó ki lett emelve a metódusokat befoglaló osztály mezőjévé. Erre azért van szükség, hogy a változó a többi metódusban is hozzáférhető legyen.
     \item
     Az eredeti metódus által visszaadott értéket a transzformált metódus visszaadja a \textit{trampoline}-nak, a folytatás kíséretében. Ez a még nem ismert \texttt{primes\_2} metódus, ami a további teendőket tartalmazza.
 \end{enumerate}
@@ -178,7 +178,7 @@ Az áttekintés után nézzük meg, hogy milyen kód kerül az egyes metódusokb
     \item
     Amennyiben a feltétel teljesül, akkor a törzset jelentő metódussal folytatódik a végrehajtás.
     \item
-    Ellenkező esetben az előzőleg létrehozott befejező metódus következik. Hiszen ez a \texttt{do-while} az eredeti metódus utolsó utasítása.
+    Ellenkező esetben az előzőleg létrehozott befejező metódus következik. Hiszen ez a \texttt{do-while} ciklus az eredeti metódus utolsó utasítása.
 \end{enumerate}
 
 \section{A transzformáció lépései -- 4}
@@ -198,7 +198,7 @@ Az áttekintés után nézzük meg, hogy milyen kód kerül az egyes metódusokb
     \item
     A frissítés \texttt{foreach} ciklus esetén az iterátor következő elemének lekérdezését jelenti. Amennyiben van következő elem, a ciklus törzsével kell folytatni. Amennyiben nincs, a ciklust követő utasítások következnek, melyeket a \texttt{primes\_5} metódus jelképez. Ez a \texttt{do-while} ciklus hátralevő utasításait jelenti.
     \item
-    Végül következzen az egész \texttt{primes} metódus legérdekesebb része, a \texttt{for} ciklus törzse, azon belül pedig a \texttt{continue} utasítás. Ez egyfajta ugrást tesz lehetővé. Az eljárás részeként folyamatosan tárolásra kerül, hogy a különböző metódusoknak mi a rákövetkezője. A címkék ezt tovább bonyolítják azzal, hogy ugrásokat tesznek lehetővé, akár több szint mélyről is. Itt is pontosan ez történik. A \texttt{continue} a külső \texttt{do-while} léptetését okozza, emiatt lesz a \texttt{primes\_4} metódus, ami a ciklusfej transzformáltja, a \textit{continuation}.
+    Végül következzen az egész \texttt{primes} metódus legérdekesebb része, a \texttt{foreach} ciklus törzse, azon belül pedig a \texttt{continue} utasítás. Ez ugrást tesz lehetővé. Az eljárás részeként folyamatosan tárolásra kerül, hogy a különböző metódusoknak mi a rákövetkezője. A címkék ezt tovább bonyolítják azzal, hogy ugrásokat tesznek lehetővé, akár több szint mélyről is. Itt is pontosan ez történik. A \texttt{continue} a külső \texttt{do-while} léptetését okozza, emiatt lesz a \texttt{primes\_4} metódus, ami a ciklusfej transzformáltja, a \textit{continuation}.
     \item
     Ezzel elkészült a teljes metódus transzformációja. Futásidőben egy \textit{trampoline} fogja a generált metódusok meghívását végezni, ez azonban a programozó előtt rejtve marad.
 \end{enumerate}
@@ -209,7 +209,7 @@ Az implementációk kifejtése után talán már világosabb, hogy miért pont �
 
 \section{Összefoglalás}
 
-Zárásként szeretném összefoglalni az előadásom tartalmát. Kezdésként szerepelt, hogy a generátorok bevezetése indokolt a \textit{Java} nyelvben. Ezt számtalan példával próbáltam meg alátámasztani. Ezt követően néhány, már nem támogatott könyvtár után bemutattam egy példán keresztül az általam kidolgozott eljárást. Ez az annotációkkal megjelölt metódusokat kis építőkövekre bontja, melyeket futásidőben egy \textit{trampoline} fog össze. A transzformáció az összes vezérlési szerkezetet elágazásokkal és a \textit{continuation}ök megfelelő szervezésével modellez. A programozónak csak a megfelelő annotációt kell használnia, minden mást elvégez helyette a létrehozott könyvtár.
+Zárásként szeretném összefoglalni az előadásom tartalmát. Kezdésként szerepelt, hogy a generátorok bevezetése indokolt a \textit{Java} nyelvben. Ezt számtalan példával próbáltam meg alátámasztani. Ezt követően néhány, már nem támogatott könyvtár után bemutattam egy példán keresztül az általam kidolgozott eljárást. Ez az annotációkkal megjelölt metódusokat kis építőkövekre bontja, melyeket futásidőben egy \textit{trampoline} fog össze. A transzformáció az összes vezérlési szerkezetet elágazásokkal, és a \textit{continuation}ök megfelelő szervezésével modellezi. A programozónak csak a megfelelő annotációt kell használnia, minden mást elvégez helyette a létrehozott könyvtár.
 
 \hfill \\
 
