@@ -4,7 +4,7 @@
 
 Szerző: Bagossy Attila
 
-Témavezetők: Dr. Battyányi Gyula Péter, Balla Tibor
+Témavezetők: Dr. Battyányi Péter, Balla Tibor
 
 ## Absztrakt
 

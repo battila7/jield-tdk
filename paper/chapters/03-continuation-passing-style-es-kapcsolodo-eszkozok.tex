@@ -39,11 +39,11 @@ function factDSIter(n) {
         if (i === 0) {
             return acc;
         } else {
-            factIterAcc(i - 1, acc * i);
+            return factIterAcc(i - 1, acc * i);
         }
     }
 
-    factIterAcc(n, 1);
+    return factIterAcc(n, 1);
 }
 \end{lstlisting}
 
@@ -230,6 +230,8 @@ function trampoline(start) {
 
 function counter(n) {
   if (n > 0) {
+    console.log(n);
+
     return { 
       func: counter, 
       args: [n - 1]
