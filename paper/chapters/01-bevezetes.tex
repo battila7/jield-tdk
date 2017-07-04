@@ -10,7 +10,11 @@ A \textit{Java} az objektumorientált paradigma mentén megtervezett, legutóbbi
 
 Bár ezek a fejlesztések jelentősek, azonban mondhatni folytatás nélkül maradnak, hiszen a 2017. július 27-én kiadásra kerülő \textit{Java 9} nem tartalmaz ilyen jellegű, az említettekkel megegyező horderejű újdonságokat \cite{Java9Features}. Tehát olyan eszközök támogatása, mint például a generátorok, sem a legközelebbi, sem a későbbi verziókban nem várható, a jelenlegi tervek alapján \cite{ProjectValhalla}.
 
-Természetesen felmerül a kérdés, hogy mégis mennyiben indokolt egy ilyen, új nyelvi elem bevezetése? Egyelőre ahelyett, hogy a generátorok előnyeivel próbálnánk érvelni a bevezetésük mellett, vizsgáljuk meg inkább azt, hogy más, széleskörben használt programozási nyelvek hogyan viszonyulnak a kérdéshez. A legnépszerűbb nyelvek listájához a TIOBE Indexet vettem alapul \cite{TIOBEIndex}. Az \ref{table:1} táblázat adataiból kiolvasható, hogy a legnépszerűbb programozási nyelvek fele natívan támogatja a generátorok létrehozását. Ennek ismeretében már feltételezhetjük, hogy valós igény mutatkozna e struktúra bevezetésére a \textit{Java} nyelvben is. Az említett két tényező biztosította a motivációt, hogy a generátorok \textit{Java} nyelvben történő bevezetésének lehetőségét megvizsgáljam.
+Természetesen felmerül a kérdés, hogy mégis mennyiben indokolt egy ilyen, új nyelvi elem bevezetése? Egyelőre ahelyett, hogy a generátorok előnyeivel próbálnánk érvelni a bevezetésük mellett, vizsgáljuk meg inkább azt, hogy más, széleskörben használt programozási nyelvek hogyan viszonyulnak a kérdéshez. A legnépszerűbb nyelvek listájához a TIOBE Indexet vettem alapul \cite{TIOBEIndex}. Az \ref{table:1} táblázat adataiból kiolvasható, hogy a legnépszerűbb programozási nyelvek fele natívan támogatja a generátorok létrehozását.
+
+Pusztán annak elterjedtségével indokolni egy új nyelvi elem bevezetését azonban rendkívül öncélú lenne. Ezért a dolgozatban valós példákon keresztül szeretném bizonyítani, hogy a generátorok népszerűsége mögött valós előnyök húzódnak meg, melyek az olvashatóság megtartása mellett roppant összetett programvezérlésre adnak lehetőséget. 
+
+A dolgozat és a kapcsolódó implementáció elkészítését tehát az előzőekben kifejtett két, egymással összefonódó motiváció hajtotta. Egyfelől a generátorok nyújtotta vonzó lehetőségek, másfelől pedig a \textit{Java} nyelv jelenlegi fejlesztési üteme, mely valószínűtlenné teszi a generátorok hivatalos támogatásának közeljővőben történő megjelenését.
 
 \if\useColors1
   \begin{table}

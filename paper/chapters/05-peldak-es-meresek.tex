@@ -1,10 +1,12 @@
 \chapter{Példák és mérések}\label{ch:peldakEsMeresek}
 
-A fejezetben a bemutatott eljárást használó és kézzel írt generátorok összehasonlítása szerepel, két példán keresztül. Objektív szempont a kódok teljesítménye, melynek mérése a mikromérések (\textit{microbenchmark}) készítésére alkalmas \textit{JMH} könyvtárral történt. Emellett olyan, szubjektívebb szempontot tekintve is összevetésre kerültek a megvalósítások, mint az olvashatóság és áttekinthetőség.
+A fejezetben példák két típusán keresztül kívánom szemléltetni a generátorok kínálta sokszínű lehetőségeket. Elsőként a hagyományosabb felhasználási módot bemutató példák szerepelnek, melyek valamilyen sorozat előállítását valósítják meg. Ezek a példák nem csak a \textit{jield} könyvtárral, hanem kézzel írt generátorokat is magukban foglalnak, lehetőséget biztosítva az összehasonlításra. Objektív szempont a kódok teljesítménye, melynek mérése a mikromérések (\textit{microbenchmark}) készítésére alkalmas \textit{JMH} könyvtárral történt. Emellett olyan, szubjektívebb szempontot tekintve is összevetésre kerültek a megvalósítások, mint az olvashatóság és áttekinthetőség.
+
+A második csoport a generátorok vezérlésre kifejtett hatását kiaknázó kódrészleteket tartalmaz. Az összehasonlítást nélkülözve, kizárólag a kidolgozott implementáción alapuló példák szerepelnek, melyek azt hivatottak bemutatni, hogy elrugaszkodva a generátorok megszokott sorozatképző viselkedésétől, alkalmazásukkal bámulatos vezérlési út hozható létre.
 
 \section{Konfiguráció}
 
-Egy teljesítményteszt eredményének reprodukálásához elengedhetetlen a használt paraméterek pontos ismerete. Ez magában foglalja a mérésekhez alkalmazott keretrendszer, a \textit{JMH} beállításait és a futtató környezet szoftver- és hardverkonfigurációját is. Előbbit az \ref{table:jmhparams}, utóbbit az \ref{table:envparams} táblázat tartalmazza.
+Az összehasonlítást tartalmazó példák előtt tekintsük át a teljesítményteszthez használt konfigurációt, hiszen egy teljesítményteszt eredményének reprodukálásához elengedhetetlen a használt paraméterek pontos ismerete. Ez magában foglalja a mérésekhez alkalmazott keretrendszer, a \textit{JMH} beállításait és a futtató környezet szoftver- és hardverkonfigurációját is. Előbbit az \ref{table:jmhparams}, utóbbit az \ref{table:envparams} táblázat tartalmazza.
 
 \begin{table}[h]
 \captionsetup{justification=centering}
@@ -54,7 +56,7 @@ A \ref{table:jmhparams} táblázat a \textit{JMH} beállításait a keretrendsze
 
 \section{Fibonacci-sorozat}
 
-Az első példát a Fibonacci-sorozat elemeit generáló metódusok alkotják. A sorozat elemeinek kiszámítását végző algoritmus azonos, a három kódrészlet közötti különbséget az algoritmust működtető mechanizmus jelenti. Az összehasonlított megvalósítások közül kettő szerepel az \ref{FibComparison} kódrészletben. A harmadik, az \texttt{intStreamGenerate} annyiban tér el a \texttt{streamGenerate} metódustól, hogy az \texttt{int} típusra specializált \texttt{IntStream} és \texttt{IntSupplier} osztályokat alkalmazza.
+Az első példát a Fibonacci-sorozat elemeit generáló metódusok alkotják. A sorozat elemeinek kiszámítását végző algoritmus azonos, a három kódrészlet közötti különbséget az algoritmust működtető mechanizmus jelenti. Az összehasonlított megvalósítások közül kettő szerepel az \ref{FibComparison} kódrészletben. A harmadik, az \texttt{intStreamGenerate} annyiban tér el a \texttt{streamGenerate} metódustól, hogy az \texttt{int} típusra specializált \texttt{IntStream} és \texttt{IntSupplier} osztályokat alkalmazza. Ez az eltérés bár aprónak tűnhet, azonban látni fogjuk, hogy a kódrészlet teljesítményére jelentős hatással van.
 
 \begin{center}
 \begin{mdframed}[topline=true]
@@ -80,7 +82,6 @@ public Stream<Integer> streamGenerate() {
   return Stream.generate(
     new Supplier<Integer>() {
       private int a = 0;
-
       private int b = 1;
 
       @Override
@@ -88,7 +89,6 @@ public Stream<Integer> streamGenerate() {
         int temp = a;
         a = b;
         b = a + temp;
-
         return temp;
       }
     });
@@ -138,7 +138,7 @@ Az \ref{table:fibComp} táblázat adatai nem nevezhetőek meglepőnek. A generá
 
 \section{\textit{Iterable} elemeinek ismétlése}
 
-A második példa metódusai az \textit{R} nyelv \texttt{rep} függvényéhez hasonló működést valósítanak meg. Egy olyan sorozatot képeznek, mely egy \texttt{Iterable} elemeiből áll, és két paraméterrel befolyásolható. A \texttt{times} azt adja meg, hogy az \texttt{Iterable} elemeit hányszor állítsa elő a generátor, az \texttt{each} pedig azt, hogy az így kapott sorozat minden eleme hányszor legyen megismételve. Csak két generikus implementáció került összehasonlításra, az egyik a \textit{Jield}-féle generátor, a másik pedig a \texttt{Stream.generate} metódust veszi alapul.
+A második példa metódusai egy olyan sorozatot képeznek, mely egy \texttt{Iterable} elemeiből áll, és két paraméterrel befolyásolható. A \texttt{times} azt adja meg, hogy az \texttt{Iterable} elemeit hányszor állítsa elő a generátor, az \texttt{each} pedig azt, hogy az így kapott sorozat minden eleme hányszor legyen megismételve. Csak két generikus implementáció került összehasonlításra, az egyik a \textit{Jield}-féle generátor, a másik pedig a \texttt{Stream.generate} metódust veszi alapul.
 
 \begin{lstlisting}[language=Java, caption={Elemek ismétlése \textit{Jield} segítségével}, escapechar=!, captionpos=b, belowskip=1em, belowcaptionskip=0em]
 @Generator
@@ -172,7 +172,7 @@ A \textit{Jield} a megszokott vezérlési szerkezeteket alkalmazva teszi lehető
 
 \subsection{Teljesítmény}
 
-A méréseket különböző \texttt{times} és \texttt{each} paraméterértékek mellett végeztem el. Az átadott \texttt{Iterable} minden esetben egy három elemű, \texttt{String} objektumokból álló lista volt, az \texttt{Arrays.asList} metódussal összeállítva. 
+A mérésekhez kiválasztottam három-három \texttt{times} és \texttt{each} paraméterértéket, és ezek összes lehetséges kombinációjára lefuttattam a megvalósításokat. Az átadott \texttt{Iterable} minden esetben egy három elemű, \texttt{String} objektumokból álló lista volt, az \texttt{Arrays.asList} metódussal összeállítva. Mivel mindkét implementáció azonos \texttt{Iterable}-t használ, így az feltehetően azonos mértékben befolyásolja a teljesítményüket is.
 
 \begin{table}[h]
 \captionsetup{justification=centering}
