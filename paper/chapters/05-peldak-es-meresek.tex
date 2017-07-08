@@ -1,6 +1,6 @@
 \chapter{Példák és mérések}\label{ch:peldakEsMeresek}
 
-A fejezetben példák két típusán keresztül kívánom szemléltetni a generátorok kínálta sokszínű lehetőségeket. Elsőként a hagyományosabb felhasználási módot bemutató példák szerepelnek, melyek valamilyen sorozat előállítását valósítják meg. Ezek a példák nem csak a \textit{jield} könyvtárral, hanem kézzel írt generátorokat is magukban foglalnak, lehetőséget biztosítva az összehasonlításra. Objektív szempont a kódok teljesítménye, melynek mérése a mikromérések (\textit{microbenchmark}) készítésére alkalmas \textit{JMH} könyvtárral történt. Emellett olyan, szubjektívebb szempontot tekintve is összevetésre kerültek a megvalósítások, mint az olvashatóság és áttekinthetőség.
+A fejezetben példák két típusán keresztül kívánom szemléltetni a generátorok kínálta sokszínű lehetőségeket. Elsőként a hagyományosabb felhasználási módot bemutató példák szerepelnek, melyek valamilyen sorozat előállítását valósítják meg. Ezek a példák nem csak a \textit{Jield} könyvtárral, hanem kézzel írt generátorokat is magukban foglalnak, lehetőséget biztosítva az összehasonlításra. Objektív szempont a kódok teljesítménye, melynek mérése a mikromérések (\textit{microbenchmark}) készítésére alkalmas \textit{JMH} könyvtárral történt. Emellett olyan, szubjektívebb szempontot tekintve is összevetésre kerültek a megvalósítások, mint az olvashatóság és áttekinthetőség.
 
 A második csoport a generátorok vezérlésre kifejtett hatását kiaknázó kódrészleteket tartalmaz. Az összehasonlítást nélkülözve, kizárólag a kidolgozott implementáción alapuló példák szerepelnek, melyek azt hivatottak bemutatni, hogy elrugaszkodva a generátorok megszokott sorozatképző viselkedésétől, alkalmazásukkal bámulatos vezérlési út hozható létre.
 
@@ -210,10 +210,119 @@ A mérésekhez kiválasztottam három-három \texttt{times} és \texttt{each} pa
 
 Előzetesen azt vártam, hogy a \texttt{jield} lassabb lesz, mint a \texttt{streamGenerate}. Ez az elvárás be is igazolódott, amint az az \ref{table:repComp} táblázat adataiból kiolvasható. Legrosszabb esetben, a paraméterek maximális értéke esetén ezúttal is $7,5$-szeres különbség figyelhető meg, a \texttt{streamGenerate} javára. 
 
+\section{Mikroszálak, szimmetrikus korutinok}
+
+A hagyományos, valóban generátorszerű működést megvalósító kódrészletek után következzenek azok a példák, melyek a generátorok aszimmetrikus korutin voltára építenek. Két példát kívánok bemutatni, melyek azonban együtt szerepelnek, hiszen implementációjuk alapját ugyanaz a kód adja. 
+
+A \textit{Jield} a verem túlcsordulásának elkerülésére a 3. fejezetben ismertetett \textit{trampolining} technikát használja az egyes generátorok esetén. Mi történik azonban ha a generátorok meghívása szintén egy \textit{trampoline}-ból (vagy ahhoz hasonló konstrukcióból) történik, és azok valamilyen vezérlőjelet adnak vissza? E vezérlőjeltől függően lehetségessé válik szimmetrikus korutinok és kooperatív multitaszking megvalósítása.
+
+\subsection{Az ütemező}
+
+A generátorok vezérlésének logikáját tartalmazó, eddig \textit{trampoline}-nak nevezett szerkezetre a továbbiakban ütemezőként fogok hivatkozni. Az ütemező a legutóbb meghívott generátor által visszaadott vezérlőjelnek megfelelően folytatja működését. A vezérlőjelek a következőek lehetnek:
+
+\begin{itemize}
+  \item \textit{CONTINUE}: Az ütemező válasszon ki egy másik generátort legközelebbi meghívásra, valamilyen kiválasztási algoritmus szerint.
+  \item \textit{REMOVE}: Az ütemező távolítsa el a jelet visszaadó generátort az ütemezett generátorok közül.
+  \item \textit{QUIT}: Az ütemező fejezze be a működését.
+  \item \textit{continueWith(id)}: Az ütemező az \textit{id} azonosítójú generátort válassza ki következőnek futásra.
+\end{itemize}
+
+Pusztán a \textit{CONTINUE} vezérlőjel már elegendő kooperatív multitaszking megvalósításához. A szimmetrikus korutinok modellezését pedig a \textit{continueWith} jel teszi lehetővé, mely biztosítja a generátorok számára az ütemezést megkerülve a saját futásuk felfüggesztését, és egy másik generátor futásának folytatását.
+
+Az ütemező legfontosabb metódusát az \ref{execute} kódrészlet tartalmazza, mely mindaddig fut, amíg van rendelkezésre álló generátor. A generátorok egy \texttt{SchedulableMicrothread} nevű osztályba vannak becsomagolva, ami a tényleges generátoron felül egy azonosítót és egy prioritást tartalmaz. Az \texttt{execute} metódus a legutolsónak végrehajtott generátor által visszaadott vezérlőjel és a \texttt{getNextThread} metódus segítségével választja ki a következőnek végrehajtandó generátort. Ezután, ezt meghívja, majd újra kiválaszt egy szálat, és így tovább.
+
+\begin{lstlisting}[language=Java, caption={A generátorok ütemezését végző metódus}, escapechar=@, captionpos=b, aboveskip=1em, label=execute]
+public void execute() {
+    Signal previousSignal = CONTINUE;
+    SchedulableMicrothread previousThread = null;
+
+    while (!threadMap.isEmpty()) {
+        Optional<SchedulableMicrothread> threadOptional = getNextThread(previousThread, previousSignal);
+
+        if (threadOptional.isPresent()) {
+            previousThread = threadOptional.get();
+
+            if (previousThread.getThreadIterator().hasNext()) {
+                previousSignal = previousThread.getThreadIterator().next();
+            } else {
+                threadMap.remove(previousThread.getIdentifier());
+
+                previousSignal = CONTINUE;
+
+                previousThread = null;
+            }
+        } else {
+            return;
+        }
+    }
+}
+\end{lstlisting} 
+
+Természetesen a bemutatott viselkedés csak egy lehetséges implementációja az ütemező ötletének, mely sok részletben megváltoztatható, továbbfejleszthető. Hozzáadhatók például további vezérlőjelek, vagy biztosítható a generátorok közötti adatcsere.
+
+\subsection{Kooperatív multitaszking mikroszálakkal}
+
+Ahogy az ütemező elnevezésből, valamint a \ref{execute} kódrészlet azonosítóiból is kitűnik, az \texttt{execute} metódus elsősorban úgynevezett mikroszálakra van felkészítve. Ezek a mikroszálak valójában generátorok, melyek maguk döntik el, hogy mikor adják vissza a vezérlést az ütemezőnek, így kooperatív (nem-preemptív) multitaszkingot megvalósítva. A vezérlés visszaadása a \texttt{return} utasítás segítségével történik, az említett vezérlőjelek valamelyikének kíséretében.
+
+\begin{lstlisting}[language=Java, caption={Kooperatív mikroszálak}, escapechar=!, captionpos=b, aboveskip=1em, label=cooperative]
+public static class EvenCounter implements Microthread {
+    @Override @Generator
+    public Stream<Signal> execute() {
+        for (int i = 0; i < 10; i += 2) {
+            System.out.println(i);
+            return CONTINUE;
+        }
+    }
+}
+public static class OddCounter implements Microthread {
+    @Override @Generator
+    public Stream<Signal> execute() {
+        for (int i = 1; i < 10; i += 2) {
+            System.out.println(i);
+            return CONTINUE;
+        }
+    }
+}
+\end{lstlisting} 
+
+Az \ref{cooperative} kódrészlet két egyszerű mikroszálat mutat be, melyek a páros, valamint a páratlan számokat írják ki a konzolra. A mikroszálat leíró osztály nem tartalmaz sem azonosítót, sem pedig prioritást. Ezeket csak akkor szükséges megadni, amikor az osztály egy példányát egy ütemező alá rendeljük. Ennek köszönhetően ugyanazon mikroszál több példánya is futhat egy ütemező felügyelete alatt, akár különböző prioritásokkal.
+
+\subsection{Szimmetrikus korutinok}
+
+Az aszimmetrikus korutinok (azaz generátorok) és a szimmetrikus társaik közötti szakadék mindössze egy ütemezővel áthidalható. A generátor amikor visszaadja a vezérlést, kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
+
+\begin{lstlisting}[language=Java, caption={Számlálás szimmetrikus korutinokkal}, escapechar=!, captionpos=b, aboveskip=1em, label=symmetric]
+public static class EvenCounter implements Microthread {
+    @Override
+    @Generator
+    public Stream<Signal> execute() {
+        for (int i = 0; i < 10; i += 2) {
+            System.out.println(i);
+            return continueWith("odd");
+        }
+    }
+}
+
+public static class OddCounter implements Microthread {
+    @Override
+    @Generator
+    public Stream<Signal> execute() {
+        for (int i = 1; i < 10; i += 2) {
+            System.out.println(i);
+            return continueWith("even");
+        }
+    }
+}
+\end{lstlisting} 
+
+Az \ref{symmetric} kódrészlet két szimmetrikus korutint tartalmaz, melyek a megelőző kódrészlethez hasonlóan egyszerű számláló viselkedést valósítanak meg. Azonban nem hagyatkoznak az ütemezőre, hanem közvetlenül hívják egymást azonosítók segítségével. Bár a példa rendkívül egyszerű, kiválóan rávilágít a szimmetrikus korutinok lényegére, azaz hogy az egyes korutinok tetszőlegesen hívhatják egymást, mely hívások közt a legutolsó felfüggesztés helye és a lokális változók értéke megmarad. 
+
 \section{Konklúzió}
 
-A fejezet két példán keresztül mutatta be a \textit{Jield} használatát és teljesítményét. Természetesen ez nem elég ahhoz, hogy általános érvényű következtetéseket vonhassunk le, azonban bizonyos jellemzők megfigyelését lehetővé teszik.
+A fejezet négy példán keresztül mutatta be a \textit{Jield} használatát és teljesítményét. Természetesen ez nem elég ahhoz, hogy általános érvényű következtetéseket vonhassunk le, azonban bizonyos jellemzők megfigyelését lehetővé teszik.
 
 A \textit{Jield} segítségével ugyanúgy írhatunk generátort, mint egy hagyományos metódust, mindössze a \texttt{return} megváltozott szerepére kell tekintettel lenni. Ez lehetővé teszi, hogy közvetlenül az elemek előállítására koncentráljunk, a generátor működési mechanizmusa rejtve marad.
+
+A generátorok valójában aszimmetrikus korutinok, így a \textit{Jield} által kínált generátorok is azok, a különleges tulajdonságokkal együtt. Ezekre a tulajdonságokra építve egészen izgalmas, új konstrukciót képezhetők, mint például a fejezetben is bemutatott kooperatív mikroszálak.
 
 Az absztrakciónak azonban ára van. A mérésekből kitűnik, hogy legjobb esetben is kétszer, legrosszabb esetben mintegy $7,5$-szer több a \textit{Jield}-féle generátorok átlagos futási ideje, mint a \texttt{Stream}et használó metódusoké. Teljesítménykritikus helyzetekben ezt mindenképpen figyelembe kell venni.

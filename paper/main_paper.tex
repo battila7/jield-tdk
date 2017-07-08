@@ -15,6 +15,7 @@
 \usepackage{caption}
 \usepackage{ellipsis}
 \usepackage{multirow}
+\usepackage[titles]{tocloft}
 
 \usepackage{apacite}
 \bibliographystyle{apacite}
@@ -33,6 +34,8 @@
 \begin{document}
     \input{./misc/titlepage.tex}
 
+    \setlength{\cftbeforechapskip}{.2ex}
+    \setlength{\cftbeforesecskip}{-.5ex}
     \tableofcontents
 
     \if\printName1
