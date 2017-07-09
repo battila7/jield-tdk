@@ -52,7 +52,7 @@ Az összehasonlítást tartalmazó példák előtt tekintsük át a teljesítmé
 \label{table:envparams}
 \end{table}
 
-A \ref{table:jmhparams} táblázat a \textit{JMH} beállításait a keretrendszerben használt nevükkel sorolja fel. Összefoglalva, minden tényleges mérést 10, egyenként 1 másodperc hosszúságú bemelegítő iteráció előzött meg. A bemelegítést követően 10, szintén 1 másodpercig tartó ismétlés alatt a végrehajtáshoz szükséges átlagidő került mérésre. Ez az eljárás 5 független \textit{JVM}-en lett elvégezve.
+Az \ref{table:jmhparams} táblázat a \textit{JMH} beállításait a keretrendszerben használt nevükkel sorolja fel. Összefoglalva, minden tényleges mérést 10, egyenként 1 másodperc hosszúságú bemelegítő iteráció előzött meg. A bemelegítést követően 10, szintén 1 másodpercig tartó ismétlés alatt a végrehajtáshoz szükséges átlagidő került mérésre. Ez az eljárás 5 független \textit{JVM}-en lett elvégezve.
 
 \section{Fibonacci-sorozat}
 
@@ -262,7 +262,7 @@ Természetesen a bemutatott viselkedés csak egy lehetséges implementációja a
 
 \subsection{Kooperatív multitaszking mikroszálakkal}
 
-Ahogy az ütemező elnevezésből, valamint a \ref{execute} kódrészlet azonosítóiból is kitűnik, az \texttt{execute} metódus elsősorban úgynevezett mikroszálakra van felkészítve. Ezek a mikroszálak valójában generátorok, melyek maguk döntik el, hogy mikor adják vissza a vezérlést az ütemezőnek, így kooperatív (nem-preemptív) multitaszkingot megvalósítva. A vezérlés visszaadása a \texttt{return} utasítás segítségével történik, az említett vezérlőjelek valamelyikének kíséretében.
+Ahogy az ütemező elnevezésből, valamint az \ref{execute} kódrészlet azonosítóiból is kitűnik, az \texttt{execute} metódus elsősorban úgynevezett mikroszálakra van felkészítve. Ezek a mikroszálak valójában generátorok, melyek maguk döntik el, hogy mikor adják vissza a vezérlést az ütemezőnek, így kooperatív (nem-preemptív) multitaszkingot megvalósítva. A vezérlés visszaadása a \texttt{return} utasítás segítségével történik, az említett vezérlőjelek valamelyikének kíséretében.
 
 \begin{lstlisting}[language=Java, caption={Kooperatív mikroszálak}, escapechar=!, captionpos=b, aboveskip=1em, label=cooperative]
 public static class EvenCounter implements Microthread {
@@ -289,7 +289,7 @@ Az \ref{cooperative} kódrészlet két egyszerű mikroszálat mutat be, melyek a
 
 \subsection{Szimmetrikus korutinok}
 
-Az aszimmetrikus korutinok (azaz generátorok) és a szimmetrikus társaik közötti szakadék mindössze egy ütemezővel áthidalható. A generátor amikor visszaadja a vezérlést, kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
+Az aszimmetrikus korutinok (azaz generátorok) és a szimmetrikus társaik közötti szakadék mindössze egy ütemezővel áthidalható. Amikor a generátor visszaadja a vezérlést, kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
 
 \begin{lstlisting}[language=Java, caption={Számlálás szimmetrikus korutinokkal}, escapechar=!, captionpos=b, aboveskip=1em, label=symmetric]
 public static class EvenCounter implements Microthread {
