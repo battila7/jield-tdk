@@ -289,7 +289,7 @@ Az \ref{cooperative} kódrészlet két egyszerű mikroszálat mutat be, melyek a
 
 \subsection{Szimmetrikus korutinok}
 
-A korutinok két típusa közti különbség röviden összegezhető annyiban, hogy egy aszimmetrikus korutinnak egy ponton mindenképpen vissza kell adnia a vezérlést az őt hívó kódnak, míg szimmetrikus korutinok esetén ez a korlátozás nem áll fenn. Érezhető, hogy ez a különbség nem olyan jelentős, s ez valóban így is van. A szakadék mindössze egy ütemezővel áthidalható.  Amikor a generátor (azaz aszimettrikus korutin) visszaadja a vezérlést, akkor kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
+A korutinok két típusa közti különbség röviden összegezhető annyiban, hogy egy aszimmetrikus korutinnak egy ponton mindenképpen vissza kell adnia a vezérlést az őt hívó kódnak, míg szimmetrikus korutinok esetén ez a korlátozás nem áll fenn. Érezhető, hogy ez a különbség nem olyan jelentős, s ez valóban így is van. A szakadék mindössze egy ütemezővel áthidalható.  Amikor a generátor (azaz aszimmetrikus korutin) visszaadja a vezérlést, akkor kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
 
 \begin{lstlisting}[language=Java, caption={Számlálás szimmetrikus korutinokkal}, escapechar=!, captionpos=b, aboveskip=1em, label=symmetric]
 public static class EvenCounter implements Microthread {
@@ -319,7 +319,7 @@ Az \ref{symmetric} kódrészlet két szimmetrikus korutint tartalmaz, melyek a m
 
 \subsection{Összehasonlítás}
 
-Érdemes az előző két példát összehasonlítani, hiszen bár a felszínen hasonlónak tűnhetnek, jobban már nem is különbözhetnének. Mivel az aszimmetrikus korutinok adják mindkét példa mögöttes mechanizmusát, ezért a lokális változók értékei, és a felfüggeszthető-újraindítható működés mindkét kódrészlet jellemzője. Az igazi eltérést az ütemező szerepe jelenti. Míg a mikroszálak esetén az ütemező aktív, azaz valóban döntéseket hoz a vezérlést illetően, addig a szimmetrikus korutinok esetén közvetlenül a korutin mondja meg, hogyan folytatódjon a program futása. Ekkor az ütemező mindössze a vezérlés átadásáért felel, a szimmetrikus korutin gondoskodik annak kijelöléséről, hogy ki kerüljön legközelebb ütemezésre.
+Érdemes az előző két példát összehasonlítani, hiszen bár a felszínen hasonlónak tűnhetnek, jobban már nem is különbözhetnének. Mivel az aszimmetrikus korutinok adják mindkét példa mögöttes mechanizmusát, ezért a lokális változók értékei, és a felfüggeszthető-újraindítható működés mindkét kódrészlet jellemzője. Az igazi eltérést az ütemező szerepe jelenti. Míg a mikroszálak esetén az ütemező aktív, azaz valóban döntéseket hoz a vezérlést illetően, addig a szimmetrikus korutinok esetén közvetlenül a korutin mondja meg, hogyan folytatódjon a program futása. Ekkor az ütemező csak a vezérlés átadásáért felel, a szimmetrikus korutin gondoskodik annak kijelöléséről, hogy ki kerüljön legközelebb ütemezésre.
 
 A két eszköz tehát nem azonos célokat szolgál, mindössze nagyon hasonló az eszközkészlet, melynek segítségével megvalósíthatóak.
 
