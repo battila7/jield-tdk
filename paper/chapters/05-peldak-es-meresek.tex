@@ -285,11 +285,11 @@ public static class OddCounter implements Microthread {
 }
 \end{lstlisting} 
 
-Az \ref{cooperative} kódrészlet két egyszerű mikroszálat mutat be, melyek a páros, valamint a páratlan számokat írják ki a konzolra. A mikroszálat leíró osztály nem tartalmaz sem azonosítót, sem pedig prioritást. Ezeket csak akkor szükséges megadni, amikor az osztály egy példányát egy ütemező alá rendeljük. Ennek köszönhetően ugyanazon mikroszál több példánya is futhat egy ütemező felügyelete alatt, akár különböző prioritásokkal.
+Az \ref{cooperative} kódrészlet két egyszerű mikroszálat mutat be, melyek a páros, valamint a páratlan számokat írják ki a konzolra. Azonos prioritással futtatva ezeket a mikroszálakat, a számok felváltva fognak a konzolra kerülni. Azonban a mikroszálat leíró osztály nem tartalmaz sem azonosítót, sem pedig prioritást. Ezeket csak akkor szükséges megadni, amikor az osztály egy példányát egy ütemező alá rendeljük. Ennek köszönhetően ugyanazon mikroszál több példánya is futhat egy ütemező felügyelete alatt, akár különböző prioritásokkal.
 
 \subsection{Szimmetrikus korutinok}
 
-Az aszimmetrikus korutinok (azaz generátorok) és a szimmetrikus társaik közötti szakadék mindössze egy ütemezővel áthidalható. Amikor a generátor visszaadja a vezérlést, kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
+A korutinok két típusa közti különbség röviden összegezhető annyiban, hogy egy aszimmetrikus korutinnak egy ponton mindenképpen vissza kell adnia a vezérlést az őt hívó kódnak, míg szimmetrikus korutinok esetén ez a korlátozás nem áll fenn. Érezhető, hogy ez a különbség nem olyan jelentős, s ez valóban így is van. A szakadék mindössze egy ütemezővel áthidalható.  Amikor a generátor (azaz aszimettrikus korutin) visszaadja a vezérlést, akkor kijelöli valamilyen módon, hogy mely másik generátorral folytatódjon a végrehajtás. Az előző ütemező implementációt alkalmazva ez a \textit{continueWith} vezérlőjel használatával történik.
 
 \begin{lstlisting}[language=Java, caption={Számlálás szimmetrikus korutinokkal}, escapechar=!, captionpos=b, aboveskip=1em, label=symmetric]
 public static class EvenCounter implements Microthread {
@@ -315,7 +315,13 @@ public static class OddCounter implements Microthread {
 }
 \end{lstlisting} 
 
-Az \ref{symmetric} kódrészlet két szimmetrikus korutint tartalmaz, melyek a megelőző kódrészlethez hasonlóan egyszerű számláló viselkedést valósítanak meg. Azonban nem hagyatkoznak az ütemezőre, hanem közvetlenül hívják egymást azonosítók segítségével. Bár a példa rendkívül egyszerű, kiválóan rávilágít a szimmetrikus korutinok lényegére, azaz hogy az egyes korutinok tetszőlegesen hívhatják egymást, mely hívások közt a legutolsó felfüggesztés helye és a lokális változók értéke megmarad. 
+Az \ref{symmetric} kódrészlet két szimmetrikus korutint tartalmaz, melyek a megelőző kódrészlethez hasonlóan egyszerű számláló viselkedést valósítanak meg. Azonban nem hagyatkoznak az ütemezőre, hanem közvetlenül hívják egymást azonosítók segítségével. Bár a példa rendkívül egyszerű, kiválóan rávilágít a szimmetrikus korutinok lényegére, azaz hogy az egyes korutinok tetszőlegesen hívhatják egymást, mely hívások közt a legutolsó felfüggesztés helye és a lokális változók értéke megmarad.
+
+\subsection{Összehasonlítás}
+
+Érdemes az előző két példát összehasonlítani, hiszen bár a felszínen hasonlónak tűnhetnek, jobban már nem is különbözhetnének. Mivel az aszimmetrikus korutinok adják mindkét példa mögöttes mechanizmusát, ezért a lokális változók értékei, és a felfüggeszthető-újraindítható működés mindkét kódrészlet jellemzője. Az igazi eltérést az ütemező szerepe jelenti. Míg a mikroszálak esetén az ütemező aktív, azaz valóban döntéseket hoz a vezérlést illetően, addig a szimmetrikus korutinok esetén közvetlenül a korutin mondja meg, hogyan folytatódjon a program futása. Ekkor az ütemező mindössze a vezérlés átadásáért felel, a szimmetrikus korutin gondoskodik annak kijelöléséről, hogy ki kerüljön legközelebb ütemezésre.
+
+A két eszköz tehát nem azonos célokat szolgál, mindössze nagyon hasonló az eszközkészlet, melynek segítségével megvalósíthatóak.
 
 \section{Konklúzió}
 
